@@ -104,7 +104,13 @@ function buildDirSwitch() {
   return button;
 }
 
+function addFavicon() {
+  if (document.querySelector('link[rel~="icon"]')) return;
+  document.head.append(el('link', {rel: 'icon', type: 'image/png', href: '../assets/favicon.png'}));
+}
+
 function mount() {
+  addFavicon();
   applyTheme(load('rx-demo-theme', THEMES, 'system'));
   applyDir(load('rx-demo-dir', DIRS, 'ltr'));
 
@@ -124,11 +130,17 @@ function mount() {
     menu.ariaExpanded = String(open);
   });
 
+  const title = el(
+    'a',
+    {className: 'demo-title', href: './index.html'},
+    el('img', {src: '../assets/icon.png', alt: '', width: 32, height: 32}),
+    el('span', {textContent: 'RX Material 3E'}),
+  );
   const header = el(
     'header',
     {className: 'demo-header'},
     menu,
-    el('a', {className: 'demo-title', href: './index.html', textContent: 'RX Material 3E'}),
+    title,
     el('div', {className: 'demo-actions'}, buildThemeSwitch(), buildDirSwitch()),
   );
 

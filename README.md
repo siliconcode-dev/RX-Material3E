@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.png" alt="RXM3E" width="240">
+</p>
+
 # RX-Material3E
 
 Material 3 and Material 3 Expressive as framework-free web components. Each component is ported by hand from Google's Jetpack Compose Material3 source, with Material Components for Android as a second reference.

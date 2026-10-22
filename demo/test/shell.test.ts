@@ -7,6 +7,8 @@ const byText = (text: string) =>
 describe('demo shell', () => {
   beforeAll(async () => {
     localStorage.clear();
+    // The test runner page brings its own favicon; the shell only adds one when none exists.
+    document.querySelectorAll('link[rel~="icon"]').forEach((link) => link.remove());
     document.body.innerHTML = '<p id="content">Page content</p>';
     await import('../shell');
   });
@@ -14,6 +16,12 @@ describe('demo shell', () => {
   it('moves page content into main and adds header and navigation', () => {
     expect(document.querySelector('main #content')).not.toBeNull();
     expect(document.querySelector('header .demo-title')?.textContent).toBe('RX Material 3E');
+    expect(document.querySelector('header .demo-title img')?.getAttribute('src')).toBe(
+      '../assets/icon.png',
+    );
+    expect(document.querySelector('link[rel="icon"]')?.getAttribute('href')).toBe(
+      '../assets/favicon.png',
+    );
     const links = [...document.querySelectorAll('nav a')].map((a) => a.textContent);
     expect(links).toEqual(['Catalog', 'Design tokens', 'Theme']);
   });
