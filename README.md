@@ -10,7 +10,7 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Steps 1 to 5 of 79 done. See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 to 6 of 79 done. See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package          | What it is                                                     | Status                            |
 | ---------------- | -------------------------------------------------------------- | --------------------------------- |
@@ -68,6 +68,18 @@ To use a different font, override `--md-ref-typeface-brand` and `--md-ref-typefa
 npm run tokens:fetch   # sparse-clones androidx into .cache/
 npm run tokens         # rewrites packages/tokens
 ```
+
+## Typography
+
+Use the class for any of the 15 Material type styles, or its Material 3 Expressive `-emphasized` version:
+
+```html
+<link rel="stylesheet" href="@rx-m3e/tokens/typescale.css" />
+<h2 class="rx-typescale-headline-small">Settings</h2>
+<p class="rx-typescale-body-large-emphasized">Saved</p>
+```
+
+Inside your own Lit components, use `typescale('title-medium')` for the declarations or `typescaleStyles` for the classes (both from `@rx-m3e/web`).
 
 ## Theme
 

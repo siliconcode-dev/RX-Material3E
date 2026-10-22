@@ -23,7 +23,7 @@ The order of the sections is the order we build in. Later components reuse earli
 | 0.6  | Focus ring                                                            | `rx-focus-ring`             | (foundation)                                        | `focus/`                        | M3                    | ☐             |
 | 0.7  | Icon                                                                  | `rx-icon`                   | `Icon.kt`                                           | `imageview/`                    | M3                    | ☐             |
 | 0.8  | Surface                                                               | `rx-surface`                | `Surface.kt`                                        | `card/` (MaterialCardView base) | M3                    | ☐             |
-| 0.9  | Typography / Text                                                     | typescale CSS classes       | `Text.kt`, `Typography.kt`                          | `textview/`                     | M3 + M3E (emphasized) | ☐             |
+| 0.9  | Typography / Text                                                     | `rx-typescale-*` classes    | `Text.kt`, `Typography.kt`                          | `textview/`                     | M3 + M3E (emphasized) | ☑             |
 | 0.10 | Shapes + shape morphing (35 expressive shapes)                        | `rx-shape`, `morph()`       | `MaterialShapes.kt`, `Shapes.kt`, `graphics-shapes` | `shape/`                        | M3E                   | ☐             |
 | 0.11 | Scrim                                                                 | `rx-scrim`                  | `Scrim.kt`                                          | —                               | M3                    | ☐             |
 

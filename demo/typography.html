@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Typography · RX Material 3E</title>
+    <link rel="stylesheet" href="../packages/tokens/css/fonts.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/theme.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/typescale.css" />
+    <link rel="stylesheet" href="./demo.css" />
+    <script type="module" src="./shell.ts"></script>
+    <script type="module" src="./typography.ts"></script>
+    <style>
+      .type-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: end;
+        padding: 16px;
+        border-radius: var(--md-sys-shape-corner-large);
+        background: var(--md-sys-color-surface-container);
+      }
+      .type-controls label {
+        display: grid;
+        gap: 4px;
+        flex: 1 1 200px;
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      .type-controls input,
+      .type-controls select {
+        min-height: 40px;
+        padding: 0 12px;
+        border: 1px solid var(--md-sys-color-outline);
+        border-radius: var(--md-sys-shape-corner-small);
+        background: var(--md-sys-color-surface);
+        color: var(--md-sys-color-on-surface);
+        font: inherit;
+      }
+      .specimen {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 4px 24px;
+        padding: 16px 0;
+        border-bottom: 1px solid var(--md-sys-color-outline-variant);
+      }
+      .specimen header {
+        grid-column: 1 / -1;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 16px;
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      .specimen header code {
+        color: var(--md-sys-color-primary);
+      }
+      .specimen p {
+        margin: 0;
+        overflow-wrap: anywhere;
+      }
+      .specimen .tag {
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      @media (max-width: 599px) {
+        .specimen {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Typography</h1>
+    <p>
+      The 15 Material type styles, each next to its Material 3 Expressive
+      <em>emphasized</em> version. Use the classes from <code>@rx-m3e/tokens/typescale.css</code>,
+      for example <code>class="rx-typescale-title-large"</code>.
+    </p>
+
+    <form class="type-controls" id="type-controls">
+      <label class="rx-typescale-label-large">
+        Sample text
+        <input name="sample" value="The quick brown fox jumps over the lazy dog" />
+      </label>
+      <label class="rx-typescale-label-large">
+        Language
+        <select name="lang">
+          <option value="en">English</option>
+          <option value="bn">বাংলা (Bangla)</option>
+          <option value="hi">हिन्दी (Hindi)</option>
+          <option value="ar">العربية (Arabic)</option>
+          <option value="ja">日本語 (Japanese)</option>
+          <option value="ko">한국어 (Korean)</option>
+          <option value="zh-CN">中文 (Chinese)</option>
+        </select>
+      </label>
+    </form>
+
+    <div id="specimens"></div>
+  </body>
+</html>

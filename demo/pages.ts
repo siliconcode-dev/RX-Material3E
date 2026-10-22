@@ -21,6 +21,7 @@ export const sections: DemoSection[] = [
     pages: [
       {title: 'Design tokens', href: 'tokens.html'},
       {title: 'Theme', href: 'theme.html'},
+      {title: 'Typography', href: 'typography.html'},
     ],
   },
 ];

@@ -31,7 +31,7 @@ Status: `☐` not started, `◐` in progress, `☑` done.
 | Step | Work                                                                               | Status |
 | ---- | ---------------------------------------------------------------------------------- | ------ |
 | 5    | Theme: seed color to full scheme, scheme variants, contrast levels, `applyTheme()` | ☑      |
-| 6    | Typography: typescale classes, emphasized styles                                   | ☐      |
+| 6    | Typography: typescale classes, emphasized styles                                   | ☑      |
 | 7    | Elevation: shadows for levels 0 to 5                                               | ☐      |
 | 8    | Focus ring                                                                         | ☐      |
 | 9    | State layer and ripple                                                             | ☐      |

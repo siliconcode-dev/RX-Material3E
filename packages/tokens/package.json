@@ -12,6 +12,7 @@
     "./theme.css": "./css/theme.css",
     "./fonts.css": "./css/fonts.css",
     "./typeface.css": "./css/typeface.css",
+    "./typescale.css": "./css/typescale.css",
     "./ref.css": "./css/ref.css",
     "./sys.css": "./css/sys.css",
     "./color.css": "./css/color.css",

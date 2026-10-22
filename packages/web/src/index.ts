@@ -1,3 +1,4 @@
 // Public entry point for @rx-m3e/web. Each component is exported here once
 // its roadmap step is done; see ROADMAP.md.
 export * from './theme/index.js';
+export * from './typography/index.js';

@@ -350,6 +350,44 @@ writeFileSync(
     ].join('\n'),
 );
 
+// One class per typescale role, e.g. .rx-typescale-body-large and
+// .rx-typescale-body-large-emphasized, for text outside components.
+const TYPE_PROPS = {
+  'font-family': 'font',
+  'font-size': 'size',
+  'line-height': 'line-height',
+  'font-weight': 'weight',
+  'letter-spacing': 'tracking',
+};
+const typescaleRoles = [
+  ...new Set(
+    Object.keys(sys)
+      .filter((k) => k.startsWith('--md-sys-typescale-'))
+      .map((k) =>
+        k
+          .slice('--md-sys-typescale-'.length)
+          .replace(/-(font|size|line-height|weight|tracking)$/, ''),
+      ),
+  ),
+];
+writeFileSync(
+  join(outDir, 'css/typescale.css'),
+  header('Typescale classes: .rx-typescale-<role>, including the expressive -emphasized roles.') +
+    typescaleRoles
+      .map((role) =>
+        block(
+          `.rx-typescale-${role}`,
+          Object.fromEntries(
+            Object.entries(TYPE_PROPS).map(([prop, part]) => [
+              prop,
+              `var(--md-sys-typescale-${role}-${part})`,
+            ]),
+          ),
+        ),
+      )
+      .join('\n'),
+);
+
 const googleFamilies = [
   'Google+Sans+Flex:opsz,wght,ROND@6..144,1..1000,0..100',
   ...NOTO_FAMILIES.map((f) => `${f.replaceAll(' ', '+')}:wght@100..900`),
