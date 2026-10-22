@@ -19,6 +19,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@material/material-color-utilities": "0.4.0",
     "@rx-m3e/tokens": "0.1.0",
     "lit": "^3.3.3"
   }

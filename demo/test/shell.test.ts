@@ -15,7 +15,7 @@ describe('demo shell', () => {
     expect(document.querySelector('main #content')).not.toBeNull();
     expect(document.querySelector('header .demo-title')?.textContent).toBe('RX Material 3E');
     const links = [...document.querySelectorAll('nav a')].map((a) => a.textContent);
-    expect(links).toEqual(['Catalog', 'Design tokens']);
+    expect(links).toEqual(['Catalog', 'Design tokens', 'Theme']);
   });
 
   it('starts on the system theme and switches to dark and light', () => {

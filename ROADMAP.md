@@ -30,7 +30,7 @@ Status: `☐` not started, `◐` in progress, `☑` done.
 
 | Step | Work                                                                               | Status |
 | ---- | ---------------------------------------------------------------------------------- | ------ |
-| 5    | Theme: seed color to full scheme, scheme variants, contrast levels, `applyTheme()` | ☐      |
+| 5    | Theme: seed color to full scheme, scheme variants, contrast levels, `applyTheme()` | ☑      |
 | 6    | Typography: typescale classes, emphasized styles                                   | ☐      |
 | 7    | Elevation: shadows for levels 0 to 5                                               | ☐      |
 | 8    | Focus ring                                                                         | ☐      |
@@ -142,5 +142,6 @@ Status: `☐` not started, `◐` in progress, `☑` done.
 - Fonts: English uses Google Sans Flex with Noto Sans as fallback; every other language uses the Noto Sans family, chosen by the `lang` attribute (CJK gets its regional family first). The library ships no font files; `@rx-m3e/tokens/fonts.css` is an optional Google Fonts loader.
 - Tooling: Lit 3, TypeScript 6 with `experimentalDecorators`, Vite 8 for the dev server, `tsc` for the library build.
 - Quality: Vitest 5 browser mode on Playwright (Chromium for now; Firefox and WebKit join at step 75), ESLint 10 with `eslint-plugin-lit` and `eslint-plugin-wc`, Prettier. CI on GitHub Actions.
+- Theme: `@material/material-color-utilities` 0.4.0 builds schemes. Default spec is 2025 (M3 Expressive); 2021 is available. The library's imports omit file extensions, so it needs a bundler (Vite, webpack, esbuild); it does not load as raw ES modules in a browser.
 - Dependency versions are normally at least two weeks old. Security fixes are the exception (Vitest 5.0.5 fixes GHSA-p458-7748-mcp3).
 - Distribution: npm. A shadcn-style registry may be added after the alpha.

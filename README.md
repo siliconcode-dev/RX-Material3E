@@ -6,7 +6,7 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Steps 1 to 4 of 79 done. See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 to 5 of 79 done. See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package          | What it is                                                     | Status                            |
 | ---------------- | -------------------------------------------------------------- | --------------------------------- |
@@ -64,6 +64,24 @@ To use a different font, override `--md-ref-typeface-brand` and `--md-ref-typefa
 npm run tokens:fetch   # sparse-clones androidx into .cache/
 npm run tokens         # rewrites packages/tokens
 ```
+
+## Theme
+
+Generate a full light and dark scheme from one seed color with Google's color engine:
+
+```js
+import {applyTheme} from '@rx-m3e/web';
+
+applyTheme({source: '#0b57d0', variant: 'vibrant', contrast: 0, spec: '2025'});
+```
+
+Or theme just part of a page:
+
+```html
+<rx-theme source="#146c2e" variant="expressive">...</rx-theme>
+```
+
+Styles: `tonal-spot` (default), `neutral`, `vibrant`, `expressive`, `fidelity`, `content`, `rainbow`, `fruit-salad`, `monochrome`. Contrast runs from -1 to 1 (0 standard, 0.5 medium, 1 high). `sourceFromImage(img)` picks a seed from a picture. Light and dark follow `data-theme` on `<html>`, or the OS.
 
 ## Development
 

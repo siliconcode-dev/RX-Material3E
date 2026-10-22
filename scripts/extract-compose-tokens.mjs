@@ -299,11 +299,13 @@ writeFileSync(
   header(
     'System color tokens. Light by default; dark follows the OS unless data-theme="light" is set.',
   ) +
-    block(':root', light) +
+    block(':root', {'color-scheme': 'light', ...light}) +
     '\n@media (prefers-color-scheme: dark) {\n' +
-    block(':root:not([data-theme="light"])', dark, '    ').replace(/^/gm, '  ').trimEnd() +
+    block(':root:not([data-theme="light"])', {'color-scheme': 'dark', ...dark})
+      .replace(/^/gm, '  ')
+      .trimEnd() +
     '\n}\n\n' +
-    block(':root[data-theme="dark"]', dark),
+    block(':root[data-theme="dark"]', {'color-scheme': 'dark', ...dark}),
 );
 writeFileSync(
   join(outDir, 'css/components.css'),
