@@ -10,12 +10,26 @@ const ref = process.argv[2] ?? 'androidx-main';
 const git = (...args) => execFileSync('git', args, {stdio: 'inherit'});
 
 if (!existsSync(dir)) {
-  git('clone', '--depth', '1', '--filter=blob:none', '--sparse', '--branch', ref,
-    'https://github.com/androidx/androidx.git', dir);
+  git(
+    'clone',
+    '--depth',
+    '1',
+    '--filter=blob:none',
+    '--sparse',
+    '--branch',
+    ref,
+    'https://github.com/androidx/androidx.git',
+    dir,
+  );
 } else {
   git('-C', dir, 'fetch', '--depth', '1', 'origin', ref);
   git('-C', dir, 'checkout', 'FETCH_HEAD');
 }
-git('-C', dir, 'sparse-checkout', 'set',
+git(
+  '-C',
+  dir,
+  'sparse-checkout',
+  'set',
   'compose/material3/material3/src/commonMain',
-  'graphics/graphics-shapes/src/commonMain');
+  'graphics/graphics-shapes/src/commonMain',
+);

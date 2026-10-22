@@ -6,30 +6,30 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Steps 1 and 2 of 79 done. See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 to 3 of 79 done. See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
-| Package | What it is | Status |
-|---------|-----------|--------|
-| `@rx-m3e/tokens` | All M3 and M3E design tokens as CSS custom properties and JSON | Ready |
-| `@rx-m3e/web` | The web components (`rx-*` elements) | Package set up, no components yet |
+| Package          | What it is                                                     | Status                            |
+| ---------------- | -------------------------------------------------------------- | --------------------------------- |
+| `@rx-m3e/tokens` | All M3 and M3E design tokens as CSS custom properties and JSON | Ready                             |
+| `@rx-m3e/web`    | The web components (`rx-*` elements)                           | Package set up, no components yet |
 
 ## Tokens
 
 `packages/tokens` is generated from the 119 token objects in Compose Material3. Nothing in it is typed by hand.
 
 ```html
-<link rel="stylesheet" href="@rx-m3e/tokens/theme.css">
+<link rel="stylesheet" href="@rx-m3e/tokens/theme.css" />
 ```
 
-| File | Contents |
-|------|----------|
-| `css/ref.css` | Tonal palettes (`--md-ref-palette-*`) and typefaces |
-| `css/sys.css` | Typescale (incl. emphasized), shape corners, elevation levels, state opacities, durations, easings, expressive springs |
-| `css/typeface.css` | Language rules: English uses Google Sans Flex, other languages use Noto Sans |
-| `css/fonts.css` | Optional Google Fonts loader for every family above |
-| `css/color.css` | Light and dark color roles. Follows the OS; force with `data-theme="light"` or `"dark"` on `<html>` |
-| `css/components.css` | 2,430 component tokens (`--md-comp-*`) across 104 sets, for reference |
-| `src/tokens.json` | Everything above as JSON, plus the source commit |
+| File                 | Contents                                                                                                               |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `css/ref.css`        | Tonal palettes (`--md-ref-palette-*`) and typefaces                                                                    |
+| `css/sys.css`        | Typescale (incl. emphasized), shape corners, elevation levels, state opacities, durations, easings, expressive springs |
+| `css/typeface.css`   | Language rules: English uses Google Sans Flex, other languages use Noto Sans                                           |
+| `css/fonts.css`      | Optional Google Fonts loader for every family above                                                                    |
+| `css/color.css`      | Light and dark color roles. Follows the OS; force with `data-theme="light"` or `"dark"` on `<html>`                    |
+| `css/components.css` | 2,430 component tokens (`--md-comp-*`) across 104 sets, for reference                                                  |
+| `src/tokens.json`    | Everything above as JSON, plus the source commit                                                                       |
 
 CSS has no spring timing function, so each expressive spring (fast, default, slow; spatial and effects) is simulated and exported as a `linear()` easing with a matching duration:
 
@@ -42,9 +42,9 @@ Run `npm run dev` and open `/demo/tokens.html` to see the colors, typescale, cor
 
 ### Fonts
 
-| Text | Font |
-|------|------|
-| English | Google Sans Flex, falling back to Noto Sans |
+| Text               | Font                                                                                  |
+| ------------------ | ------------------------------------------------------------------------------------- |
+| English            | Google Sans Flex, falling back to Noto Sans                                           |
 | Any other language | The Noto Sans family (Noto Sans, Noto Sans Bengali, Devanagari, Arabic, CJK and more) |
 
 Mark text with its language and the right font follows: `<p lang="bn">`, `<html lang="ar">` and so on. Text without a `lang` uses the English stack, but any script Google Sans Flex can't draw (Bangla, Arabic, Chinese...) still falls through to the matching Noto font. Chinese, Japanese and Korean each get their own Noto family first, so shared characters take the right regional shapes.
@@ -52,8 +52,8 @@ Mark text with its language and the right font follows: `<p lang="bn">`, `<html 
 The library ships no font files. The easiest way to load them all is the optional `fonts.css`, which pulls every family from Google Fonts; browsers only download the parts a page actually uses.
 
 ```html
-<link rel="stylesheet" href="@rx-m3e/tokens/fonts.css">
-<link rel="stylesheet" href="@rx-m3e/tokens/theme.css">
+<link rel="stylesheet" href="@rx-m3e/tokens/fonts.css" />
+<link rel="stylesheet" href="@rx-m3e/tokens/theme.css" />
 ```
 
 To use a different font, override `--md-ref-typeface-brand` and `--md-ref-typeface-plain`.
@@ -69,9 +69,15 @@ npm run tokens         # rewrites packages/tokens
 
 ```sh
 npm install
-npm run dev     # demo pages at http://localhost:5173/demo/
-npm run build   # compiles packages/web to dist/
+npm run dev           # demo pages at http://localhost:5173/demo/
+npm run build         # compiles packages/web to dist/
+npm test              # browser tests (Vitest + Playwright, headless Chromium)
+npm run lint          # ESLint with the Lit and web component rules
+npm run format        # Prettier
+npm run typecheck     # TypeScript, no output
 ```
+
+GitHub Actions runs lint, format check, type check, build and tests on every push and pull request.
 
 Components are Lit elements written in TypeScript. They use Lit's `experimentalDecorators` mode (the same mode `@material/web` uses), because the dev server does not yet compile standard decorators.
 

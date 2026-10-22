@@ -50,7 +50,14 @@ for (const file of readdirSync(srcDir).filter((f) => f.endsWith('.kt'))) {
 
 const hex = (expr) => {
   const m = /Color\(red = (\d+), green = (\d+), blue = (\d+)\)/.exec(expr);
-  return m && '#' + m.slice(1).map((v) => (+v).toString(16).padStart(2, '0')).join('');
+  return (
+    m &&
+    '#' +
+      m
+        .slice(1)
+        .map((v) => (+v).toString(16).padStart(2, '0'))
+        .join('')
+  );
 };
 
 // Compose maps both typefaces to the platform sans serif. On the web:
@@ -60,11 +67,31 @@ const hex = (expr) => {
 // non-Latin text still reaches the right Noto script font through per-glyph
 // fallback. The library ships no font files (see css/fonts.css).
 const NOTO_FAMILIES = [
-  'Noto Sans', 'Noto Sans Bengali', 'Noto Sans Devanagari', 'Noto Sans Arabic', 'Noto Sans Hebrew',
-  'Noto Sans Thai', 'Noto Sans Tamil', 'Noto Sans Telugu', 'Noto Sans Gujarati', 'Noto Sans Gurmukhi',
-  'Noto Sans Kannada', 'Noto Sans Malayalam', 'Noto Sans Oriya', 'Noto Sans Sinhala', 'Noto Sans Khmer',
-  'Noto Sans Lao', 'Noto Sans Myanmar', 'Noto Sans Ethiopic', 'Noto Sans Georgian', 'Noto Sans Armenian',
-  'Noto Sans SC', 'Noto Sans TC', 'Noto Sans HK', 'Noto Sans JP', 'Noto Sans KR',
+  'Noto Sans',
+  'Noto Sans Bengali',
+  'Noto Sans Devanagari',
+  'Noto Sans Arabic',
+  'Noto Sans Hebrew',
+  'Noto Sans Thai',
+  'Noto Sans Tamil',
+  'Noto Sans Telugu',
+  'Noto Sans Gujarati',
+  'Noto Sans Gurmukhi',
+  'Noto Sans Kannada',
+  'Noto Sans Malayalam',
+  'Noto Sans Oriya',
+  'Noto Sans Sinhala',
+  'Noto Sans Khmer',
+  'Noto Sans Lao',
+  'Noto Sans Myanmar',
+  'Noto Sans Ethiopic',
+  'Noto Sans Georgian',
+  'Noto Sans Armenian',
+  'Noto Sans SC',
+  'Noto Sans TC',
+  'Noto Sans HK',
+  'Noto Sans JP',
+  'Noto Sans KR',
 ];
 const quote = (families) => families.map((f) => `'${f}'`).join(', ');
 const ENGLISH_STACK = `'Google Sans Flex', ${quote(NOTO_FAMILIES)}, system-ui, sans-serif`;
@@ -92,8 +119,16 @@ function resolve(expr) {
     return `cubic-bezier(${m[1].split(',').map(num).join(', ')})`;
   if ((m = /^RoundedCornerShape\(([\d.]+)\.dp\)$/.exec(expr))) return px(+m[1]);
   if ((m = /^CornerSize\(([\d.]+)\.dp\)$/.exec(expr))) return px(+m[1]);
-  if ((m = /^RoundedCornerShape\(\s*topStart = ([\d.]+)\.dp, topEnd = ([\d.]+)\.dp, bottomEnd = ([\d.]+)\.dp, bottomStart = ([\d.]+)\.dp,?\s*\)$/.exec(expr)))
-    return m.slice(1).map((v) => px(+v)).join(' ');
+  if (
+    (m =
+      /^RoundedCornerShape\(\s*topStart = ([\d.]+)\.dp, topEnd = ([\d.]+)\.dp, bottomEnd = ([\d.]+)\.dp, bottomStart = ([\d.]+)\.dp,?\s*\)$/.exec(
+        expr,
+      ))
+  )
+    return m
+      .slice(1)
+      .map((v) => px(+v))
+      .join(' ');
   if (expr === 'CircleShape') return '9999px';
   if (expr === 'RectangleShape') return '0px';
   if ((m = /^(\w+Tokens)\.(\w+)$/.exec(expr)) && objects[m[1]])
@@ -107,11 +142,19 @@ const unresolved = [];
 // 3. Reference + system tokens.
 
 const ref = {};
-for (const [k, v] of Object.entries(objects.PaletteTokens)) ref[`--md-ref-palette-${kebab(k)}`] = hex(v);
-for (const [k, v] of Object.entries(objects.TypefaceTokens)) ref[`--md-ref-typeface-${kebab(k)}`] = resolve(v);
+for (const [k, v] of Object.entries(objects.PaletteTokens))
+  ref[`--md-ref-palette-${kebab(k)}`] = hex(v);
+for (const [k, v] of Object.entries(objects.TypefaceTokens))
+  ref[`--md-ref-typeface-${kebab(k)}`] = resolve(v);
 
+// A bare name (SurfaceTint = Primary) points at another role in the same scheme.
 const colorScheme = (o) =>
-  Object.fromEntries(Object.entries(o).map(([k, v]) => [`--md-sys-color-${kebab(k)}`, resolve(v)]));
+  Object.fromEntries(
+    Object.entries(o).map(([k, v]) => [
+      `--md-sys-color-${kebab(k)}`,
+      v in o ? `var(--md-sys-color-${kebab(v)})` : resolve(v),
+    ]),
+  );
 const light = colorScheme(objects.ColorLightTokens);
 const dark = colorScheme(objects.ColorDarkTokens);
 
@@ -120,11 +163,15 @@ for (const [k, v] of Object.entries(objects.TypeScaleTokens)) {
   const name = `--md-sys-typescale-${kebab(k.replace(/(Font|LineHeight|Size|Tracking|Weight)$/, ''))}-${kebab(k.match(/(Font|LineHeight|Size|Tracking|Weight)$/)[1])}`;
   sys[name] = resolve(v);
 }
-for (const [k, v] of Object.entries(objects.ShapeTokens)) sys[`--md-sys-shape-${kebab(k)}`] = resolve(v);
-for (const [k, v] of Object.entries(objects.ElevationTokens)) sys[`--md-sys-elevation-${kebab(k)}`] = resolve(v);
-for (const [k, v] of Object.entries(objects.StateTokens)) sys[`--md-sys-state-${kebab(k)}`] = resolve(v);
+for (const [k, v] of Object.entries(objects.ShapeTokens))
+  sys[`--md-sys-shape-${kebab(k)}`] = resolve(v);
+for (const [k, v] of Object.entries(objects.ElevationTokens))
+  sys[`--md-sys-elevation-${kebab(k)}`] = resolve(v);
+for (const [k, v] of Object.entries(objects.StateTokens))
+  sys[`--md-sys-state-${kebab(k)}`] = resolve(v);
 for (const [k, v] of Object.entries(objects.MotionTokens)) {
-  if (k.startsWith('Duration')) sys[`--md-sys-motion-duration-${kebab(k.slice(8))}`] = `${num(v)}ms`;
+  if (k.startsWith('Duration'))
+    sys[`--md-sys-motion-duration-${kebab(k.slice(8))}`] = `${num(v)}ms`;
   else sys[`--md-sys-motion-easing-${kebab(k.slice(6).replace(/CubicBezier$/, ''))}`] = resolve(v);
 }
 
@@ -133,7 +180,9 @@ for (const [k, v] of Object.entries(objects.MotionTokens)) {
 function spring(stiffness, dampingRatio) {
   const w0 = Math.sqrt(stiffness);
   const dt = 1 / 600;
-  let x = 0, v = 0, t = 0;
+  let x = 0,
+    v = 0,
+    t = 0;
   const samples = [];
   let settled = 0;
   while (t < 3) {
@@ -173,10 +222,22 @@ for (const speed of ['Default', 'Fast', 'Slow']) {
 // 4. Component tokens.
 
 const SYSTEM_OBJECTS = new Set([
-  'PaletteTokens', 'TypefaceTokens', 'ColorLightTokens', 'ColorDarkTokens', 'TypeScaleTokens',
-  'TypographyTokens', 'ShapeTokens', 'ElevationTokens', 'StateTokens', 'MotionTokens',
-  'ExpressiveMotionTokens', 'StandardMotionTokens', 'ColorSchemeKeyTokens', 'ShapeKeyTokens',
-  'TypographyKeyTokens', 'MotionSchemeKeyTokens',
+  'PaletteTokens',
+  'TypefaceTokens',
+  'ColorLightTokens',
+  'ColorDarkTokens',
+  'TypeScaleTokens',
+  'TypographyTokens',
+  'ShapeTokens',
+  'ElevationTokens',
+  'StateTokens',
+  'MotionTokens',
+  'ExpressiveMotionTokens',
+  'StandardMotionTokens',
+  'ColorSchemeKeyTokens',
+  'ShapeKeyTokens',
+  'TypographyKeyTokens',
+  'MotionSchemeKeyTokens',
 ]);
 
 const components = {};
@@ -203,25 +264,41 @@ for (const [obj, entries] of Object.entries(objects).sort()) {
   }
 }
 
+// Refuse to write anything if a value could not be converted.
+for (const [group, vars] of Object.entries({ref, sys, light, dark})) {
+  for (const [k, v] of Object.entries(vars)) if (v == null) unresolved.push(`${group}: ${k}`);
+}
+if (unresolved.length) {
+  console.error(`unresolved (${unresolved.length}):\n  ` + unresolved.join('\n  '));
+  process.exit(1);
+}
+
 // ---------------------------------------------------------------------------
 // 5. Write outputs.
 
 const header = (title) =>
   `/**\n * ${title}\n * Generated by scripts/extract-compose-tokens.mjs from androidx@${commit}.\n * DO NOT EDIT BY HAND. Source tokens: Apache-2.0, The Android Open Source Project.\n */\n`;
 const block = (sel, vars, indent = '  ') =>
-  `${sel} {\n${Object.entries(vars).map(([k, v]) => `${indent}${k}: ${v};`).join('\n')}\n}\n`;
+  `${sel} {\n${Object.entries(vars)
+    .map(([k, v]) => `${indent}${k}: ${v};`)
+    .join('\n')}\n}\n`;
 
 mkdirSync(join(outDir, 'css'), {recursive: true});
 mkdirSync(join(outDir, 'src'), {recursive: true});
 
-writeFileSync(join(outDir, 'css/ref.css'), header('Reference tokens: tonal palettes and typefaces.') + block(':root', ref));
+writeFileSync(
+  join(outDir, 'css/ref.css'),
+  header('Reference tokens: tonal palettes and typefaces.') + block(':root', ref),
+);
 writeFileSync(
   join(outDir, 'css/sys.css'),
   header('System tokens: typescale, shape, elevation, state and motion.') + block(':root', sys),
 );
 writeFileSync(
   join(outDir, 'css/color.css'),
-  header('System color tokens. Light by default; dark follows the OS unless data-theme="light" is set.') +
+  header(
+    'System color tokens. Light by default; dark follows the OS unless data-theme="light" is set.',
+  ) +
     block(':root', light) +
     '\n@media (prefers-color-scheme: dark) {\n' +
     block(':root:not([data-theme="light"])', dark, '    ').replace(/^/gm, '  ').trimEnd() +
@@ -245,7 +322,9 @@ writeFileSync(
 const typefaceVars = (stack) => ({
   '--md-ref-typeface-brand': stack,
   '--md-ref-typeface-plain': stack,
-  ...Object.fromEntries(Object.entries(sys).filter(([k]) => /^--md-sys-typescale-.*-font$/.test(k))),
+  ...Object.fromEntries(
+    Object.entries(sys).filter(([k]) => /^--md-sys-typescale-.*-font$/.test(k)),
+  ),
 });
 // Chinese, Japanese and Korean share Han code points, so the first CJK family
 // in the stack decides their glyph shapes. Put the matching one first.
@@ -259,7 +338,9 @@ const cjkStack = (first) =>
   `${quote([first, ...NOTO_FAMILIES.filter((f) => f !== first)])}, system-ui, sans-serif`;
 writeFileSync(
   join(outDir, 'css/typeface.css'),
-  header('Language-aware typefaces: Google Sans Flex for English, the Noto Sans family for other languages.') +
+  header(
+    'Language-aware typefaces: Google Sans Flex for English, the Noto Sans family for other languages.',
+  ) +
     [
       block('[lang]:not(:lang(en))', typefaceVars(OTHER_STACK)),
       ...CJK.map(([sel, first]) => block(sel, typefaceVars(cjkStack(first)))),
@@ -273,17 +354,31 @@ const googleFamilies = [
 ];
 writeFileSync(
   join(outDir, 'css/fonts.css'),
-  header('Optional: loads every typeface the tokens name from Google Fonts. Browsers only download the subsets a page uses.') +
+  header(
+    'Optional: loads every typeface the tokens name from Google Fonts. Browsers only download the subsets a page uses.',
+  ) +
     `@import url('https://fonts.googleapis.com/css2?${googleFamilies.map((f) => `family=${f}`).join('&')}&display=swap');\n`,
 );
 
 writeFileSync(
   join(outDir, 'css/theme.css'),
-  header('Full theme: reference, system, typeface and color tokens. Fonts are loaded separately (fonts.css).') +
+  header(
+    'Full theme: reference, system, typeface and color tokens. Fonts are loaded separately (fonts.css).',
+  ) +
     "@import './ref.css';\n@import './sys.css';\n@import './typeface.css';\n@import './color.css';\n",
 );
 
-const json = {source: {repo: 'androidx/androidx', commit, path: 'compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/tokens'}, ref, sys, color: {light, dark}, components};
+const json = {
+  source: {
+    repo: 'androidx/androidx',
+    commit,
+    path: 'compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/tokens',
+  },
+  ref,
+  sys,
+  color: {light, dark},
+  components,
+};
 writeFileSync(join(outDir, 'src/tokens.json'), JSON.stringify(json, null, 2) + '\n');
 writeFileSync(join(outDir, 'src/raw-compose-tokens.json'), JSON.stringify(objects, null, 2) + '\n');
 
@@ -292,6 +387,3 @@ console.log(
   `objects: ${Object.keys(objects).length}, ref: ${Object.keys(ref).length}, sys: ${Object.keys(sys).length}, ` +
     `color: ${Object.keys(light).length}, component sets: ${Object.keys(components).length}, component tokens: ${compCount}`,
 );
-if (unresolved.length) {
-  console.log(`unresolved (${unresolved.length}):\n  ` + unresolved.join('\n  '));
-}
