@@ -6,7 +6,7 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Steps 1 to 3 of 79 done. See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 to 4 of 79 done. See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package          | What it is                                                     | Status                            |
 | ---------------- | -------------------------------------------------------------- | --------------------------------- |
@@ -69,13 +69,15 @@ npm run tokens         # rewrites packages/tokens
 
 ```sh
 npm install
-npm run dev           # demo pages at http://localhost:5173/demo/
+npm run dev           # demo site at http://localhost:5173/demo/
 npm run build         # compiles packages/web to dist/
 npm test              # browser tests (Vitest + Playwright, headless Chromium)
 npm run lint          # ESLint with the Lit and web component rules
 npm run format        # Prettier
 npm run typecheck     # TypeScript, no output
 ```
+
+The demo site (`demo/`) has a catalog page read straight from COMPONENTS.md, plus a page per finished step. Its top bar switches theme (system, light, dark) and text direction (LTR, RTL). To add a page, copy the `<head>` from `demo/tokens.html` and list the page in `demo/pages.ts`.
 
 GitHub Actions runs lint, format check, type check, build and tests on every push and pull request.
 

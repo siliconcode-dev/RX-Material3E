@@ -1,0 +1,269 @@
+/* Shared styles for the demo site. Everything reads from @rx-m3e/tokens. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  font: var(--md-sys-typescale-body-large-weight) var(--md-sys-typescale-body-large-size) /
+    var(--md-sys-typescale-body-large-line-height) var(--md-sys-typescale-body-large-font);
+  letter-spacing: var(--md-sys-typescale-body-large-tracking);
+}
+
+a {
+  color: var(--md-sys-color-primary);
+}
+
+h1 {
+  font: var(--md-sys-typescale-headline-large-weight) var(--md-sys-typescale-headline-large-size) /
+    var(--md-sys-typescale-headline-large-line-height) var(--md-sys-typescale-headline-large-font);
+  margin: 0 0 16px;
+}
+
+h2 {
+  font: var(--md-sys-typescale-title-large-weight) var(--md-sys-typescale-title-large-size) /
+    var(--md-sys-typescale-title-large-line-height) var(--md-sys-typescale-title-large-font);
+  margin: 32px 0 12px;
+}
+
+/* Top bar */
+
+.demo-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 8px 16px;
+  background: var(--md-sys-color-surface-container);
+}
+
+.demo-title {
+  flex: 1;
+  color: inherit;
+  text-decoration: none;
+  font: var(--md-sys-typescale-title-large-weight) var(--md-sys-typescale-title-large-size) /
+    var(--md-sys-typescale-title-large-line-height) var(--md-sys-typescale-title-large-font);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.demo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.demo-button,
+.demo-segmented button {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-full);
+  background: transparent;
+  color: var(--md-sys-color-on-surface);
+  font: var(--md-sys-typescale-label-large-weight) var(--md-sys-typescale-label-large-size) /
+    var(--md-sys-typescale-label-large-line-height) var(--md-sys-typescale-label-large-font);
+  cursor: pointer;
+}
+
+.demo-button[aria-pressed='true'],
+.demo-segmented button[aria-pressed='true'] {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.demo-segmented {
+  display: flex;
+}
+
+.demo-segmented button {
+  border-radius: 0;
+}
+
+.demo-segmented button + button {
+  margin-inline-start: -1px;
+}
+
+.demo-segmented button:first-child {
+  border-start-start-radius: var(--md-sys-shape-corner-full);
+  border-end-start-radius: var(--md-sys-shape-corner-full);
+}
+
+.demo-segmented button:last-child {
+  border-start-end-radius: var(--md-sys-shape-corner-full);
+  border-end-end-radius: var(--md-sys-shape-corner-full);
+}
+
+:is(.demo-button, .demo-segmented button):focus-visible,
+.demo-nav a:focus-visible {
+  outline: 3px solid var(--md-sys-color-secondary);
+  outline-offset: 2px;
+}
+
+/* Navigation + content */
+
+.demo-layout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+}
+
+.demo-nav {
+  position: sticky;
+  top: 64px;
+  align-self: start;
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+  padding: 8px 12px 24px;
+}
+
+.demo-nav h2 {
+  margin: 16px 16px 4px;
+  font: var(--md-sys-typescale-title-small-weight) var(--md-sys-typescale-title-small-size) /
+    var(--md-sys-typescale-title-small-line-height) var(--md-sys-typescale-title-small-font);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.demo-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.demo-nav a {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 16px;
+  border-radius: var(--md-sys-shape-corner-full);
+  color: var(--md-sys-color-on-surface-variant);
+  text-decoration: none;
+  font: var(--md-sys-typescale-label-large-weight) var(--md-sys-typescale-label-large-size) /
+    var(--md-sys-typescale-label-large-line-height) var(--md-sys-typescale-label-large-font);
+}
+
+.demo-nav a[aria-current='page'] {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.demo-main {
+  min-width: 0;
+  padding: 24px 24px 48px;
+}
+
+.demo-menu {
+  display: none;
+}
+
+@media (max-width: 839px) {
+  .demo-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .demo-menu {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .demo-nav {
+    display: none;
+    position: fixed;
+    inset: 64px 0 auto;
+    z-index: 1;
+    max-height: calc(100vh - 64px);
+    background: var(--md-sys-color-surface-container-low);
+    box-shadow: 0 4px 8px rgb(0 0 0 / 0.2);
+  }
+
+  .demo-nav-open .demo-nav {
+    display: block;
+  }
+
+  .demo-main {
+    padding: 16px 16px 48px;
+  }
+}
+
+@media (max-width: 479px) {
+  .demo-header {
+    flex-wrap: wrap;
+  }
+
+  .demo-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .demo-nav {
+    inset-block-start: 112px;
+    max-height: calc(100vh - 112px);
+  }
+}
+
+/* Catalog page */
+
+.catalog-summary {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.catalog-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.catalog-table th,
+.catalog-table td {
+  padding: 8px 12px;
+  text-align: start;
+  vertical-align: top;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.catalog-table th {
+  font: var(--md-sys-typescale-label-large-weight) var(--md-sys-typescale-label-large-size) /
+    var(--md-sys-typescale-label-large-line-height) var(--md-sys-typescale-label-large-font);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.catalog-table code {
+  font-size: 0.875em;
+}
+
+.catalog-scroll {
+  overflow-x: auto;
+}
+
+.status {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: var(--md-sys-shape-corner-full);
+  font: var(--md-sys-typescale-label-medium-weight) var(--md-sys-typescale-label-medium-size) /
+    var(--md-sys-typescale-label-medium-line-height) var(--md-sys-typescale-label-medium-font);
+  white-space: nowrap;
+}
+
+.status-todo {
+  background: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.status-progress {
+  background: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+}
+
+.status-done {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}

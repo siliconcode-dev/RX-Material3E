@@ -3,22 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Token preview</title>
+    <title>Design tokens · RX Material 3E</title>
     <link rel="stylesheet" href="../packages/tokens/css/fonts.css" />
     <link rel="stylesheet" href="../packages/tokens/css/theme.css" />
+    <link rel="stylesheet" href="./demo.css" />
+    <script type="module" src="./shell.ts"></script>
     <style>
-      body {
-        margin: 0;
-        padding: 24px 16px;
-        background: var(--md-sys-color-surface);
-        color: var(--md-sys-color-on-surface);
-        font-family: var(--md-sys-typescale-body-large-font);
-      }
-      h2 {
-        font: var(--md-sys-typescale-title-large-weight) var(--md-sys-typescale-title-large-size) /
-          var(--md-sys-typescale-title-large-line-height) var(--md-sys-typescale-title-large-font);
-        margin: 32px 0 12px;
-      }
       .langs p {
         margin: 4px 0;
         font: 400 20px / 1.5 var(--md-sys-typescale-body-large-font);
@@ -64,25 +54,18 @@
     </style>
   </head>
   <body>
-    <button
-      onclick="
-        document.documentElement.dataset.theme =
-          document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'
-      "
-    >
-      Toggle theme
-    </button>
+    <h1>Design tokens</h1>
 
     <h2>Languages</h2>
     <div class="langs">
-      <p>English uses Google Sans Flex.</p>
-      <p lang="fr">Le français utilise Noto Sans.</p>
-      <p lang="bn">বাংলা লেখা Noto Sans Bengali ব্যবহার করে।</p>
-      <p lang="hi">हिन्दी Noto Sans Devanagari का उपयोग करती है।</p>
-      <p lang="ar" dir="rtl">العربية تستخدم Noto Sans Arabic.</p>
-      <p lang="ja">日本語は Noto Sans JP を使います。</p>
-      <p lang="zh-CN">中文使用 Noto Sans SC。</p>
-      <p lang="ko">한국어는 Noto Sans KR을 사용합니다.</p>
+      <p dir="auto">English uses Google Sans Flex.</p>
+      <p lang="fr" dir="auto">Le français utilise Noto Sans.</p>
+      <p lang="bn" dir="auto">বাংলা লেখা Noto Sans Bengali ব্যবহার করে।</p>
+      <p lang="hi" dir="auto">हिन्दी Noto Sans Devanagari का उपयोग करती है।</p>
+      <p lang="ar" dir="auto">العربية تستخدم Noto Sans Arabic.</p>
+      <p lang="ja" dir="auto">日本語は Noto Sans JP を使います。</p>
+      <p lang="zh-CN" dir="auto">中文使用 Noto Sans SC。</p>
+      <p lang="ko" dir="auto">한국어는 Noto Sans KR을 사용합니다.</p>
     </div>
 
     <h2>Color roles</h2>

@@ -5,7 +5,7 @@ import {playwright} from '@vitest/browser-playwright';
 // *.test.ts file in a real headless browser. Library builds use tsc.
 export default defineConfig({
   test: {
-    include: ['packages/*/test/**/*.test.ts'],
+    include: ['packages/*/test/**/*.test.ts', 'demo/test/**/*.test.ts'],
     browser: {
       enabled: true,
       headless: true,

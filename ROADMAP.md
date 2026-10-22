@@ -24,7 +24,7 @@ Status: `☐` not started, `◐` in progress, `☑` done.
 | 1    | Roadmap (this file); switch the token font stack to Google Sans Flex + Noto Sans | ☑      |
 | 2    | `@rx-m3e/web` package: Lit, TypeScript, build, dev server; language-aware fonts  | ☑      |
 | 3    | Quality tooling: browser tests, lint, format, GitHub Actions CI                  | ☑      |
-| 4    | Demo site shell: one page per component, theme toggle, font loading              | ☐      |
+| 4    | Demo site shell: one page per component, theme toggle, font loading              | ☑      |
 
 ## Phase 1: Foundations (steps 5 to 17)
 
