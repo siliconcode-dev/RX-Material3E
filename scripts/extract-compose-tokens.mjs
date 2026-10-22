@@ -53,10 +53,23 @@ const hex = (expr) => {
   return m && '#' + m.slice(1).map((v) => (+v).toString(16).padStart(2, '0')).join('');
 };
 
-// Compose maps both typefaces to the platform sans serif. On the web we use
-// Google Sans Flex (OFL-1.1), with Noto Sans for scripts it does not cover.
-// The library does not ship font files; apps load them.
-const FONT_FAMILY = {SansSerif: "'Google Sans Flex', 'Noto Sans', system-ui, sans-serif"};
+// Compose maps both typefaces to the platform sans serif. On the web:
+//   English: Google Sans Flex, falling back to Noto Sans.
+//   Any other language: the Noto Sans family.
+// Text marked with a non-English `lang` switches to the Noto stack; unmarked
+// non-Latin text still reaches the right Noto script font through per-glyph
+// fallback. The library ships no font files (see css/fonts.css).
+const NOTO_FAMILIES = [
+  'Noto Sans', 'Noto Sans Bengali', 'Noto Sans Devanagari', 'Noto Sans Arabic', 'Noto Sans Hebrew',
+  'Noto Sans Thai', 'Noto Sans Tamil', 'Noto Sans Telugu', 'Noto Sans Gujarati', 'Noto Sans Gurmukhi',
+  'Noto Sans Kannada', 'Noto Sans Malayalam', 'Noto Sans Oriya', 'Noto Sans Sinhala', 'Noto Sans Khmer',
+  'Noto Sans Lao', 'Noto Sans Myanmar', 'Noto Sans Ethiopic', 'Noto Sans Georgian', 'Noto Sans Armenian',
+  'Noto Sans SC', 'Noto Sans TC', 'Noto Sans HK', 'Noto Sans JP', 'Noto Sans KR',
+];
+const quote = (families) => families.map((f) => `'${f}'`).join(', ');
+const ENGLISH_STACK = `'Google Sans Flex', ${quote(NOTO_FAMILIES)}, system-ui, sans-serif`;
+const OTHER_STACK = `${quote(NOTO_FAMILIES)}, system-ui, sans-serif`;
+const FONT_FAMILY = {SansSerif: ENGLISH_STACK};
 const FONT_WEIGHT = {Normal: '400', Medium: '500', Bold: '700'};
 const TYPE_PARTS = ['Font', 'Size', 'LineHeight', 'Weight', 'Tracking'];
 
@@ -227,10 +240,47 @@ writeFileSync(
       ),
     ),
 );
+// A custom property's var() is resolved where it is declared, so switching the
+// typeface under [lang] must re-declare the typescale font tokens there too.
+const typefaceVars = (stack) => ({
+  '--md-ref-typeface-brand': stack,
+  '--md-ref-typeface-plain': stack,
+  ...Object.fromEntries(Object.entries(sys).filter(([k]) => /^--md-sys-typescale-.*-font$/.test(k))),
+});
+// Chinese, Japanese and Korean share Han code points, so the first CJK family
+// in the stack decides their glyph shapes. Put the matching one first.
+const CJK = [
+  ['[lang]:lang(ja)', 'Noto Sans JP'],
+  ['[lang]:lang(ko)', 'Noto Sans KR'],
+  ['[lang]:lang(zh-TW), [lang]:lang(zh-Hant)', 'Noto Sans TC'],
+  ['[lang]:lang(zh-HK), [lang]:lang(zh-MO)', 'Noto Sans HK'],
+];
+const cjkStack = (first) =>
+  `${quote([first, ...NOTO_FAMILIES.filter((f) => f !== first)])}, system-ui, sans-serif`;
+writeFileSync(
+  join(outDir, 'css/typeface.css'),
+  header('Language-aware typefaces: Google Sans Flex for English, the Noto Sans family for other languages.') +
+    [
+      block('[lang]:not(:lang(en))', typefaceVars(OTHER_STACK)),
+      ...CJK.map(([sel, first]) => block(sel, typefaceVars(cjkStack(first)))),
+      block('[lang]:lang(en)', typefaceVars(ENGLISH_STACK)),
+    ].join('\n'),
+);
+
+const googleFamilies = [
+  'Google+Sans+Flex:opsz,wght,ROND@6..144,1..1000,0..100',
+  ...NOTO_FAMILIES.map((f) => `${f.replaceAll(' ', '+')}:wght@100..900`),
+];
+writeFileSync(
+  join(outDir, 'css/fonts.css'),
+  header('Optional: loads every typeface the tokens name from Google Fonts. Browsers only download the subsets a page uses.') +
+    `@import url('https://fonts.googleapis.com/css2?${googleFamilies.map((f) => `family=${f}`).join('&')}&display=swap');\n`,
+);
+
 writeFileSync(
   join(outDir, 'css/theme.css'),
-  header('Full theme: reference, system and color tokens.') +
-    "@import './ref.css';\n@import './sys.css';\n@import './color.css';\n",
+  header('Full theme: reference, system, typeface and color tokens. Fonts are loaded separately (fonts.css).') +
+    "@import './ref.css';\n@import './sys.css';\n@import './typeface.css';\n@import './color.css';\n",
 );
 
 const json = {source: {repo: 'androidx/androidx', commit, path: 'compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/tokens'}, ref, sys, color: {light, dark}, components};

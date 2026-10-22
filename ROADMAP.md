@@ -22,7 +22,7 @@ Status: `☐` not started, `◐` in progress, `☑` done.
 | Step | Work | Status |
 |------|------|--------|
 | 1 | Roadmap (this file); switch the token font stack to Google Sans Flex + Noto Sans | ☑ |
-| 2 | `@rx-m3e/web` package: Lit, TypeScript, build, dev server | ☐ |
+| 2 | `@rx-m3e/web` package: Lit, TypeScript, build, dev server; language-aware fonts | ☑ |
 | 3 | Quality tooling: browser tests, lint, format, GitHub Actions CI | ☐ |
 | 4 | Demo site shell: one page per component, theme toggle, font loading | ☐ |
 
@@ -139,5 +139,6 @@ Status: `☐` not started, `◐` in progress, `☑` done.
 ## Decisions so far
 
 - Element prefix `rx-`, packages under `@rx-m3e/`.
-- Font: Google Sans Flex (OFL-1.1) with Noto Sans as fallback. The library ships no font files; apps load them. Google Sans Flex has no Bangla glyphs, so Bangla apps should load Noto Sans Bengali and add it to the typeface tokens (the demo does).
+- Fonts: English uses Google Sans Flex with Noto Sans as fallback; every other language uses the Noto Sans family, chosen by the `lang` attribute (CJK gets its regional family first). The library ships no font files; `@rx-m3e/tokens/fonts.css` is an optional Google Fonts loader.
+- Tooling: Lit 3, TypeScript 6 with `experimentalDecorators`, Vite 8 for the dev server, `tsc` for the library build.
 - Distribution: npm. A shadcn-style registry may be added after the alpha.

@@ -4,16 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Token preview</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght,ROND@6..144,1..1000,0..100&family=Noto+Sans:wght@100..900&family=Noto+Sans+Bengali:wght@100..900&display=swap">
+  <link rel="stylesheet" href="../packages/tokens/css/fonts.css">
   <link rel="stylesheet" href="../packages/tokens/css/theme.css">
   <style>
-    /* Bangla fallback for this demo; Google Sans Flex has no Bengali glyphs. */
-    :root {
-      --md-ref-typeface-brand: 'Google Sans Flex', 'Noto Sans', 'Noto Sans Bengali', system-ui, sans-serif;
-      --md-ref-typeface-plain: 'Google Sans Flex', 'Noto Sans', 'Noto Sans Bengali', system-ui, sans-serif;
-    }
     body {
       margin: 0;
       padding: 24px 16px;
@@ -25,6 +18,7 @@
       font: var(--md-sys-typescale-title-large-weight) var(--md-sys-typescale-title-large-size) / var(--md-sys-typescale-title-large-line-height) var(--md-sys-typescale-title-large-font);
       margin: 32px 0 12px;
     }
+    .langs p { margin: 4px 0; font: 400 20px / 1.5 var(--md-sys-typescale-body-large-font); }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
     .swatch { padding: 12px; border-radius: var(--md-sys-shape-corner-medium); min-height: 56px; font-size: 12px; }
     .shapes { display: flex; flex-wrap: wrap; gap: 12px; }
@@ -36,6 +30,18 @@
 </head>
 <body>
   <button onclick="document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'">Toggle theme</button>
+
+  <h2>Languages</h2>
+  <div class="langs">
+    <p>English uses Google Sans Flex.</p>
+    <p lang="fr">Le français utilise Noto Sans.</p>
+    <p lang="bn">বাংলা লেখা Noto Sans Bengali ব্যবহার করে।</p>
+    <p lang="hi">हिन्दी Noto Sans Devanagari का उपयोग करती है।</p>
+    <p lang="ar" dir="rtl">العربية تستخدم Noto Sans Arabic.</p>
+    <p lang="ja">日本語は Noto Sans JP を使います。</p>
+    <p lang="zh-CN">中文使用 Noto Sans SC。</p>
+    <p lang="ko">한국어는 Noto Sans KR을 사용합니다.</p>
+  </div>
 
   <h2>Color roles</h2>
   <div class="grid" id="colors"></div>

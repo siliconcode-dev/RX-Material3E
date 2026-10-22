@@ -1,0 +1,25 @@
+{
+  "name": "@rx-m3e/web",
+  "version": "0.0.0",
+  "description": "Material 3 and Material 3 Expressive web components, ported by hand from Jetpack Compose Material3.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./*": "./dist/*"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": true,
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@rx-m3e/tokens": "0.1.0",
+    "lit": "^3.3.3"
+  }
+}

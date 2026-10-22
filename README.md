@@ -6,12 +6,12 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Step 1 of 79. See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 and 2 of 79 done. See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package | What it is | Status |
 |---------|-----------|--------|
 | `@rx-m3e/tokens` | All M3 and M3E design tokens as CSS custom properties and JSON | Ready |
-| `@rx-m3e/web` | The web components (`rx-*` elements) | Not started |
+| `@rx-m3e/web` | The web components (`rx-*` elements) | Package set up, no components yet |
 
 ## Tokens
 
@@ -25,6 +25,8 @@ Step 1 of 79. See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPON
 |------|----------|
 | `css/ref.css` | Tonal palettes (`--md-ref-palette-*`) and typefaces |
 | `css/sys.css` | Typescale (incl. emphasized), shape corners, elevation levels, state opacities, durations, easings, expressive springs |
+| `css/typeface.css` | Language rules: English uses Google Sans Flex, other languages use Noto Sans |
+| `css/fonts.css` | Optional Google Fonts loader for every family above |
 | `css/color.css` | Light and dark color roles. Follows the OS; force with `data-theme="light"` or `"dark"` on `<html>` |
 | `css/components.css` | 2,430 component tokens (`--md-comp-*`) across 104 sets, for reference |
 | `src/tokens.json` | Everything above as JSON, plus the source commit |
@@ -36,24 +38,25 @@ transition: transform var(--md-sys-motion-spring-fast-spatial-duration)
   var(--md-sys-motion-spring-fast-spatial-easing);
 ```
 
-Open `demo/tokens.html` to see the colors, typescale, corners and springs.
+Run `npm run dev` and open `/demo/tokens.html` to see the colors, typescale, corners, springs and language fonts.
 
 ### Fonts
 
-The typeface tokens use `'Google Sans Flex', 'Noto Sans', system-ui, sans-serif`. The library does not ship font files, so load them in your app, for example from Google Fonts:
+| Text | Font |
+|------|------|
+| English | Google Sans Flex, falling back to Noto Sans |
+| Any other language | The Noto Sans family (Noto Sans, Noto Sans Bengali, Devanagari, Arabic, CJK and more) |
+
+Mark text with its language and the right font follows: `<p lang="bn">`, `<html lang="ar">` and so on. Text without a `lang` uses the English stack, but any script Google Sans Flex can't draw (Bangla, Arabic, Chinese...) still falls through to the matching Noto font. Chinese, Japanese and Korean each get their own Noto family first, so shared characters take the right regional shapes.
+
+The library ships no font files. The easiest way to load them all is the optional `fonts.css`, which pulls every family from Google Fonts; browsers only download the parts a page actually uses.
 
 ```html
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght,ROND@6..144,1..1000,0..100&family=Noto+Sans:wght@100..900&display=swap">
+<link rel="stylesheet" href="@rx-m3e/tokens/fonts.css">
+<link rel="stylesheet" href="@rx-m3e/tokens/theme.css">
 ```
 
-To change the font stack, override `--md-ref-typeface-brand` and `--md-ref-typeface-plain`. Google Sans Flex has no Bangla glyphs, so for Bangla text load Noto Sans Bengali and add it to the stack:
-
-```css
-:root {
-  --md-ref-typeface-brand: 'Google Sans Flex', 'Noto Sans', 'Noto Sans Bengali', system-ui, sans-serif;
-  --md-ref-typeface-plain: 'Google Sans Flex', 'Noto Sans', 'Noto Sans Bengali', system-ui, sans-serif;
-}
-```
+To use a different font, override `--md-ref-typeface-brand` and `--md-ref-typeface-plain`.
 
 ### Regenerating
 
@@ -61,6 +64,16 @@ To change the font stack, override `--md-ref-typeface-brand` and `--md-ref-typef
 npm run tokens:fetch   # sparse-clones androidx into .cache/
 npm run tokens         # rewrites packages/tokens
 ```
+
+## Development
+
+```sh
+npm install
+npm run dev     # demo pages at http://localhost:5173/demo/
+npm run build   # compiles packages/web to dist/
+```
+
+Components are Lit elements written in TypeScript. They use Lit's `experimentalDecorators` mode (the same mode `@material/web` uses), because the dev server does not yet compile standard decorators.
 
 ## License
 

@@ -10,6 +10,8 @@
   ],
   "exports": {
     "./theme.css": "./css/theme.css",
+    "./fonts.css": "./css/fonts.css",
+    "./typeface.css": "./css/typeface.css",
     "./ref.css": "./css/ref.css",
     "./sys.css": "./css/sys.css",
     "./color.css": "./css/color.css",
