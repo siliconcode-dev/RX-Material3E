@@ -1,0 +1,22 @@
+{
+  "name": "@rx-m3e/tokens",
+  "version": "0.1.0",
+  "description": "Material 3 and Material 3 Expressive design tokens as CSS custom properties, generated from Jetpack Compose Material3.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "files": [
+    "css",
+    "src"
+  ],
+  "exports": {
+    "./theme.css": "./css/theme.css",
+    "./ref.css": "./css/ref.css",
+    "./sys.css": "./css/sys.css",
+    "./color.css": "./css/color.css",
+    "./components.css": "./css/components.css",
+    "./tokens.json": "./src/tokens.json"
+  },
+  "sideEffects": [
+    "*.css"
+  ]
+}

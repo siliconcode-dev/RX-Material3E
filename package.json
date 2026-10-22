@@ -1,0 +1,17 @@
+{
+  "name": "rx-material3e",
+  "private": true,
+  "description": "Material 3 and Material 3 Expressive as framework-free web components, ported by hand from Jetpack Compose Material3.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "tokens:fetch": "node scripts/fetch-compose-source.mjs",
+    "tokens": "node scripts/extract-compose-tokens.mjs .cache/androidx/compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/tokens \"$(git -C .cache/androidx rev-parse HEAD)\""
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

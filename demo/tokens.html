@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Token preview</title>
+  <link rel="stylesheet" href="../packages/tokens/css/theme.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 24px 16px;
+      background: var(--md-sys-color-surface);
+      color: var(--md-sys-color-on-surface);
+      font-family: var(--md-sys-typescale-body-large-font);
+    }
+    h2 {
+      font: var(--md-sys-typescale-title-large-weight) var(--md-sys-typescale-title-large-size) / var(--md-sys-typescale-title-large-line-height) var(--md-sys-typescale-title-large-font);
+      margin: 32px 0 12px;
+    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
+    .swatch { padding: 12px; border-radius: var(--md-sys-shape-corner-medium); min-height: 56px; font-size: 12px; }
+    .shapes { display: flex; flex-wrap: wrap; gap: 12px; }
+    .shape { width: 72px; height: 72px; background: var(--md-sys-color-primary-container); display: grid; place-items: center; font-size: 10px; text-align: center; }
+    .spring { height: 8px; width: 24px; border-radius: 4px; background: var(--md-sys-color-primary); margin: 8px 0; }
+    .springs:hover .spring { transform: translateX(240px); }
+    button { margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <button onclick="document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'">Toggle theme</button>
+
+  <h2>Color roles</h2>
+  <div class="grid" id="colors"></div>
+
+  <h2>Typescale</h2>
+  <div id="type"></div>
+
+  <h2>Shape corners</h2>
+  <div class="shapes" id="shapes"></div>
+
+  <h2>Expressive springs (hover)</h2>
+  <div class="springs" id="springs"></div>
+
+  <script>
+    const pairs = ['primary', 'primary-container', 'secondary', 'secondary-container', 'tertiary', 'tertiary-container',
+      'error', 'error-container', 'surface', 'surface-container-lowest', 'surface-container-low', 'surface-container',
+      'surface-container-high', 'surface-container-highest', 'inverse-surface', 'primary-fixed', 'secondary-fixed', 'tertiary-fixed'];
+    const onOf = (r) => r === 'inverse-surface' ? 'inverse-on-surface'
+      : r.startsWith('surface') ? 'on-surface'
+      : r.endsWith('-fixed') ? `on-${r}` : `on-${r}`;
+    document.getElementById('colors').innerHTML = pairs.map((r) =>
+      `<div class="swatch" style="background:var(--md-sys-color-${r});color:var(--md-sys-color-${onOf(r)})">${r}</div>`).join('');
+
+    const scales = ['display', 'headline', 'title', 'body', 'label'].flatMap((s) => ['large', 'medium', 'small'].map((z) => `${s}-${z}`));
+    document.getElementById('type').innerHTML = scales.map((s) => {
+      const v = (p) => `var(--md-sys-typescale-${s}-${p})`;
+      return `<div style="font-family:${v('font')};font-size:${v('size')};line-height:${v('line-height')};font-weight:${v('weight')};letter-spacing:${v('tracking')}">${s}</div>`;
+    }).join('');
+
+    const corners = ['none', 'extra-small', 'small', 'medium', 'large', 'large-increased', 'extra-large', 'extra-large-increased', 'extra-extra-large', 'full'];
+    document.getElementById('shapes').innerHTML = corners.map((c) =>
+      `<div class="shape" style="border-radius:var(--md-sys-shape-corner-${c})">${c}</div>`).join('');
+
+    document.getElementById('springs').innerHTML = ['fast', 'default', 'slow'].map((s) =>
+      `<div>${s} spatial<div class="spring" style="transition:transform var(--md-sys-motion-spring-${s}-spatial-duration) var(--md-sys-motion-spring-${s}-spatial-easing)"></div></div>`).join('');
+  </script>
+</body>
+</html>

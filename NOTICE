@@ -1,0 +1,16 @@
+RX-Material3E
+Copyright 2026 RX-Material3E contributors
+
+This project ports designs, design tokens and component behaviour from the
+following Apache-2.0 licensed projects:
+
+Jetpack Compose Material3 and graphics-shapes (https://github.com/androidx/androidx)
+Copyright The Android Open Source Project
+
+Material Components for Android (https://github.com/material-components/material-components-android)
+Copyright Google LLC
+
+The files in packages/tokens are generated from
+compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/tokens.
+
+This project is not affiliated with or endorsed by Google.
