@@ -95,8 +95,8 @@
   --md-ref-palette-tertiary95: #ffecf1;
   --md-ref-palette-tertiary99: #fffbfa;
   --md-ref-palette-white: #ffffff;
-  --md-ref-typeface-brand: 'Roboto', system-ui, sans-serif;
-  --md-ref-typeface-plain: 'Roboto', system-ui, sans-serif;
+  --md-ref-typeface-brand: 'Google Sans Flex', 'Noto Sans', system-ui, sans-serif;
+  --md-ref-typeface-plain: 'Google Sans Flex', 'Noto Sans', system-ui, sans-serif;
   --md-ref-typeface-weight-bold: 700;
   --md-ref-typeface-weight-medium: 500;
   --md-ref-typeface-weight-regular: 400;

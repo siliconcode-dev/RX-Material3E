@@ -53,7 +53,10 @@ const hex = (expr) => {
   return m && '#' + m.slice(1).map((v) => (+v).toString(16).padStart(2, '0')).join('');
 };
 
-const FONT_FAMILY = {SansSerif: "'Roboto', system-ui, sans-serif"};
+// Compose maps both typefaces to the platform sans serif. On the web we use
+// Google Sans Flex (OFL-1.1), with Noto Sans for scripts it does not cover.
+// The library does not ship font files; apps load them.
+const FONT_FAMILY = {SansSerif: "'Google Sans Flex', 'Noto Sans', system-ui, sans-serif"};
 const FONT_WEIGHT = {Normal: '400', Medium: '500', Bold: '700'};
 const TYPE_PARTS = ['Font', 'Size', 'LineHeight', 'Weight', 'Tracking'];
 

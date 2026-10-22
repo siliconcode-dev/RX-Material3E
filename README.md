@@ -6,7 +6,7 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Foundations are in progress. See [COMPONENTS.md](COMPONENTS.md) for the full catalog and the build order.
+Step 1 of 79. See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package | What it is | Status |
 |---------|-----------|--------|
@@ -37,6 +37,23 @@ transition: transform var(--md-sys-motion-spring-fast-spatial-duration)
 ```
 
 Open `demo/tokens.html` to see the colors, typescale, corners and springs.
+
+### Fonts
+
+The typeface tokens use `'Google Sans Flex', 'Noto Sans', system-ui, sans-serif`. The library does not ship font files, so load them in your app, for example from Google Fonts:
+
+```html
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght,ROND@6..144,1..1000,0..100&family=Noto+Sans:wght@100..900&display=swap">
+```
+
+To change the font stack, override `--md-ref-typeface-brand` and `--md-ref-typeface-plain`. Google Sans Flex has no Bangla glyphs, so for Bangla text load Noto Sans Bengali and add it to the stack:
+
+```css
+:root {
+  --md-ref-typeface-brand: 'Google Sans Flex', 'Noto Sans', 'Noto Sans Bengali', system-ui, sans-serif;
+  --md-ref-typeface-plain: 'Google Sans Flex', 'Noto Sans', 'Noto Sans Bengali', system-ui, sans-serif;
+}
+```
 
 ### Regenerating
 

@@ -4,8 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Token preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght,ROND@6..144,1..1000,0..100&family=Noto+Sans:wght@100..900&family=Noto+Sans+Bengali:wght@100..900&display=swap">
   <link rel="stylesheet" href="../packages/tokens/css/theme.css">
   <style>
+    /* Bangla fallback for this demo; Google Sans Flex has no Bengali glyphs. */
+    :root {
+      --md-ref-typeface-brand: 'Google Sans Flex', 'Noto Sans', 'Noto Sans Bengali', system-ui, sans-serif;
+      --md-ref-typeface-plain: 'Google Sans Flex', 'Noto Sans', 'Noto Sans Bengali', system-ui, sans-serif;
+    }
     body {
       margin: 0;
       padding: 24px 16px;
