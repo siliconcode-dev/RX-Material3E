@@ -6,4 +6,4 @@ export {
   materialShapeName,
   type MaterialShapeName,
 } from './material-shapes.js';
-export {RxShape, shapePath} from './shape.js';
+export {morphShapePath, RxShape, shapePath} from './shape.js';

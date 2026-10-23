@@ -23,8 +23,12 @@ export class CornerRounding {
    * @param radius 0 or more: the radius of the circle forming the inner arc.
    * @param smoothing 0 to 1: how far the curve extends from the arc toward the edges.
    */
-  constructor(
-    readonly radius: number = 0,
-    readonly smoothing: number = 0,
-  ) {}
+  readonly radius: number;
+  readonly smoothing: number;
+
+  constructor(radius = 0, smoothing = 0) {
+    // Kotlin Floats.
+    this.radius = Math.fround(radius);
+    this.smoothing = Math.fround(smoothing);
+  }
 }

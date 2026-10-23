@@ -1,13 +1,14 @@
 import {afterEach, describe, expect, it} from 'vitest';
 import '@rx-m3e/tokens/theme.css';
 import '../../src/shapes/shape.js';
-import {star} from '../../src/shapes/graphics/index.js';
+import {Morph, star} from '../../src/shapes/graphics/index.js';
 import {
   MATERIAL_SHAPE_NAMES,
   MaterialShapes,
   kebabShapeName,
   materialShape,
   materialShapeName,
+  morphShapePath,
   shapePath,
   type RxShape,
 } from '../../src/index.js';
@@ -73,8 +74,9 @@ describe('shapePath', () => {
       const dy = h / 2 - ((t + b) / 2) * h;
       const placed = polygon.transformed((x, y) => [x * w + dx, y * h + dy]);
       const [pl, pt, pr, pb] = placed.calculateBounds();
-      expect((pl + pr) / 2, name).toBeCloseTo(100, 6);
-      expect((pt + pb) / 2, name).toBeCloseTo(50, 6);
+      // The polygon math is 32-bit, like Compose's Float math.
+      expect((pl + pr) / 2, name).toBeCloseTo(100, 4);
+      expect((pt + pb) / 2, name).toBeCloseTo(50, 4);
       expect(shapePath(polygon, w, h)).toMatch(/^M[-\d.]+ [-\d.]+C/);
     }
   });
@@ -118,7 +120,7 @@ describe('rx-shape', () => {
   });
 
   it('updates when the shape changes', async () => {
-    const el = await mount('<rx-shape shape="heart"></rx-shape>');
+    const el = await mount('<rx-shape shape="heart" no-morph></rx-shape>');
     el.shape = 'sunny';
     await el.updateComplete;
     expect(clipOf(el)).toBe(clip(shapePath(materialShape('Sunny'), 48, 48)));
@@ -133,7 +135,7 @@ describe('rx-shape', () => {
   });
 
   it('takes any normalized polygon', async () => {
-    const el = await mount('<rx-shape></rx-shape>');
+    const el = await mount('<rx-shape no-morph></rx-shape>');
     const custom = star(6, {innerRadius: 0.6}).normalized();
     el.polygon = custom;
     await el.updateComplete;
@@ -156,5 +158,81 @@ describe('rx-shape', () => {
     document.body.append(probe);
     expect(fill).toBe(getComputedStyle(probe).color);
     delete document.documentElement.dataset.theme;
+  });
+
+  describe('morphing', () => {
+    const slow =
+      'width: 100px; height: 100px; --rx-shape-morph-duration: 10s; --rx-shape-morph-easing: linear';
+
+    it("morphs with Google's Morph when the shape changes", async () => {
+      const el = await mount(`<rx-shape shape="heart" style="${slow}"></rx-shape>`);
+      await nextFrame();
+      el.shape = 'clover-8-leaf';
+      await el.updateComplete;
+      const animation = el.morphAnimation!;
+      expect(animation).not.toBeNull();
+      animation.pause();
+      animation.currentTime = 5000;
+      await nextFrame();
+      const morph = new Morph(materialShape('Heart'), materialShape('Clover8Leaf'));
+      expect(clipOf(el)).toBe(clip(morphShapePath(morph, 0.5, 100, 100)));
+    });
+
+    it('runs backwards when the shape goes back mid-morph', async () => {
+      const el = await mount(`<rx-shape shape="square" style="${slow}"></rx-shape>`);
+      el.shape = 'circle';
+      await el.updateComplete;
+      const animation = el.morphAnimation!;
+      animation.pause();
+      animation.currentTime = 3000;
+      el.shape = 'square';
+      await el.updateComplete;
+      expect(el.morphAnimation).toBe(animation);
+      await animation.ready;
+      expect(animation.playbackRate).toBe(-1);
+      animation.pause();
+      animation.currentTime = 1000;
+      await nextFrame();
+      const morph = new Morph(materialShape('Square'), materialShape('Circle'));
+      expect(clipOf(el)).toBe(clip(morphShapePath(morph, 0.1, 100, 100)));
+    });
+
+    it('ends exactly on the new shape', async () => {
+      const el = await mount(
+        '<rx-shape shape="pill" style="width: 80px; height: 80px; --rx-shape-morph-duration: 40ms"></rx-shape>',
+      );
+      el.shape = 'sunny';
+      await el.updateComplete;
+      expect(el.morphAnimation).not.toBeNull();
+      await new Promise((r) => setTimeout(r, 200));
+      await nextFrame();
+      expect(el.morphAnimation).toBeNull();
+      expect(clipOf(el)).toBe(clip(shapePath(materialShape('Sunny'), 80, 80)));
+    });
+
+    it('switches at once with no-morph or a zero duration', async () => {
+      for (const markup of [
+        '<rx-shape shape="gem" no-morph></rx-shape>',
+        '<rx-shape shape="gem" style="--rx-shape-morph-duration: 0s"></rx-shape>',
+      ]) {
+        const el = await mount(markup);
+        el.shape = 'bun';
+        await el.updateComplete;
+        expect(el.morphAnimation).toBeNull();
+        expect(clipOf(el)).toBe(clip(shapePath(materialShape('Bun'), 48, 48)));
+      }
+    });
+
+    it('uses the default spatial spring tokens', async () => {
+      const el = await mount('<rx-shape shape="gem"></rx-shape>');
+      el.shape = 'bun';
+      await el.updateComplete;
+      const timing = el.morphAnimation!.effect!.getTiming();
+      const root = getComputedStyle(document.documentElement);
+      expect(`${timing.duration}ms`).toBe(
+        root.getPropertyValue('--md-sys-motion-spring-default-spatial-duration').trim(),
+      );
+      expect(timing.easing).toMatch(/^linear\(/);
+    });
   });
 });

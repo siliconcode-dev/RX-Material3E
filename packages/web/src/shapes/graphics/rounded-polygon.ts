@@ -9,7 +9,7 @@
 import {CornerRounding} from './corner-rounding.js';
 import {Cubic} from './cubic.js';
 import {Corner, Edge, type Feature} from './features.js';
-import {interpolatePoint, Point, type PointTransformer} from './point.js';
+import {f32, interpolatePoint, Point, type PointTransformer} from './point.js';
 import {
   convex,
   directionVector,
@@ -21,11 +21,13 @@ import {
   square,
 } from './utils.js';
 
-// Kotlin's Float.MIN_VALUE is the smallest *positive* float, not the most
-// negative one. RoundedPolygon uses it as a "no center given" marker and as
-// the starting max in calculateBounds; Number.MIN_VALUE behaves the same way.
-const MIN_VALUE = Number.MIN_VALUE;
-const MAX_VALUE = Number.MAX_VALUE;
+// Kotlin Float math throughout: see point.ts.
+
+// Kotlin's Float.MIN_VALUE is the smallest *positive* float (2^-149), not
+// the most negative one. RoundedPolygon uses it as a "no center given"
+// marker and as the starting max in calculateBounds.
+const MIN_VALUE = 2 ** -149;
+const MAX_VALUE = 3.4028234663852886e38;
 
 export interface NumVerticesOptions {
   /** Distance of each vertex from the center. Defaults to 1. */
@@ -64,8 +66,8 @@ export class RoundedPolygon {
     let prevCubic = this.cubics[this.cubics.length - 1];
     for (const cubic of this.cubics) {
       if (
-        Math.abs(cubic.anchor0X - prevCubic.anchor1X) > DistanceEpsilon ||
-        Math.abs(cubic.anchor0Y - prevCubic.anchor1Y) > DistanceEpsilon
+        Math.abs(f32(cubic.anchor0X - prevCubic.anchor1X)) > DistanceEpsilon ||
+        Math.abs(f32(cubic.anchor0Y - prevCubic.anchor1Y)) > DistanceEpsilon
       ) {
         throw new Error(
           'RoundedPolygon must be contiguous, with the anchor points of all curves ' +
@@ -118,12 +120,11 @@ export class RoundedPolygon {
    *   perVertexRounding list of the wrong length.
    */
   static fromVertices(vertices: ArrayLike<number>, options: VerticesOptions = {}): RoundedPolygon {
-    const {
-      rounding = CornerRounding.Unrounded,
-      perVertexRounding = null,
-      centerX = MIN_VALUE,
-      centerY = MIN_VALUE,
-    } = options;
+    const {rounding = CornerRounding.Unrounded, perVertexRounding = null} = options;
+    // Kotlin takes a FloatArray and Float center.
+    const centerX = f32(options.centerX ?? MIN_VALUE);
+    const centerY = f32(options.centerY ?? MIN_VALUE);
+    vertices = Array.from(vertices, f32);
     if (vertices.length < 6) {
       throw new Error('Polygons must have at least 3 vertices');
     }
@@ -159,22 +160,28 @@ export class RoundedPolygon {
     // expectedRoundCut we can use, how much of expectedCut].
     const cutAdjusts: [number, number][] = [];
     for (let ix = 0; ix < n; ix++) {
-      const expectedRoundCut =
-        roundedCorners[ix].expectedRoundCut + roundedCorners[(ix + 1) % n].expectedRoundCut;
-      const expectedCut = roundedCorners[ix].expectedCut + roundedCorners[(ix + 1) % n].expectedCut;
+      const expectedRoundCut = f32(
+        roundedCorners[ix].expectedRoundCut + roundedCorners[(ix + 1) % n].expectedRoundCut,
+      );
+      const expectedCut = f32(
+        roundedCorners[ix].expectedCut + roundedCorners[(ix + 1) % n].expectedCut,
+      );
       const vtxX = vertices[ix * 2];
       const vtxY = vertices[ix * 2 + 1];
       const nextVtxX = vertices[((ix + 1) % n) * 2];
       const nextVtxY = vertices[((ix + 1) % n) * 2 + 1];
-      const sideSize = distance(vtxX - nextVtxX, vtxY - nextVtxY);
+      const sideSize = distance(f32(vtxX - nextVtxX), f32(vtxY - nextVtxY));
 
       // Rounding for both corners comes before any space for smoothing.
       if (expectedRoundCut > sideSize) {
         // Not enough room for full rounding: see how much we can do.
-        cutAdjusts.push([sideSize / expectedRoundCut, 0]);
+        cutAdjusts.push([f32(sideSize / expectedRoundCut), 0]);
       } else if (expectedCut > sideSize) {
         // Full rounding, but not full smoothing.
-        cutAdjusts.push([1, (sideSize - expectedRoundCut) / (expectedCut - expectedRoundCut)]);
+        cutAdjusts.push([
+          1,
+          f32(f32(sideSize - expectedRoundCut) / f32(expectedCut - expectedRoundCut)),
+        ]);
       } else {
         // Room for rounding and smoothing.
         cutAdjusts.push([1, 1]);
@@ -188,9 +195,12 @@ export class RoundedPolygon {
       const allowedCuts: number[] = [];
       for (let delta = 0; delta <= 1; delta++) {
         const [roundCutRatio, cutRatio] = cutAdjusts[(i + n - 1 + delta) % n];
+        const corner = roundedCorners[i];
         allowedCuts.push(
-          roundedCorners[i].expectedRoundCut * roundCutRatio +
-            (roundedCorners[i].expectedCut - roundedCorners[i].expectedRoundCut) * cutRatio,
+          f32(
+            f32(corner.expectedRoundCut * roundCutRatio) +
+              f32(f32(corner.expectedCut - corner.expectedRoundCut) * cutRatio),
+          ),
         );
       }
       corners.push(roundedCorners[i].getCubics(allowedCuts[0], allowedCuts[1]));
@@ -232,7 +242,8 @@ export class RoundedPolygon {
     features: readonly Feature[],
     options: {centerX?: number; centerY?: number} = {},
   ): RoundedPolygon {
-    const {centerX = NaN, centerY = NaN} = options;
+    const centerX = f32(options.centerX ?? NaN);
+    const centerY = f32(options.centerY ?? NaN);
     if (features.length < 2) throw new Error('Polygons must have at least 2 features');
     const vertices: number[] = [];
     for (const feature of features) {
@@ -268,13 +279,13 @@ export class RoundedPolygon {
    */
   normalized(): RoundedPolygon {
     const bounds = this.calculateBounds();
-    const width = bounds[2] - bounds[0];
-    const height = bounds[3] - bounds[1];
+    const width = f32(bounds[2] - bounds[0]);
+    const height = f32(bounds[3] - bounds[1]);
     const side = Math.max(width, height);
     // Center the shape if the bounds are not square.
-    const offsetX = (side - width) / 2 - bounds[0]; /* left */
-    const offsetY = (side - height) / 2 - bounds[1]; /* top */
-    return this.transformed((x, y) => [(x + offsetX) / side, (y + offsetY) / side]);
+    const offsetX = f32(f32(f32(side - width) / 2) - bounds[0]); /* left */
+    const offsetY = f32(f32(f32(side - height) / 2) - bounds[1]); /* top */
+    return this.transformed((x, y) => [f32(f32(x + offsetX) / side), f32(f32(y + offsetY) / side)]);
   }
 
   /**
@@ -287,21 +298,21 @@ export class RoundedPolygon {
     let maxDistSquared = 0;
     for (const cubic of this.cubics) {
       const anchorDistance = distanceSquared(
-        cubic.anchor0X - this.centerX,
-        cubic.anchor0Y - this.centerY,
+        f32(cubic.anchor0X - this.centerX),
+        f32(cubic.anchor0Y - this.centerY),
       );
       const middlePoint = cubic.pointOnCurve(0.5);
       const middleDistance = distanceSquared(
-        middlePoint.x - this.centerX,
-        middlePoint.y - this.centerY,
+        f32(middlePoint.x - this.centerX),
+        f32(middlePoint.y - this.centerY),
       );
       maxDistSquared = Math.max(maxDistSquared, Math.max(anchorDistance, middleDistance));
     }
-    const d = Math.sqrt(maxDistSquared);
-    bounds[0] = this.centerX - d;
-    bounds[1] = this.centerY - d;
-    bounds[2] = this.centerX + d;
-    bounds[3] = this.centerY + d;
+    const d = f32(Math.sqrt(maxDistSquared));
+    bounds[0] = f32(this.centerX - d);
+    bounds[1] = f32(this.centerY - d);
+    bounds[2] = f32(this.centerX + d);
+    bounds[3] = f32(this.centerY + d);
     return bounds;
   }
 
@@ -424,10 +435,11 @@ export function calculateCenter(vertices: ArrayLike<number>): Point {
   let cumulativeY = 0;
   let index = 0;
   while (index < vertices.length) {
-    cumulativeX += vertices[index++];
-    cumulativeY += vertices[index++];
+    cumulativeX = f32(cumulativeX + f32(vertices[index++]));
+    cumulativeY = f32(cumulativeY + f32(vertices[index++]));
   }
-  return new Point(cumulativeX / (vertices.length / 2), cumulativeY / (vertices.length / 2));
+  const n = Math.trunc(vertices.length / 2);
+  return new Point(cumulativeX / n, cumulativeY / n);
 }
 
 /**
@@ -471,11 +483,14 @@ class RoundedCorner {
       // Cosine of the angle at p1: dot product of the unit vectors to the other two vertices.
       this.cosAngle = this.d1.dotProduct(this.d2);
       // sin^2 + cos^2 = 1
-      this.sinAngle = Math.sqrt(1 - square(this.cosAngle));
+      this.sinAngle = f32(Math.sqrt(f32(1 - square(this.cosAngle))));
       // How far along each side to cut for the requested radius, from
       // tan(A/2) = sinA / (1 + cosA) and tan(A/2) = radius / cut.
+      // (Upstream compares with the Double 1e-3, so this one is not rounded.)
       this.expectedRoundCut =
-        this.sinAngle > 1e-3 ? (this.cornerRadius * (this.cosAngle + 1)) / this.sinAngle : 0;
+        this.sinAngle > 1e-3
+          ? f32(f32(this.cornerRadius * f32(this.cosAngle + 1)) / this.sinAngle)
+          : 0;
     } else {
       // One or both sides are empty; not much to do.
       this.d1 = new Point(0, 0);
@@ -490,7 +505,7 @@ class RoundedCorner {
 
   /** Smoothing lengthens the cut: 0 leaves expectedRoundCut, 1 doubles it. */
   get expectedCut(): number {
-    return (1 + this.smoothing) * this.expectedRoundCut;
+    return f32(f32(1 + this.smoothing) * this.expectedRoundCut);
   }
 
   getCubics(allowedCut0: number, allowedCut1: number = allowedCut0): Cubic[] {
@@ -513,9 +528,9 @@ class RoundedCorner {
     const actualSmoothing0 = this.calculateActualSmoothingValue(allowedCut0);
     const actualSmoothing1 = this.calculateActualSmoothingValue(allowedCut1);
     // Scale the radius if needed.
-    const actualR = (this.cornerRadius * actualRoundCut) / this.expectedRoundCut;
+    const actualR = f32(f32(this.cornerRadius * actualRoundCut) / this.expectedRoundCut);
     // Distance from the corner (p1) to the arc's center.
-    const centerDistance = Math.sqrt(square(actualR) + square(actualRoundCut));
+    const centerDistance = f32(Math.sqrt(f32(square(actualR) + square(actualRoundCut))));
     this.center = this.p1.plus(this.d1.plus(this.d2).div(2).getDirection().times(centerDistance));
     const circleIntersection0 = this.p1.plus(this.d1.times(actualRoundCut));
     const circleIntersection2 = this.p1.plus(this.d2.times(actualRoundCut));
@@ -561,9 +576,9 @@ class RoundedCorner {
     if (allowedCut > this.expectedCut) {
       return this.smoothing;
     } else if (allowedCut > this.expectedRoundCut) {
-      return (
-        (this.smoothing * (allowedCut - this.expectedRoundCut)) /
-        (this.expectedCut - this.expectedRoundCut)
+      return f32(
+        f32(this.smoothing * f32(allowedCut - this.expectedRoundCut)) /
+          f32(this.expectedCut - this.expectedRoundCut),
       );
     } else {
       return 0;
@@ -592,7 +607,7 @@ class RoundedCorner {
   ): Cubic {
     const sideDirection = sideStart.minus(corner).getDirection();
     const curveStart = corner.plus(
-      sideDirection.times(actualRoundCut * (1 + actualSmoothingValues)),
+      sideDirection.times(actualRoundCut).times(f32(1 + actualSmoothingValues)),
     );
     // Cut away part of the circle section in proportion to 1 - smoothing: all
     // of it at smoothing 0, none at 1. (Upstream notes this can misbehave near
@@ -604,7 +619,7 @@ class RoundedCorner {
     );
     // The flanking curve ends on the circle.
     const curveEnd = circleCenter.plus(
-      directionVector(p.x - circleCenter.x, p.y - circleCenter.y).times(actualR),
+      directionVector(f32(p.x - circleCenter.x), f32(p.y - circleCenter.y)).times(actualR),
     );
     // The control point on the circle side is where the circle's tangent at
     // curveEnd meets the straight side.
@@ -628,8 +643,8 @@ function lineIntersection(p0: Point, d0: Point, p1: Point, d1: Point): Point | n
   if (Math.abs(den) < DistanceEpsilon) return null;
   const num = p1.minus(p0).dotProduct(rotatedD1);
   // Same as abs(den / num) < DistanceEpsilon, without the division.
-  if (Math.abs(den) < DistanceEpsilon * Math.abs(num)) return null;
-  const k = num / den;
+  if (Math.abs(den) < f32(DistanceEpsilon * Math.abs(num))) return null;
+  const k = f32(num / den);
   return p0.plus(d0.times(k));
 }
 
@@ -641,9 +656,8 @@ function verticesFromNumVerts(
 ): number[] {
   const result: number[] = [];
   for (let i = 0; i < numVertices; i++) {
-    const vertex = radialToCartesian(radius, (FloatPi / numVertices) * 2 * i).plus(
-      new Point(centerX, centerY),
-    );
+    const angle = f32(f32(f32(FloatPi / numVertices) * 2) * i);
+    const vertex = radialToCartesian(f32(radius), angle).plus(new Point(centerX, centerY));
     result.push(vertex.x, vertex.y);
   }
   return result;

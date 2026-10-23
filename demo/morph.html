@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Shape morphing · RX Material 3E</title>
+    <link rel="stylesheet" href="../packages/tokens/css/fonts.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/theme.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/typescale.css" />
+    <link rel="stylesheet" href="./demo.css" />
+    <script type="module" src="./shell.ts"></script>
+    <script type="module" src="./morph.ts"></script>
+    <style>
+      .stage {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 24px;
+        align-items: start;
+      }
+      @media (max-width: 719px) {
+        .stage {
+          grid-template-columns: minmax(0, 1fr);
+          justify-items: center;
+        }
+      }
+      #live {
+        width: 200px;
+        height: 200px;
+      }
+      .picks {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .pick {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 48px;
+        height: 48px;
+        padding: 0;
+        border: 0;
+        border-radius: var(--md-sys-shape-corner-medium);
+        background: var(--md-sys-color-surface-container);
+        color: var(--md-sys-color-on-surface);
+        cursor: pointer;
+      }
+      .pick[aria-pressed='true'] {
+        background: var(--md-sys-color-secondary-container);
+      }
+      .pick rx-shape {
+        width: 28px;
+        height: 28px;
+        --rx-shape-color: currentColor;
+      }
+      .scrub {
+        display: grid;
+        grid-template-columns: minmax(0, 280px) minmax(0, 1fr);
+        gap: 24px;
+        align-items: start;
+        padding: 16px;
+        border-radius: var(--md-sys-shape-corner-large);
+        background: var(--md-sys-color-surface-container);
+      }
+      @media (max-width: 719px) {
+        .scrub {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+      .scrub svg {
+        width: 100%;
+        max-width: 280px;
+        aspect-ratio: 1;
+        border-radius: var(--md-sys-shape-corner-medium);
+        background: var(--md-sys-color-surface);
+      }
+      .scrub .fill {
+        fill: var(--md-sys-color-primary-container);
+        stroke: var(--md-sys-color-primary);
+        stroke-width: 0.004;
+      }
+      .scrub .anchor {
+        fill: var(--md-sys-color-tertiary);
+      }
+      .scrub-controls {
+        display: grid;
+        gap: 16px;
+        align-content: start;
+      }
+      .scrub-controls label {
+        display: grid;
+        gap: 4px;
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      .scrub-controls select {
+        min-height: 40px;
+        padding: 0 12px;
+        border: 1px solid var(--md-sys-color-outline);
+        border-radius: var(--md-sys-shape-corner-small);
+        background: var(--md-sys-color-surface);
+        color: var(--md-sys-color-on-surface);
+        font: inherit;
+      }
+      .scrub-controls input[type='range'] {
+        width: 100%;
+        accent-color: var(--md-sys-color-primary);
+      }
+      .scrub-controls .check {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .film {
+        display: grid;
+        gap: 8px;
+        overflow-x: auto;
+      }
+      .film-row {
+        display: grid;
+        grid-template-columns: 10rem repeat(5, 56px);
+        gap: 8px;
+        align-items: center;
+      }
+      .film-row code {
+        color: var(--md-sys-color-on-surface-variant);
+        font-size: 12px;
+      }
+      .film-row svg {
+        width: 56px;
+        height: 56px;
+        fill: var(--md-sys-color-primary);
+      }
+      .film-head {
+        color: var(--md-sys-color-on-surface-variant);
+        text-align: center;
+      }
+      @media (max-width: 599px) {
+        .film-row {
+          grid-template-columns: repeat(5, 48px);
+        }
+        .film-row > :first-child {
+          grid-column: 1 / -1;
+        }
+        .film-head > :first-child {
+          display: none;
+        }
+        .film-row svg {
+          width: 48px;
+          height: 48px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Shape morphing</h1>
+    <p>
+      Google's <code>Morph</code> from <code>androidx.graphics.shapes</code>, ported by hand. It
+      pairs the corners of two shapes, cuts curves so both outlines line up, then blends them. Every
+      number matches Android bit for bit: the port does Kotlin's 32-bit Float math step by step,
+      checked against Google's own Kotlin for all 1,225 pairs of Material shapes.
+    </p>
+
+    <h2>Tap a shape</h2>
+    <p>
+      <code>&lt;rx-shape&gt;</code> morphs whenever its <code>shape</code> changes, with the
+      expressive default spatial spring. Change your mind halfway and it runs back.
+    </p>
+    <div class="stage">
+      <rx-shape id="live" shape="circle"></rx-shape>
+      <div class="picks" id="picks" role="group" aria-label="Shape"></div>
+    </div>
+
+    <h2>Scrub a morph</h2>
+    <div class="scrub">
+      <svg id="scrub-svg" viewBox="-0.1 -0.1 1.2 1.2" role="img" aria-label="Morph preview">
+        <path class="fill" id="scrub-path"></path>
+        <g id="scrub-anchors"></g>
+      </svg>
+      <form class="scrub-controls" id="scrub-controls">
+        <label class="rx-typescale-label-large">
+          From
+          <select name="from"></select>
+        </label>
+        <label class="rx-typescale-label-large">
+          To
+          <select name="to"></select>
+        </label>
+        <label class="rx-typescale-label-large">
+          <span>Progress <output name="progressOut">0.50</output></span>
+          <input type="range" name="progress" min="-0.2" max="1.2" step="0.01" value="0.5" />
+        </label>
+        <label class="check rx-typescale-body-medium">
+          <input type="checkbox" name="anchors" checked /> Show where curves meet
+        </label>
+        <p class="rx-typescale-body-medium" id="scrub-info"></p>
+      </form>
+    </div>
+
+    <h2>Compose's loading indicator</h2>
+    <p>
+      The shapes Compose's <code>LoadingIndicator</code> morphs through, each morph shown at five
+      points.
+    </p>
+    <div class="film" id="film"></div>
+  </body>
+</html>

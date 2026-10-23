@@ -5,6 +5,7 @@ import {describe, expect, it} from 'vitest';
 import {Corner} from '../../src/shapes/graphics/index.js';
 import {MATERIAL_SHAPE_NAMES, materialShape} from '../../src/shapes/material-shapes.js';
 import golden from './golden/material-shapes.json';
+import {expectFloatsEqual} from './golden-utils.js';
 
 interface GoldenShape {
   center: [number, number];
@@ -13,17 +14,8 @@ interface GoldenShape {
   features: {type: 'corner' | 'edge'; convex: boolean | null; cubics: number}[];
 }
 
-const Epsilon = 1e-4;
-
-function expectNumbersClose(actual: readonly number[], expected: readonly number[], label: string) {
-  expect(actual.length, `${label} length`).toBe(expected.length);
-  actual.forEach((value, i) => {
-    expect(
-      Math.abs(value - expected[i]),
-      `${label}[${i}]: ${value} vs. Kotlin ${expected[i]}`,
-    ).toBeLessThanOrEqual(Epsilon);
-  });
-}
+// Bit for bit: see golden-utils.ts.
+const expectNumbersClose = expectFloatsEqual;
 
 describe("golden: MaterialShapes vs Google's Kotlin", () => {
   const data = golden as unknown as Record<string, GoldenShape>;

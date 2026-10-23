@@ -4,14 +4,27 @@
  *
  * Kotlin's Point is a FloatFloatPair with extension operators; here it is a
  * small immutable class with the same operations as methods.
+ *
+ * Kotlin does this math in 32-bit Floats. So does this port: coordinates
+ * are stored as 32-bit values and every operation rounds its result with
+ * Math.fround, in Kotlin's order. Shapes then come out bit for bit as on
+ * Android, which matters wherever upstream compares or sorts numbers (Morph
+ * picks which corners to pair by sorting distances, and symmetric shapes
+ * have ties that only exact Float math breaks the same way).
  */
+
+/** Rounds to a 32-bit float (Kotlin Float). */
+export const f32 = Math.fround;
 
 /** A 2D point or vector. Immutable. */
 export class Point {
-  constructor(
-    readonly x: number,
-    readonly y: number,
-  ) {}
+  readonly x: number;
+  readonly y: number;
+
+  constructor(x: number, y: number) {
+    this.x = f32(x);
+    this.y = f32(y);
+  }
 
   copy(x: number = this.x, y: number = this.y): Point {
     return new Point(x, y);
@@ -19,20 +32,20 @@ export class Point {
 
   /** The distance of this point from (0, 0). */
   getDistance(): number {
-    return Math.sqrt(this.x * this.x + this.y * this.y);
+    return f32(Math.sqrt(this.getDistanceSquared()));
   }
 
   /** The square of the distance from (0, 0). Cheaper than {@link getDistance}. */
   getDistanceSquared(): number {
-    return this.x * this.x + this.y * this.y;
+    return f32(f32(this.x * this.x) + f32(this.y * this.y));
   }
 
   dotProduct(other: Point): number {
-    return this.x * other.x + this.y * other.y;
+    return f32(f32(this.x * other.x) + f32(this.y * other.y));
   }
 
   dotProductXY(otherX: number, otherY: number): number {
-    return this.x * otherX + this.y * otherY;
+    return f32(f32(this.x * otherX) + f32(this.y * otherY));
   }
 
   /**
@@ -40,7 +53,7 @@ export class Point {
    * coordinate of their cross product. False when they are collinear.
    */
   clockwise(other: Point): boolean {
-    return this.x * other.y - this.y * other.x > 0;
+    return f32(f32(this.x * other.y) - f32(this.y * other.x)) > 0;
   }
 
   /** Unit vector in the direction of this point from (0, 0). */
@@ -63,15 +76,18 @@ export class Point {
   }
 
   times(operand: number): Point {
-    return new Point(this.x * operand, this.y * operand);
+    const o = f32(operand);
+    return new Point(this.x * o, this.y * o);
   }
 
   div(operand: number): Point {
-    return new Point(this.x / operand, this.y / operand);
+    const o = f32(operand);
+    return new Point(this.x / o, this.y / o);
   }
 
   rem(operand: number): Point {
-    return new Point(this.x % operand, this.y % operand);
+    const o = f32(operand);
+    return new Point(this.x % o, this.y % o);
   }
 
   /** Rotates 90 degrees (Utils.kt `rotate90`). */
@@ -99,5 +115,6 @@ export function interpolatePoint(start: Point, stop: Point, fraction: number): P
 
 /** Linearly interpolate between `start` and `stop` with `fraction` between them. */
 export function interpolate(start: number, stop: number, fraction: number): number {
-  return (1 - fraction) * start + fraction * stop;
+  const t = f32(fraction);
+  return f32(f32(f32(1 - t) * start) + f32(t * stop));
 }

@@ -3,10 +3,15 @@
  * Copyright 2022 The Android Open Source Project. Licensed under the Apache License 2.0.
  */
 
-import {interpolate, Point, type PointTransformer} from './point.js';
+import {f32, interpolate, Point, type PointTransformer} from './point.js';
 import {convex, directionVector, distance, DistanceEpsilon} from './utils.js';
 
+// Kotlin Float math throughout: see point.ts. Points are stored as 32-bit
+// values, like Kotlin's FloatArray.
+
 const inUnitRange = (t: number) => t >= 0 && t <= 1;
+const OneThird = f32(1 / 3);
+const TwoThirds = f32(2 / 3);
 
 /**
  * One cubic Bézier curve: anchor points (anchor0X, anchor0Y) and
@@ -14,12 +19,12 @@ const inUnitRange = (t: number) => t >= 0 && t <= 1;
  * control0Y) and (control1X, control1Y) shaping the curve between them.
  */
 export class Cubic {
-  /** anchor0, control0, control1, anchor1 as x, y pairs. */
+  /** anchor0, control0, control1, anchor1 as x, y pairs (32-bit values). */
   readonly points: number[];
 
   constructor(points: ArrayLike<number> = new Array<number>(8).fill(0)) {
     if (points.length !== 8) throw new Error('Points array size should be 8');
-    this.points = Array.from(points);
+    this.points = Array.from(points, f32);
   }
 
   static fromPoints(anchor0: Point, control0: Point, control1: Point, anchor1: Point): Cubic {
@@ -86,23 +91,25 @@ export class Cubic {
    * The point at parameter `t` along the curve: 0 is anchor0, 1 is anchor1.
    */
   pointOnCurve(t: number): Point {
-    const u = 1 - t;
+    t = f32(t);
+    const u = f32(1 - t);
+    // Kotlin: a0 * (u * u * u) + c0 * (3 * t * u * u) + c1 * (3 * t * t * u) + a1 * (t * t * t)
+    const w0 = f32(f32(u * u) * u);
+    const w1 = f32(f32(f32(3 * t) * u) * u);
+    const w2 = f32(f32(f32(3 * t) * t) * u);
+    const w3 = f32(f32(t * t) * t);
+    const at = (a: number, c0: number, c1: number, b: number) =>
+      f32(f32(f32(f32(a * w0) + f32(c0 * w1)) + f32(c1 * w2)) + f32(b * w3));
     return new Point(
-      this.anchor0X * (u * u * u) +
-        this.control0X * (3 * t * u * u) +
-        this.control1X * (3 * t * t * u) +
-        this.anchor1X * (t * t * t),
-      this.anchor0Y * (u * u * u) +
-        this.control0Y * (3 * t * u * u) +
-        this.control1Y * (3 * t * t * u) +
-        this.anchor1Y * (t * t * t),
+      at(this.anchor0X, this.control0X, this.control1X, this.anchor1X),
+      at(this.anchor0Y, this.control0Y, this.control1Y, this.anchor1Y),
     );
   }
 
   zeroLength(): boolean {
     return (
-      Math.abs(this.anchor0X - this.anchor1X) < DistanceEpsilon &&
-      Math.abs(this.anchor0Y - this.anchor1Y) < DistanceEpsilon
+      Math.abs(f32(this.anchor0X - this.anchor1X)) < DistanceEpsilon &&
+      Math.abs(f32(this.anchor0Y - this.anchor1Y)) < DistanceEpsilon
     );
   }
 
@@ -146,9 +153,11 @@ export class Cubic {
     }
 
     // The derivative is a quadratic Bézier; solve it for t with the quadratic formula.
-    const xa = -this.anchor0X + 3 * this.control0X - 3 * this.control1X + this.anchor1X;
-    const xb = 2 * this.anchor0X - 4 * this.control0X + 2 * this.control1X;
-    const xc = -this.anchor0X + this.control0X;
+    const xa = f32(
+      f32(f32(-this.anchor0X + f32(3 * this.control0X)) - f32(3 * this.control1X)) + this.anchor1X,
+    );
+    const xb = f32(f32(f32(2 * this.anchor0X) - f32(4 * this.control0X)) + f32(2 * this.control1X));
+    const xc = f32(-this.anchor0X + this.control0X);
 
     const includeX = (t: number) => {
       if (!inUnitRange(t)) return;
@@ -158,19 +167,21 @@ export class Cubic {
     };
     if (this.zeroIsh(xa)) {
       // Muller's method finds the single root when a is 0.
-      if (xb !== 0) includeX((2 * xc) / (-2 * xb));
+      if (xb !== 0) includeX(f32(f32(2 * xc) / f32(-2 * xb)));
     } else {
-      const xs = xb * xb - 4 * xa * xc;
+      const xs = f32(f32(xb * xb) - f32(f32(4 * xa) * xc));
       if (xs >= 0) {
-        includeX((-xb + Math.sqrt(xs)) / (2 * xa));
-        includeX((-xb - Math.sqrt(xs)) / (2 * xa));
+        includeX(f32(f32(-xb + f32(Math.sqrt(xs))) / f32(2 * xa)));
+        includeX(f32(f32(-xb - f32(Math.sqrt(xs))) / f32(2 * xa)));
       }
     }
 
     // Repeat for y.
-    const ya = -this.anchor0Y + 3 * this.control0Y - 3 * this.control1Y + this.anchor1Y;
-    const yb = 2 * this.anchor0Y - 4 * this.control0Y + 2 * this.control1Y;
-    const yc = -this.anchor0Y + this.control0Y;
+    const ya = f32(
+      f32(f32(-this.anchor0Y + f32(3 * this.control0Y)) - f32(3 * this.control1Y)) + this.anchor1Y,
+    );
+    const yb = f32(f32(f32(2 * this.anchor0Y) - f32(4 * this.control0Y)) + f32(2 * this.control1Y));
+    const yc = f32(-this.anchor0Y + this.control0Y);
 
     const includeY = (t: number) => {
       if (!inUnitRange(t)) return;
@@ -179,12 +190,12 @@ export class Cubic {
       if (y > maxY) maxY = y;
     };
     if (this.zeroIsh(ya)) {
-      if (yb !== 0) includeY((2 * yc) / (-2 * yb));
+      if (yb !== 0) includeY(f32(f32(2 * yc) / f32(-2 * yb)));
     } else {
-      const ys = yb * yb - 4 * ya * yc;
+      const ys = f32(f32(yb * yb) - f32(f32(4 * ya) * yc));
       if (ys >= 0) {
-        includeY((-yb + Math.sqrt(ys)) / (2 * ya));
-        includeY((-yb - Math.sqrt(ys)) / (2 * ya));
+        includeY(f32(f32(-yb + f32(Math.sqrt(ys))) / f32(2 * ya)));
+        includeY(f32(f32(-yb - f32(Math.sqrt(ys))) / f32(2 * ya)));
       }
     }
 
@@ -197,26 +208,34 @@ export class Cubic {
 
   /** Splits the curve at parameter `t` into two curves. */
   split(t: number): [Cubic, Cubic] {
-    const u = 1 - t;
+    t = f32(t);
+    const u = f32(1 - t);
     const p = this.pointOnCurve(t);
+    const uu = f32(u * u);
+    const ut2 = f32(f32(2 * u) * t);
+    const tt = f32(t * t);
+    // a * w0 + b * w1, and a * w0 + b * w1 + c * w2, rounded as Kotlin does.
+    const lerp = (a: number, b: number) => f32(f32(a * u) + f32(b * t));
+    const quad = (a: number, b: number, c: number) =>
+      f32(f32(f32(a * uu) + f32(b * ut2)) + f32(c * tt));
     return [
       Cubic.of(
         this.anchor0X,
         this.anchor0Y,
-        this.anchor0X * u + this.control0X * t,
-        this.anchor0Y * u + this.control0Y * t,
-        this.anchor0X * (u * u) + this.control0X * (2 * u * t) + this.control1X * (t * t),
-        this.anchor0Y * (u * u) + this.control0Y * (2 * u * t) + this.control1Y * (t * t),
+        lerp(this.anchor0X, this.control0X),
+        lerp(this.anchor0Y, this.control0Y),
+        quad(this.anchor0X, this.control0X, this.control1X),
+        quad(this.anchor0Y, this.control0Y, this.control1Y),
         p.x,
         p.y,
       ),
       Cubic.of(
         p.x,
         p.y,
-        this.control0X * (u * u) + this.control1X * (2 * u * t) + this.anchor1X * (t * t),
-        this.control0Y * (u * u) + this.control1Y * (2 * u * t) + this.anchor1Y * (t * t),
-        this.control1X * u + this.anchor1X * t,
-        this.control1Y * u + this.anchor1Y * t,
+        quad(this.control0X, this.control1X, this.anchor1X),
+        quad(this.control0Y, this.control1Y, this.anchor1Y),
+        lerp(this.control1X, this.anchor1X),
+        lerp(this.control1Y, this.anchor1Y),
         this.anchor1X,
         this.anchor1Y,
       ),
@@ -242,11 +261,12 @@ export class Cubic {
   }
 
   times(x: number): Cubic {
-    return new Cubic(this.points.map((v) => v * x));
+    const k = f32(x);
+    return new Cubic(this.points.map((v) => v * k));
   }
 
   div(x: number): Cubic {
-    return this.times(1 / x);
+    return this.times(f32(1 / f32(x)));
   }
 
   equals(other: unknown): boolean {
@@ -278,10 +298,10 @@ export class Cubic {
     return Cubic.of(
       x0,
       y0,
-      interpolate(x0, x1, 1 / 3),
-      interpolate(y0, y1, 1 / 3),
-      interpolate(x0, x1, 2 / 3),
-      interpolate(y0, y1, 2 / 3),
+      interpolate(x0, x1, OneThird),
+      interpolate(y0, y1, OneThird),
+      interpolate(x0, x1, TwoThirds),
+      interpolate(y0, y1, TwoThirds),
       x1,
       y1,
     );
@@ -301,25 +321,30 @@ export class Cubic {
     x1: number,
     y1: number,
   ): Cubic {
-    const p0d = directionVector(x0 - centerX, y0 - centerY);
-    const p1d = directionVector(x1 - centerX, y1 - centerY);
+    [centerX, centerY, x0, y0, x1, y1] = [centerX, centerY, x0, y0, x1, y1].map(f32);
+    const p0d = directionVector(f32(x0 - centerX), f32(y0 - centerY));
+    const p1d = directionVector(f32(x1 - centerX), f32(y1 - centerY));
     const rotatedP0 = p0d.rotate90();
     const rotatedP1 = p1d.rotate90();
-    const clockwise = rotatedP0.dotProductXY(x1 - centerX, y1 - centerY) >= 0;
+    const clockwise = rotatedP0.dotProductXY(f32(x1 - centerX), f32(y1 - centerY)) >= 0;
     const cosa = p0d.dotProduct(p1d);
-    if (cosa > 0.999) /* p0 ~= p1 */ return Cubic.straightLine(x0, y0, x1, y1);
-    const k =
-      ((((distance(x0 - centerX, y0 - centerY) * 4) / 3) *
-        (Math.sqrt(2 * (1 - cosa)) - Math.sqrt(1 - cosa * cosa))) /
-        (1 - cosa)) *
-      (clockwise ? 1 : -1);
+    if (cosa > f32(0.999)) /* p0 ~= p1 */ return Cubic.straightLine(x0, y0, x1, y1);
+    const oneMinusCosa = f32(1 - cosa);
+    const k = f32(
+      f32(
+        f32(
+          f32(f32(distance(f32(x0 - centerX), f32(y0 - centerY)) * 4) / 3) *
+            f32(f32(Math.sqrt(f32(2 * oneMinusCosa))) - f32(Math.sqrt(f32(1 - f32(cosa * cosa))))),
+        ) / oneMinusCosa,
+      ) * (clockwise ? 1 : -1),
+    );
     return Cubic.of(
       x0,
       y0,
-      x0 + rotatedP0.x * k,
-      y0 + rotatedP0.y * k,
-      x1 - rotatedP1.x * k,
-      y1 - rotatedP1.y * k,
+      x0 + f32(rotatedP0.x * k),
+      y0 + f32(rotatedP0.y * k),
+      x1 - f32(rotatedP1.x * k),
+      y1 - f32(rotatedP1.y * k),
       x1,
       y1,
     );
@@ -338,8 +363,8 @@ export class Cubic {
 export class MutableCubic extends Cubic {
   private transformOnePoint(f: PointTransformer, ix: number) {
     const [x, y] = f(this.points[ix], this.points[ix + 1]);
-    this.points[ix] = x;
-    this.points[ix + 1] = y;
+    this.points[ix] = f32(x);
+    this.points[ix + 1] = f32(y);
   }
 
   transform(f: PointTransformer) {

@@ -75,8 +75,8 @@ function isContinuous(feature: Feature): boolean {
   for (let index = 1; index < feature.cubics.length; index++) {
     const cubic = feature.cubics[index];
     if (
-      Math.abs(cubic.anchor0X - prevCubic.anchor1X) > DistanceEpsilon ||
-      Math.abs(cubic.anchor0Y - prevCubic.anchor1Y) > DistanceEpsilon
+      Math.abs(Math.fround(cubic.anchor0X - prevCubic.anchor1X)) > DistanceEpsilon ||
+      Math.abs(Math.fround(cubic.anchor0Y - prevCubic.anchor1Y)) > DistanceEpsilon
     ) {
       return false;
     }

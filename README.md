@@ -10,7 +10,7 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Steps 1 to 13 of 79 done. Live demo: https://rx-material3e.ashfaqizop.workers.dev See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 to 14 of 79 done. Live demo: https://rx-material3e.ashfaqizop.workers.dev See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package          | What it is                                                     | Status                            |
 | ---------------- | -------------------------------------------------------------- | --------------------------------- |
@@ -156,7 +156,9 @@ const cookie = s.star(9, {innerRadius: 0.85, rounding: new s.CornerRounding(0.2,
 const d = s.toPath(cookie.normalized()); // SVG path data in a 0..1 box
 ```
 
-`RoundedPolygon` (from a vertex count, vertices or features), `circle`, `rectangle`, `star`, `pill`, `pillStar`, `CornerRounding` (radius and smoothing), bounds, `normalized()`, `transformed()`, and `toPath()` for SVG, clip paths or `Path2D`. Google's own tests are ported, and `npm test` also compares 32 shapes against output from Google's real Kotlin code (see `scripts/shapes-golden/`).
+`RoundedPolygon` (from a vertex count, vertices or features), `circle`, `rectangle`, `star`, `pill`, `pillStar`, `CornerRounding` (radius and smoothing), bounds, `normalized()`, `transformed()`, `Morph`, and `toPath()`/`morphToPath()` for SVG, clip paths or `Path2D`.
+
+It does Kotlin's 32-bit Float math step for step, so every number matches Android bit for bit. That is what makes morphs pair the same corners as on Android. Google's own tests are ported, and `npm test` checks the output against Google's real Kotlin code exactly (see `scripts/shapes-golden/`).
 
 ## Material shapes
 
@@ -166,7 +168,29 @@ const d = s.toPath(cookie.normalized()); // SVG path data in a 0..1 box
 </rx-shape>
 ```
 
-All 35 Material 3 Expressive shapes from Compose's `MaterialShapes`: circle, square, slanted, arch, fan, arrow, semi-circle, oval, pill, triangle, diamond, clam-shell, pentagon, gem, sunny, very-sunny, cookie-4/6/7/9/12-sided, ghostish, clover-4/8-leaf, burst, soft-burst, boom, soft-boom, flower, puffy, puffy-diamond, pixel-circle, pixel-triangle, bun and heart. `--rx-shape-color` sets the fill. In code, `MaterialShapes.Heart` or `materialShape('Heart')` gives the polygon and `shapePath(polygon, width, height)` its SVG path. Every shape is compared point for point with Google's own Kotlin.
+All 35 Material 3 Expressive shapes from Compose's `MaterialShapes`: circle, square, slanted, arch, fan, arrow, semi-circle, oval, pill, triangle, diamond, clam-shell, pentagon, gem, sunny, very-sunny, cookie-4/6/7/9/12-sided, ghostish, clover-4/8-leaf, burst, soft-burst, boom, soft-boom, flower, puffy, puffy-diamond, pixel-circle, pixel-triangle, bun and heart. `--rx-shape-color` sets the fill. In code, `MaterialShapes.Heart` or `materialShape('Heart')` gives the polygon and `shapePath(polygon, width, height)` its SVG path. Every shape matches Google's own Kotlin bit for bit.
+
+## Shape morphing
+
+```html
+<rx-shape id="s" shape="circle"></rx-shape>
+<script>
+  s.shape = 'heart'; // morphs, with the expressive default spatial spring
+</script>
+```
+
+Changing `shape` morphs to the new shape with Google's `Morph`. Sending it back mid-morph runs the morph backwards. `--rx-shape-morph-duration` and `--rx-shape-morph-easing` change the timing, `no-morph` switches at once, and so does reduced motion. `morphAnimation` gives the running animation, to pause or seek it.
+
+In code:
+
+```js
+import {graphicsShapes as s, MaterialShapes, morphShapePath} from '@rx-m3e/web';
+
+const morph = new s.Morph(MaterialShapes.Heart, MaterialShapes.Clover8Leaf);
+const d = morphShapePath(morph, 0.5, 200, 200); // halfway, drawn at 200x200
+```
+
+All 1,225 pairs of Material shapes, Compose's loading indicator sequence and Google's test pairs are checked against Google's Kotlin.
 
 ## Theme
 

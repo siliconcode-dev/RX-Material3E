@@ -6,23 +6,9 @@
  */
 
 import {CornerRounding} from './graphics/corner-rounding.js';
-import type {PointTransformer} from './graphics/point.js';
+import {rotateZTransformer as rotateZ, scaleTransformer as scale} from './graphics/path.js';
 import {RoundedPolygon} from './graphics/rounded-polygon.js';
 import {circle as polygonCircle, rectangle, star} from './graphics/shapes.js';
-
-// Compose Matrix().apply { rotateZ(degrees) } applied with Matrix.map:
-// x' = c*x - s*y, y' = s*x + c*y, with c and s computed in double precision.
-function rotateZ(degrees: number): PointTransformer {
-  const r = degrees * (Math.PI / 180);
-  const s = Math.sin(r);
-  const c = Math.cos(r);
-  return (x, y) => [c * x - s * y, s * x + c * y];
-}
-
-// Compose Matrix().apply { scale(x, y) }.
-function scale(sx: number, sy: number): PointTransformer {
-  return (x, y) => [x * sx, y * sy];
-}
 
 // Cached roundings, as upstream.
 const cornerRound15 = new CornerRounding(Math.fround(0.15));

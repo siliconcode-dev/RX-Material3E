@@ -1,7 +1,7 @@
 // Compares the TypeScript port against output from Google's real Kotlin
 // graphics-shapes code (scripts/shapes-golden/Golden.kt). Every case here
-// must match one there; tolerance is the library's own 1e-4, which covers
-// Kotlin's 32-bit floats against JavaScript's 64-bit numbers.
+// must match one there, bit for bit: the port does Kotlin's 32-bit Float
+// math step for step.
 import {describe, expect, it} from 'vitest';
 import {
   circle,
@@ -14,6 +14,7 @@ import {
   star,
 } from '../../src/shapes/graphics/index.js';
 import golden from './golden/graphics-shapes.json';
+import {expectFloatsEqual} from './golden-utils.js';
 
 interface GoldenPolygon {
   center: [number, number];
@@ -111,27 +112,15 @@ const cases: Record<string, () => RoundedPolygon> = {
   'normalized-star5': () => star(5, {rounding: r(0.1, 0.3)}).normalized(),
   'normalized-pill': () => pill({width: 3, height: 1}).normalized(),
   'transformed-hexagon': () =>
+    // The same Float steps as the Kotlin lambda.
     RoundedPolygon.fromNumVertices(6, {rounding: r(0.25, 0.5)}).transformed((x, y) => [
-      x * 2 + y * 0.5 + 3,
-      y * 1.5 - 1,
+      Math.fround(Math.fround(Math.fround(x * 2) + Math.fround(y * 0.5)) + 3),
+      Math.fround(Math.fround(y * 1.5) - 1),
     ]),
   empty: () => RoundedPolygon.fromNumVertices(6, {radius: 0, rounding: r(0.1, 0)}),
 };
 
-const Epsilon = 1e-4;
-
-function expectNumbersClose(actual: readonly number[], expected: readonly number[], label: string) {
-  expect(actual.length, `${label} length`).toBe(expected.length);
-  actual.forEach((value, i) => {
-    const want = expected[i];
-    // Bounds may start from Kotlin's Float.MIN_VALUE (1.4e-45); JavaScript's is 5e-324.
-    const tolerance = Math.max(Epsilon, Math.abs(want) * 1e-5);
-    expect(
-      Math.abs(value - want),
-      `${label}[${i}]: ${value} vs. Kotlin ${want}`,
-    ).toBeLessThanOrEqual(tolerance);
-  });
-}
+const expectNumbersClose = expectFloatsEqual;
 
 describe("golden: TypeScript port vs Google's Kotlin graphics-shapes", () => {
   const data = golden as unknown as Record<string, GoldenPolygon>;
