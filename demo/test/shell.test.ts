@@ -1,4 +1,5 @@
 import {beforeAll, describe, expect, it} from 'vitest';
+import {sections} from '../pages';
 
 const root = document.documentElement;
 const byText = (text: string) =>
@@ -23,14 +24,8 @@ describe('demo shell', () => {
       '../assets/favicon.png',
     );
     const links = [...document.querySelectorAll('nav a')].map((a) => a.textContent);
-    expect(links).toEqual([
-      'Catalog',
-      'Design tokens',
-      'Theme',
-      'Typography',
-      'Elevation',
-      'Focus ring',
-    ]);
+    expect(links).toEqual(sections.flatMap((section) => section.pages.map((page) => page.title)));
+    expect(links).toContain('Ripple');
   });
 
   it('starts on the system theme and switches to dark and light', () => {

@@ -10,7 +10,7 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Steps 1 to 8 of 79 done. See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 to 9 of 79 done. See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package          | What it is                                                     | Status                            |
 | ---------------- | -------------------------------------------------------------- | --------------------------------- |
@@ -102,6 +102,18 @@ Inside your own Lit components, use `typescale('title-medium')` for the declarat
 ```
 
 Shows only for keyboard focus (`:focus-visible`), follows the control's corner radius, and springs in. Add `inward` for edge-to-edge rows, or `for="id"` to follow another element.
+
+## Ripple
+
+```html
+<button style="position: relative; color: var(--md-sys-color-on-primary)">
+  Save
+  <rx-ripple></rx-ripple>
+  <rx-focus-ring></rx-focus-ring>
+</button>
+```
+
+Hover tints the control, a press grows a ripple from the pointer (or from the center for the keyboard), using the control's text color. Set `--rx-ripple-color` to change it, `dragged` while dragging, `disabled` to turn it off.
 
 ## Theme
 

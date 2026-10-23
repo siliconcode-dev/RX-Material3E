@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ripple · RX Material 3E</title>
+    <link rel="stylesheet" href="../packages/tokens/css/fonts.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/theme.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/typescale.css" />
+    <link rel="stylesheet" href="./demo.css" />
+    <script type="module" src="./shell.ts"></script>
+    <script type="module" src="./ripple.ts"></script>
+    <style>
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+        padding: 16px 8px;
+      }
+      /* Plain stand-ins until the real components exist. */
+      .tap {
+        position: relative;
+        border: none;
+        font: inherit;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .pill {
+        min-height: 40px;
+        padding: 0 24px;
+        border-radius: var(--md-sys-shape-corner-full);
+        background: var(--md-sys-color-primary);
+        color: var(--md-sys-color-on-primary);
+      }
+      .tonal {
+        background: var(--md-sys-color-secondary-container);
+        color: var(--md-sys-color-on-secondary-container);
+      }
+      .text {
+        background: transparent;
+        color: var(--md-sys-color-primary);
+      }
+      .icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: transparent;
+        color: var(--md-sys-color-on-surface-variant);
+        font-size: 22px;
+      }
+      .card {
+        width: min(100%, 320px);
+        min-height: 160px;
+        padding: 16px;
+        border-radius: var(--md-sys-shape-corner-medium);
+        background: var(--md-sys-color-surface-container-highest);
+        color: var(--md-sys-color-on-surface);
+        text-align: start;
+      }
+      .list {
+        max-width: 420px;
+        padding: 8px 0;
+        border-radius: var(--md-sys-shape-corner-large);
+        background: var(--md-sys-color-surface-container);
+        overflow: hidden;
+      }
+      .item {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        min-height: 56px;
+        padding: 0 16px;
+        background: transparent;
+        color: var(--md-sys-color-on-surface);
+        text-align: start;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>State layer and ripple</h1>
+    <p>
+      Hover tints the surface; pressing grows a ripple from your finger. The ripple's color comes
+      from the control's content color. Every control here also has a focus ring for the keyboard.
+    </p>
+    <div class="controls">
+      <label class="rx-typescale-label-large"
+        ><input type="checkbox" id="slow" /> Slow motion (5×)</label
+      >
+    </div>
+
+    <h2>Buttons</h2>
+    <div class="row">
+      <button class="tap pill">Filled</button>
+      <button class="tap pill tonal">Tonal</button>
+      <button class="tap pill text">Text</button>
+      <button class="tap icon" aria-label="Favourite">♥</button>
+    </div>
+
+    <h2>Card</h2>
+    <div class="row">
+      <button class="tap card">
+        <span class="rx-typescale-title-medium">Tap anywhere</span><br />
+        <span class="rx-typescale-body-medium"
+          >On a large surface the ripple starts where you press and drifts to the middle as it
+          grows.</span
+        >
+      </button>
+    </div>
+
+    <h2>List</h2>
+    <div class="list">
+      <button class="tap item">Inbox</button>
+      <button class="tap item">Starred</button>
+      <button class="tap item">Sent</button>
+    </div>
+  </body>
+</html>

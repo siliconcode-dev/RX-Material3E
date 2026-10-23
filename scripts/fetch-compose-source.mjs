@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Sparse-clones the Compose Material3 and graphics-shapes sources into .cache/androidx
+// Sparse-clones the Compose Material3, material3-ripple and graphics-shapes sources into .cache/androidx
 // so `npm run tokens` can regenerate packages/tokens. Pass a ref to pin a commit.
 
 import {execFileSync} from 'node:child_process';
@@ -31,5 +31,6 @@ git(
   'sparse-checkout',
   'set',
   'compose/material3/material3/src/commonMain',
+  'compose/material3/material3-ripple/src/commonMain',
   'graphics/graphics-shapes/src/commonMain',
 );

@@ -34,7 +34,7 @@ Status: `☐` not started, `◐` in progress, `☑` done.
 | 6    | Typography: typescale classes, emphasized styles                                   | ☑      |
 | 7    | Elevation: shadows for levels 0 to 5                                               | ☑      |
 | 8    | Focus ring                                                                         | ☑      |
-| 9    | State layer and ripple                                                             | ☐      |
+| 9    | State layer and ripple                                                             | ☑      |
 | 10   | Icon: Material Symbols font and SVG slot                                           | ☐      |
 | 11   | Surface                                                                            | ☐      |
 | 12   | Shapes 1: port `graphics-shapes` (RoundedPolygon) to TypeScript                    | ☐      |
@@ -145,6 +145,7 @@ Status: `☐` not started, `◐` in progress, `☑` done.
 - Theme: `@material/material-color-utilities` 0.4.0 builds schemes. Default spec is 2025 (M3 Expressive); 2021 is available. The library's imports omit file extensions, so it needs a bundler (Vite, webpack, esbuild); it does not load as raw ES modules in a browser.
 - Elevation: `--rx-elevation` is a registered, non-inheriting `<length>` taking the Compose dp values directly; the M3 key + ambient shadow pair is computed from it in CSS, so it animates between levels. Shadows only; tonal elevation is covered by the surface-container color roles, as in current Compose.
 - Focus ring: outward by default (M3 web spec: 3dp `secondary`, 2dp offset); `inward` is Compose's InsetFocusRing (2dp `secondary` over a 3dp `on-secondary` band). Springs in with fast spatial, out with fast effects, as in `material3-ripple`. Shown only for `:focus-visible`.
+- Ripple: timings and geometry from `material3-ripple` (75ms fade in, 225ms fast-out-slow-in grow from 30% of the longest side to the surface plus 10dp, center drifting to the middle, 150ms fade out after both the grow and the press end). State layer: hover 8%, dragged 16%; focus tint is off by default because components use `<rx-focus-ring>`.
 - Every element must upgrade cleanly when it is already in the page before the library loads; `test/upgrade.test.ts` checks all of them (add each new tag there).
 - Dependency versions are normally at least two weeks old. Security fixes are the exception (Vitest 5.0.5 fixes GHSA-p458-7748-mcp3).
 - Distribution: npm. A shadcn-style registry may be added after the alpha.
