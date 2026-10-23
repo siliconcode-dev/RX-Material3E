@@ -400,6 +400,15 @@ writeFileSync(
     `@import url('https://fonts.googleapis.com/css2?${googleFamilies.map((f) => `family=${f}`).join('&')}&display=swap');\n`,
 );
 
+// Optional icon font for <rx-icon>: Material Symbols Rounded with every
+// axis. It is large (about 5 MB); apps that know their icons should load it
+// from Google Fonts with &icon_names=home,search,... instead.
+writeFileSync(
+  join(outDir, 'css/icons.css'),
+  header('Optional: loads the full Material Symbols Rounded font (about 5 MB) for <rx-icon>.') +
+    "@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block');\n",
+);
+
 writeFileSync(
   join(outDir, 'css/theme.css'),
   header(

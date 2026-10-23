@@ -10,7 +10,7 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Steps 1 to 9 of 79 done. See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 to 10 of 79 done. Live demo: https://rx-material3e.ashfaqizop.workers.dev See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package          | What it is                                                     | Status                            |
 | ---------------- | -------------------------------------------------------------- | --------------------------------- |
@@ -114,6 +114,27 @@ Shows only for keyboard focus (`:focus-visible`), follows the control's corner r
 ```
 
 Hover tints the control, a press grows a ripple from the pointer (or from the center for the keyboard), using the control's text color. Set `--rx-ripple-color` to change it, `dragged` while dragging, `disabled` to turn it off.
+
+## Icons
+
+```html
+<rx-icon>home</rx-icon>
+<rx-icon filled label="Favourite">favorite</rx-icon>
+<rx-icon><svg viewBox="0 0 24 24">...</svg></rx-icon>
+```
+
+Any [Material Symbols](https://fonts.google.com/icons) name, or your own SVG. 24dp and the surrounding text color by default; `variant` picks rounded (default), outlined or sharp; `--rx-icon-size`, `--rx-icon-weight`, `--rx-icon-grade` and `--rx-icon-optical-size` tune it; `flip-rtl` mirrors arrows in right-to-left pages. Without a `label` the icon is hidden from screen readers.
+
+Load the font yourself. To keep it small, ask Google Fonts for just your icons:
+
+```html
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=favorite,home,search&display=block"
+/>
+```
+
+`@rx-m3e/tokens/icons.css` loads every icon instead (about 5 MB).
 
 ## Theme
 

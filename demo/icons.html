@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Icons · RX Material 3E</title>
+    <link rel="stylesheet" href="../packages/tokens/css/fonts.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/theme.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/typescale.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block"
+    />
+    <link rel="stylesheet" href="../packages/tokens/css/icons.css" />
+    <link rel="stylesheet" href="./demo.css" />
+    <script type="module" src="./shell.ts"></script>
+    <script type="module" src="./icons.ts"></script>
+    <style>
+      .icon-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px 24px;
+        align-items: end;
+        padding: 16px;
+        border-radius: var(--md-sys-shape-corner-large);
+        background: var(--md-sys-color-surface-container);
+      }
+      .icon-controls label {
+        display: grid;
+        gap: 4px;
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      .icon-controls select,
+      .icon-controls input[type='text'] {
+        min-height: 40px;
+        padding: 0 12px;
+        border: 1px solid var(--md-sys-color-outline);
+        border-radius: var(--md-sys-shape-corner-small);
+        background: var(--md-sys-color-surface);
+        color: var(--md-sys-color-on-surface);
+        font: inherit;
+      }
+      .icon-controls input[type='range'] {
+        accent-color: var(--md-sys-color-primary);
+      }
+      .icon-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+        gap: 8px;
+        padding: 16px 0;
+      }
+      .icon-cell {
+        display: grid;
+        justify-items: center;
+        gap: 8px;
+        padding: 16px 8px;
+        border-radius: var(--md-sys-shape-corner-medium);
+        background: var(--md-sys-color-surface-container-low);
+        color: var(--md-sys-color-on-surface);
+        text-align: center;
+        overflow-wrap: anywhere;
+      }
+      .icon-cell small {
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      .examples {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        align-items: center;
+      }
+      .examples > div {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+      .primary {
+        color: var(--md-sys-color-primary);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Icons</h1>
+    <p>
+      <code>&lt;rx-icon&gt;</code> shows any of the 3,000+ Material Symbols by name, or your own
+      SVG. Like Compose's <code>Icon</code> it is 24dp and takes the surrounding text color.
+    </p>
+
+    <form class="icon-controls" id="icon-controls">
+      <label class="rx-typescale-label-large">
+        Try a name
+        <input type="text" name="custom" value="rocket_launch" spellcheck="false" />
+      </label>
+      <label class="rx-typescale-label-large">
+        Style
+        <select name="variant">
+          <option value="rounded" selected>Rounded</option>
+          <option value="outlined">Outlined</option>
+          <option value="sharp">Sharp</option>
+        </select>
+      </label>
+      <label class="rx-typescale-label-large"
+        ><span><input type="checkbox" name="filled" /> Filled</span></label
+      >
+      <label class="rx-typescale-label-large">
+        <span>Weight <output name="weightOut">400</output></span>
+        <input type="range" name="weight" min="100" max="700" step="100" value="400" />
+      </label>
+      <label class="rx-typescale-label-large">
+        <span>Grade <output name="gradeOut">0</output></span>
+        <input type="range" name="grade" min="-25" max="200" step="25" value="0" />
+      </label>
+      <label class="rx-typescale-label-large">
+        <span>Size <output name="sizeOut">24</output>px</span>
+        <input type="range" name="size" min="20" max="48" step="4" value="24" />
+      </label>
+    </form>
+
+    <div class="icon-grid" id="icon-grid"></div>
+
+    <h2>More</h2>
+    <div class="examples">
+      <div>
+        <rx-icon class="primary" label="Your own SVG"
+          ><svg viewBox="0 0 24 24">
+            <path d="M12 2 2 22h20L12 2Zm0 5 6.5 13h-13L12 7Z" /></svg
+        ></rx-icon>
+        <span class="rx-typescale-body-medium">Your own SVG, tinted like the rest</span>
+      </div>
+      <div>
+        <rx-icon flip-rtl>arrow_back</rx-icon><rx-icon flip-rtl>send</rx-icon>
+        <span class="rx-typescale-body-medium">
+          <code>flip-rtl</code> mirrors these in right to left (switch LTR/RTL at the top)
+        </span>
+      </div>
+    </div>
+  </body>
+</html>

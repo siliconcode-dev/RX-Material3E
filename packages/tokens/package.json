@@ -11,6 +11,7 @@
   "exports": {
     "./theme.css": "./css/theme.css",
     "./fonts.css": "./css/fonts.css",
+    "./icons.css": "./css/icons.css",
     "./typeface.css": "./css/typeface.css",
     "./typescale.css": "./css/typescale.css",
     "./ref.css": "./css/ref.css",
