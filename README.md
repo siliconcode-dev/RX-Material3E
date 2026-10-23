@@ -138,8 +138,8 @@ Styles: `tonal-spot` (default), `neutral`, `vibrant`, `expressive`, `fidelity`, 
 ```sh
 npm install
 npm run dev           # demo site at http://localhost:5173/demo/
-npm run build         # compiles packages/web to dist/
-npm run build:site    # builds the demo site as static files in dist-site/
+npm run build         # compiles packages/web to dist/ and the demo site to dist-site/
+npm run build:site    # only the demo site
 npm test              # browser tests (Vitest + Playwright, headless Chromium)
 npm run lint          # ESLint with the Lit and web component rules
 npm run format        # Prettier
@@ -150,9 +150,14 @@ The demo site (`demo/`) has a catalog page read straight from COMPONENTS.md, plu
 
 ### Hosting the demo site
 
-`npm run build:site` writes a static site to `dist-site/`, with every demo page at the root. On Cloudflare Pages use build command `npm run build:site`, output directory `dist-site`, Node 22 (from `.node-version`).
+`npm run build` also writes the demo site to `dist-site/` as static files, with every page at the root.
 
-GitHub Actions runs lint, format check, type check, both builds and tests on every push and pull request.
+- Cloudflare Workers: build command `npm run build`, deploy command `npx wrangler deploy` (reads `wrangler.jsonc`).
+- Cloudflare Pages or any static host: build command `npm run build`, output directory `dist-site`.
+
+Node 22 comes from `.node-version`.
+
+GitHub Actions runs lint, format check, type check, build and tests on every push and pull request.
 
 Components are Lit elements written in TypeScript. They use Lit's `experimentalDecorators` mode (the same mode `@material/web` uses), because the dev server does not yet compile standard decorators.
 

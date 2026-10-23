@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "npm run build --workspace @rx-m3e/web",
+    "build": "npm run build --workspace @rx-m3e/web && npm run build:site",
     "tokens:fetch": "node scripts/fetch-compose-source.mjs",
     "tokens": "node scripts/extract-compose-tokens.mjs .cache/androidx/compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/tokens \"$(git -C .cache/androidx rev-parse HEAD)\"",
     "test": "vitest run",

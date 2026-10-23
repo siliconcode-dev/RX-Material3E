@@ -1,0 +1,9 @@
+// Cloudflare Workers static-assets config for the demo site.
+// `npm run build` writes the site to dist-site/; `npx wrangler deploy` publishes it.
+{
+  "name": "rx-material3e",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist-site",
+  },
+}
