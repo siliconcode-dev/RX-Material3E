@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Focus ring · RX Material 3E</title>
+    <link rel="stylesheet" href="../packages/tokens/css/fonts.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/theme.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/typescale.css" />
+    <link rel="stylesheet" href="./demo.css" />
+    <script type="module" src="./shell.ts"></script>
+    <script type="module" src="../packages/web/src/focus/focus-ring.ts"></script>
+    <style>
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+        padding: 16px 8px;
+      }
+      /* Plain stand-ins until the real components exist. */
+      .pill {
+        position: relative;
+        min-height: 40px;
+        padding: 0 24px;
+        border: none;
+        border-radius: var(--md-sys-shape-corner-full);
+        background: var(--md-sys-color-primary);
+        color: var(--md-sys-color-on-primary);
+        font: inherit;
+        cursor: pointer;
+      }
+      .pill.tonal {
+        background: var(--md-sys-color-secondary-container);
+        color: var(--md-sys-color-on-secondary-container);
+      }
+      .square {
+        position: relative;
+        width: 56px;
+        height: 56px;
+        border: none;
+        border-radius: var(--md-sys-shape-corner-large);
+        background: var(--md-sys-color-tertiary-container);
+        color: var(--md-sys-color-on-tertiary-container);
+        font-size: 24px;
+        cursor: pointer;
+      }
+      .list {
+        max-width: 420px;
+        padding: 8px 0;
+        border-radius: var(--md-sys-shape-corner-large);
+        background: var(--md-sys-color-surface-container);
+      }
+      .item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        min-height: 56px;
+        padding: 0 16px;
+        outline: none;
+        cursor: pointer;
+      }
+      .field {
+        position: relative;
+        display: inline-block;
+        border-radius: var(--md-sys-shape-corner-extra-small);
+      }
+      .field input {
+        min-height: 56px;
+        width: 260px;
+        padding: 0 16px;
+        border: 1px solid var(--md-sys-color-outline);
+        border-radius: inherit;
+        background: transparent;
+        color: var(--md-sys-color-on-surface);
+        font: inherit;
+        outline: none;
+      }
+      .hint {
+        padding: 12px 16px;
+        border-radius: var(--md-sys-shape-corner-medium);
+        background: var(--md-sys-color-secondary-container);
+        color: var(--md-sys-color-on-secondary-container);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Focus ring</h1>
+    <p class="hint rx-typescale-body-large">
+      Press <kbd>Tab</kbd> to move through the controls below. Clicking doesn't show the ring; only
+      keyboard focus does.
+    </p>
+
+    <h2>Outward (default)</h2>
+    <p>
+      The M3 web ring: 3dp in <code>secondary</code>, 2dp outside the control, following its shape.
+    </p>
+    <div class="row">
+      <button class="pill">Save<rx-focus-ring></rx-focus-ring></button>
+      <button class="pill tonal">Cancel<rx-focus-ring></rx-focus-ring></button>
+      <button class="square" aria-label="Add">+<rx-focus-ring></rx-focus-ring></button>
+      <span class="field">
+        <input id="name" placeholder="Name" aria-label="Name" />
+        <rx-focus-ring for="name"></rx-focus-ring>
+      </span>
+    </div>
+
+    <h2>Inward</h2>
+    <p>
+      Compose's inset ring, for edge-to-edge rows: a 2dp <code>secondary</code> ring over a
+      contrasting <code>on-secondary</code> band, inside the edge.
+    </p>
+    <div class="list" role="listbox" aria-label="Fruit">
+      <div class="item" role="option" tabindex="0">Apple<rx-focus-ring inward></rx-focus-ring></div>
+      <div class="item" role="option" tabindex="0">
+        Banana<rx-focus-ring inward></rx-focus-ring>
+      </div>
+      <div class="item" role="option" tabindex="0">Mango<rx-focus-ring inward></rx-focus-ring></div>
+    </div>
+  </body>
+</html>

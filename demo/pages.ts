@@ -23,6 +23,7 @@ export const sections: DemoSection[] = [
       {title: 'Theme', href: 'theme.html'},
       {title: 'Typography', href: 'typography.html'},
       {title: 'Elevation', href: 'elevation.html'},
+      {title: 'Focus ring', href: 'focus.html'},
     ],
   },
 ];

@@ -3,3 +3,4 @@
 export * from './theme/index.js';
 export * from './typography/index.js';
 export * from './elevation/index.js';
+export * from './focus/index.js';

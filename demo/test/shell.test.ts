@@ -23,7 +23,14 @@ describe('demo shell', () => {
       '../assets/favicon.png',
     );
     const links = [...document.querySelectorAll('nav a')].map((a) => a.textContent);
-    expect(links).toEqual(['Catalog', 'Design tokens', 'Theme', 'Typography', 'Elevation']);
+    expect(links).toEqual([
+      'Catalog',
+      'Design tokens',
+      'Theme',
+      'Typography',
+      'Elevation',
+      'Focus ring',
+    ]);
   });
 
   it('starts on the system theme and switches to dark and light', () => {
