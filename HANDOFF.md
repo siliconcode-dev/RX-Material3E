@@ -6,11 +6,11 @@ all decisions) and COMPONENTS.md (the catalog).
 
 ## Where things stand
 
-- **Steps 1 to 22 of 79 are done**, committed and pushed, CI green.
+- **Steps 1 to 23 of 79 are done**, committed and pushed, CI green.
   Phase 0 (groundwork) and Phase 1 (foundations) are finished; Phase 2
   (actions) is under way: step 18 (buttons), step 19 (button sizes, square
   shape, press morph), step 20 (toggle button), step 21 (icon button), step 22 (icon button
-  sizes and widths).
+  sizes and widths), step 23 (button group, without the overflow menu).
 - Repository: **https://github.com/siliconcode-dev/RX-Material3E** (the
   owner's new account; the old `siliconxcode2` account is lost). `gh` is
   logged in as `siliconcode-dev`; the clone has it as `origin` and the old
@@ -21,12 +21,12 @@ all decisions) and COMPONENTS.md (the catalog).
 - Demo site: Vercel builds every push (`vercel.json`: `npm run build`,
   output `dist-site`, clean URLs, so pages have no `.html`, e.g. `/buttons`).
   The old Cloudflare Workers URL in the README is from the lost account.
-- **Next: step 23**, button group: standard. Wait for the owner to say
-  "Go ahead with step 23".
+- **Next: step 24**, button group: connected. Wait for the owner to say
+  "Go ahead with step 24".
 
 When the new session starts, after reading these notes, tell the owner:
 
-> Ready for step 23 (button group) when you are.
+> Ready for step 24 (connected button group) when you are.
 
 ## The owner's machine (Windows)
 
@@ -162,13 +162,18 @@ regenerating from a clean setup gives identical files.
 - npm publishing at step 79 (needs the owner's npm account); a shadcn-style
   registry may come later.
 
-## Notes for step 23 (button group)
+## Notes for step 24 (connected button group)
 
-Not read yet: read upstream first, as always. Starting points:
-`ButtonGroup.kt` (ButtonGroup, ButtonGroupDefaults, ButtonGroupScope and its
-`animateWidth` press interaction, where a pressed button grows and its
-neighbours shrink) and the tokens ButtonGroupSmallTokens and
-ConnectedButtonGroupSmallTokens (connected groups are step 24). It lays out
-rx-button, rx-toggle-button and rx-icon-button children; check how the
-width animation is driven (likely an Animatable per item on a spring) and how
-overflow works. `PressInteractionController` gives each child's press.
+Read in step 23 (read again before coding): connected groups are a
+ButtonGroup with ButtonGroupDefaults.ConnectedSpaceBetween (2dp,
+ConnectedButtonGroupSmallTokens.BetweenSpace) and toggle buttons whose shapes
+come from connectedLeadingButtonShapes / connectedMiddleButtonShapes /
+connectedTrailingButtonShapes (full outer corners, InnerCornerCornerSize
+inner corners, PressedInnerCornerCornerSize pressed, connectedButtonCheckedShape
+= CornerFull checked). See SingleSelectConnectedButtonGroupSample and
+MultiSelectConnectedButtonGroupSample in ButtonGroupSamples.kt (single select
+uses Role.RadioButton semantics). These shapes have different start and end
+corners: check that InteractionShapeController's per-corner morph (logical
+corners) and CSS radius scaling match Compose's createOutline, which scales
+the start pair and the end pair separately. The overflow menu is deferred to
+step 58 (menus).

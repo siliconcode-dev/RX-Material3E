@@ -329,7 +329,8 @@ export class RxIconButton extends FormAssociated(LitElement) {
         display: inline-grid;
         place-items: center;
         box-sizing: border-box;
-        width: var(--_width);
+        /* In a button group: the width the group gives it. */
+        width: var(--rx-button-group-width, var(--_width));
         height: var(--_height);
         border-radius: var(--_shape);
         background: var(--_off-container);

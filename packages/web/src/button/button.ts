@@ -331,12 +331,20 @@ export class RxButton extends FormAssociated(LitElement) {
         /*
          * ButtonDefaults.MinWidth, and MinHeight or the size's height
          * (heightIn sets a minimum height, so defaultMinSize then only
-         * applies its width).
+         * applies its width). In a button group the container fills the
+         * width the group gives it (--rx-button-group-width), and may shrink
+         * below the minimum while a neighbour grows.
          */
-        min-width: 58px;
+        width: var(--rx-button-group-width, auto);
+        min-width: var(--rx-button-group-min-width, 58px);
         min-height: var(--_height);
         padding-block: var(--_padding-block);
-        padding-inline: var(--_padding-start) var(--_padding-end);
+        /*
+         * A button group squeezing this one caps the padding at half its
+         * width, as Compose's padding gives way under tight constraints.
+         */
+        padding-inline: min(var(--_padding-start), var(--rx-button-group-max-padding, 9999px))
+          min(var(--_padding-end), var(--rx-button-group-max-padding, 9999px));
         border-radius: var(--_shape);
         background: var(--_container);
         color: var(--_content);

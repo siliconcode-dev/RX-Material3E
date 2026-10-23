@@ -30,6 +30,11 @@ export {
   type InteractionElevations,
 } from './interaction-elevation.js';
 export {InteractionShapeController, type InteractionShapeOptions} from './interaction-shape.js';
-export {PressInteractionController, type PressInteractionOptions} from './press-interaction.js';
+export {
+  PressInteractionController,
+  trackPress,
+  type PressInteractionOptions,
+  type PressTracker,
+} from './press-interaction.js';
 export {RovingTabindexController, type RovingTabindexOptions} from './roving-tabindex.js';
 export {MinimumInteractiveComponentSize, minimumInteractiveComponentSize} from './touch-target.js';

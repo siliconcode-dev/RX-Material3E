@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Button groups · RX Material 3E</title>
+    <link rel="stylesheet" href="../packages/tokens/css/fonts.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/theme.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/typescale.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/icons.css" />
+    <link rel="stylesheet" href="./demo.css" />
+    <script type="module" src="./shell.ts"></script>
+    <script type="module" src="./button-groups.ts"></script>
+    <style>
+      .stack {
+        display: grid;
+        gap: 16px;
+        justify-items: start;
+        overflow-x: auto;
+        padding: 8px 0;
+      }
+      .wide {
+        width: min(100%, 480px);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Button groups</h1>
+    <p>
+      Compose's <code>ButtonGroup</code>, ported from <code>ButtonGroup.kt</code>: buttons, toggle
+      buttons and icon buttons in a row, 12dp apart. Press and hold one: it grows into its
+      neighbours on the fast spatial spring and settles back when you let go. Each button keeps its
+      own width; icon buttons fill their 48dp touch target, as in Compose.
+    </p>
+
+    <h2>Buttons</h2>
+    <div class="stack">
+      <rx-button-group>
+        <rx-button type="button">Day</rx-button>
+        <rx-button type="button" variant="tonal">Week</rx-button>
+        <rx-button type="button" variant="tonal">Month</rx-button>
+        <rx-button type="button" variant="tonal">Year</rx-button>
+      </rx-button-group>
+      <rx-button-group>
+        <rx-button type="button" variant="outlined"
+          ><rx-icon slot="icon">undo</rx-icon>Undo</rx-button
+        >
+        <rx-button type="button" variant="outlined"
+          ><rx-icon slot="icon">redo</rx-icon>Redo</rx-button
+        >
+        <rx-button type="button"><rx-icon slot="icon">save</rx-icon>Save</rx-button>
+      </rx-button-group>
+    </div>
+
+    <h2>Toggles and icon buttons</h2>
+    <div class="stack">
+      <rx-button-group>
+        <rx-toggle-button checked><rx-icon slot="icon">format_bold</rx-icon>Bold</rx-toggle-button>
+        <rx-toggle-button><rx-icon slot="icon">format_italic</rx-icon>Italic</rx-toggle-button>
+        <rx-toggle-button
+          ><rx-icon slot="icon">format_underlined</rx-icon>Underline</rx-toggle-button
+        >
+      </rx-button-group>
+      <rx-button-group>
+        <rx-icon-button variant="tonal" type="button"
+          ><rx-icon label="Previous">skip_previous</rx-icon></rx-icon-button
+        >
+        <rx-icon-button variant="filled" type="button" size="m" width="wide"
+          ><rx-icon label="Play">play_arrow</rx-icon></rx-icon-button
+        >
+        <rx-icon-button variant="tonal" type="button"
+          ><rx-icon label="Next">skip_next</rx-icon></rx-icon-button
+        >
+      </rx-button-group>
+    </div>
+
+    <h2>Sharing the width</h2>
+    <p>
+      Give items <code>flex: 1</code> (Compose's <code>weight</code>) and the group a width: the
+      free space is shared out. Pressing still grows the pressed one.
+    </p>
+    <div class="stack">
+      <rx-button-group class="wide" style="display: flex">
+        <rx-button type="button" variant="tonal" style="flex: 1">Cancel</rx-button>
+        <rx-button type="button" style="flex: 2">Continue</rx-button>
+      </rx-button-group>
+    </div>
+
+    <h2>Aligned and static</h2>
+    <p>
+      Items of different heights line up at the top by default; <code>align</code> centers them or
+      puts them at the bottom. <code>static</code> turns the growing off.
+    </p>
+    <div class="stack">
+      <rx-button-group align="center">
+        <rx-button type="button" size="m">Medium</rx-button>
+        <rx-button type="button" variant="tonal">Small</rx-button>
+        <rx-button type="button" variant="tonal" size="xs">Extra small</rx-button>
+      </rx-button-group>
+      <rx-button-group static>
+        <rx-button type="button" variant="outlined">Static</rx-button>
+        <rx-button type="button" variant="outlined">No</rx-button>
+        <rx-button type="button" variant="outlined">Growing</rx-button>
+      </rx-button-group>
+    </div>
+  </body>
+</html>

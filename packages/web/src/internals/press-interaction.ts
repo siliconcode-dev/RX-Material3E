@@ -30,9 +30,68 @@ const EVENTS = [
   'focusout',
 ] as const;
 
+/** The press state of one element, from its events. */
+export interface PressTracker {
+  readonly pressed: boolean;
+  /** Ends a press without a release (PressInteraction.Cancel). */
+  cancel(): void;
+  /** Stops listening (and cancels a press). */
+  dispose(): void;
+}
+
+/**
+ * Tracks whether `element` is pressed, for an element whose events you can
+ * listen to but don't own (the items of a button group).
+ */
+export function trackPress(element: HTMLElement, options: PressInteractionOptions): PressTracker {
+  let press = false;
+  const set = (value: boolean) => {
+    if (press === value) return;
+    press = value;
+    options.onChange(value);
+  };
+  const handleEvent = (event: Event) => {
+    switch (event.type) {
+      case 'pointerdown':
+        if ((event as PointerEvent).button === 0 && options.enabled()) set(true);
+        break;
+      case 'pointerup':
+      case 'pointercancel':
+      case 'pointerleave':
+      case 'keyup':
+      case 'focusout':
+        set(false);
+        break;
+      case 'keydown': {
+        const key = (event as KeyboardEvent).key;
+        if (
+          (options.keys?.() ?? [' ', 'Enter']).includes(key) &&
+          !(event as KeyboardEvent).repeat &&
+          event.target === element &&
+          options.enabled()
+        ) {
+          set(true);
+        }
+        break;
+      }
+    }
+  };
+  for (const type of EVENTS) element.addEventListener(type, handleEvent);
+  return {
+    get pressed() {
+      return press;
+    },
+    cancel: () => set(false),
+    dispose() {
+      for (const type of EVENTS) element.removeEventListener(type, handleEvent);
+      set(false);
+    },
+  };
+}
+
 /** Tracks whether the host is pressed. */
 export class PressInteractionController implements ReactiveController {
-  private press = false;
+  private tracker: PressTracker | null = null;
 
   constructor(
     private readonly host: ReactiveControllerHost & HTMLElement,
@@ -43,54 +102,20 @@ export class PressInteractionController implements ReactiveController {
 
   /** collectIsPressedAsState().value. */
   get pressed(): boolean {
-    return this.press;
+    return this.tracker?.pressed ?? false;
   }
 
   hostConnected() {
-    for (const type of EVENTS) this.host.addEventListener(type, this);
+    this.tracker = trackPress(this.host, this.options);
   }
 
   hostDisconnected() {
-    for (const type of EVENTS) this.host.removeEventListener(type, this);
-    this.set(false);
+    this.tracker?.dispose();
+    this.tracker = null;
   }
 
   hostUpdated() {
     // Disabling a pressed control cancels its press, as clickable does.
-    if (this.press && !this.options.enabled()) this.set(false);
-  }
-
-  private set(press: boolean) {
-    if (this.press === press) return;
-    this.press = press;
-    this.options.onChange(press);
-  }
-
-  /** @internal */
-  handleEvent(event: Event) {
-    switch (event.type) {
-      case 'pointerdown':
-        if ((event as PointerEvent).button === 0 && this.options.enabled()) this.set(true);
-        break;
-      case 'pointerup':
-      case 'pointercancel':
-      case 'pointerleave':
-      case 'keyup':
-      case 'focusout':
-        this.set(false);
-        break;
-      case 'keydown': {
-        const key = (event as KeyboardEvent).key;
-        if (
-          (this.options.keys?.() ?? [' ', 'Enter']).includes(key) &&
-          !(event as KeyboardEvent).repeat &&
-          event.target === this.host &&
-          this.options.enabled()
-        ) {
-          this.set(true);
-        }
-        break;
-      }
-    }
+    if (this.pressed && !this.options.enabled()) this.tracker?.cancel();
   }
 }

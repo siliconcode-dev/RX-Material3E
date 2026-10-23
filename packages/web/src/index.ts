@@ -14,3 +14,4 @@ export * from './internals/index.js';
 export * from './scrim/index.js';
 export * from './button/index.js';
 export * from './icon-button/index.js';
+export * from './button-group/index.js';

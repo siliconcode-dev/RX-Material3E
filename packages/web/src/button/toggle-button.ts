@@ -325,9 +325,16 @@ export class RxToggleButton extends FormAssociated(LitElement) {
         align-items: center;
         justify-content: center;
         box-sizing: border-box;
+        /* In a button group: the width the group gives it. */
+        width: var(--rx-button-group-width, auto);
         min-height: var(--_height);
         padding-block: var(--_padding-block);
-        padding-inline: var(--_padding-start) var(--_padding-end);
+        /*
+         * A button group squeezing this one caps the padding at half its
+         * width, as Compose's padding gives way under tight constraints.
+         */
+        padding-inline: min(var(--_padding-start), var(--rx-button-group-max-padding, 9999px))
+          min(var(--_padding-end), var(--rx-button-group-max-padding, 9999px));
         border-radius: var(--_shape);
         background: var(--_container);
         color: var(--_content);
