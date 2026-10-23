@@ -139,6 +139,7 @@ Styles: `tonal-spot` (default), `neutral`, `vibrant`, `expressive`, `fidelity`, 
 npm install
 npm run dev           # demo site at http://localhost:5173/demo/
 npm run build         # compiles packages/web to dist/
+npm run build:site    # builds the demo site as static files in dist-site/
 npm test              # browser tests (Vitest + Playwright, headless Chromium)
 npm run lint          # ESLint with the Lit and web component rules
 npm run format        # Prettier
@@ -147,7 +148,11 @@ npm run typecheck     # TypeScript, no output
 
 The demo site (`demo/`) has a catalog page read straight from COMPONENTS.md, plus a page per finished step. Its top bar switches theme (system, light, dark) and text direction (LTR, RTL). To add a page, copy the `<head>` from `demo/tokens.html` and list the page in `demo/pages.ts`.
 
-GitHub Actions runs lint, format check, type check, build and tests on every push and pull request.
+### Hosting the demo site
+
+`npm run build:site` writes a static site to `dist-site/`, with every demo page at the root. On Cloudflare Pages use build command `npm run build:site`, output directory `dist-site`, Node 22 (from `.node-version`).
+
+GitHub Actions runs lint, format check, type check, both builds and tests on every push and pull request.
 
 Components are Lit elements written in TypeScript. They use Lit's `experimentalDecorators` mode (the same mode `@material/web` uses), because the dev server does not yet compile standard decorators.
 

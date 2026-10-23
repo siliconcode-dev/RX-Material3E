@@ -4,6 +4,10 @@
 
 import {sections} from './pages';
 
+// Resolved through import.meta.url so the site build copies and fingerprints them.
+const ICON = new URL('../assets/icon.png', import.meta.url).href;
+const FAVICON = new URL('../assets/favicon.png', import.meta.url).href;
+
 type Theme = 'system' | 'light' | 'dark';
 type Dir = 'ltr' | 'rtl';
 
@@ -106,7 +110,7 @@ function buildDirSwitch() {
 
 function addFavicon() {
   if (document.querySelector('link[rel~="icon"]')) return;
-  document.head.append(el('link', {rel: 'icon', type: 'image/png', href: '../assets/favicon.png'}));
+  document.head.append(el('link', {rel: 'icon', type: 'image/png', href: FAVICON}));
 }
 
 function mount() {
@@ -133,7 +137,7 @@ function mount() {
   const title = el(
     'a',
     {className: 'demo-title', href: './index.html'},
-    el('img', {src: '../assets/icon.png', alt: '', width: 32, height: 32}),
+    el('img', {src: ICON, alt: '', width: 32, height: 32}),
     el('span', {textContent: 'RX Material 3E'}),
   );
   const header = el(

@@ -9,6 +9,7 @@ export default tseslint.config(
     ignores: [
       '**/node_modules/',
       '**/dist/',
+      'dist-site/',
       '.cache/',
       'packages/tokens/css/',
       'packages/tokens/src/',

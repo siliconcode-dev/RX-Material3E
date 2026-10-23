@@ -17,11 +17,11 @@ describe('demo shell', () => {
   it('moves page content into main and adds header and navigation', () => {
     expect(document.querySelector('main #content')).not.toBeNull();
     expect(document.querySelector('header .demo-title')?.textContent).toBe('RX Material 3E');
-    expect(document.querySelector('header .demo-title img')?.getAttribute('src')).toBe(
-      '../assets/icon.png',
+    expect(document.querySelector('header .demo-title img')?.getAttribute('src')).toMatch(
+      /assets\/icon\.png$/,
     );
-    expect(document.querySelector('link[rel="icon"]')?.getAttribute('href')).toBe(
-      '../assets/favicon.png',
+    expect(document.querySelector('link[rel="icon"]')?.getAttribute('href')).toMatch(
+      /assets\/favicon\.png$/,
     );
     const links = [...document.querySelectorAll('nav a')].map((a) => a.textContent);
     expect(links).toEqual(sections.flatMap((section) => section.pages.map((page) => page.title)));
