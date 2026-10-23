@@ -10,7 +10,7 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Steps 1 to 16 of 79 done. Live demo: https://rx-material3e.ashfaqizop.workers.dev See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 to 17 of 79 done. Live demo: https://rx-material3e.ashfaqizop.workers.dev See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package          | What it is                                                     | Status                            |
 | ---------------- | -------------------------------------------------------------- | --------------------------------- |
@@ -214,6 +214,18 @@ Each scheme has six springs: `defaultSpatial`, `fastSpatial`, `slowSpatial`, `de
 In CSS, `--md-sys-motion-spring-*-duration` and `-easing` give each spring as a `linear()` curve. Compose ends a spring once it stays within 0.01 of its target in the value's own unit, so a longer move takes longer; the tokens are timed for a 100dp move (spatial) and an alpha from 0 to 1 (effects). `data-motion-scheme="standard"` on any element switches it to the standard scheme.
 
 With reduced motion, animations jump to their end, like Android's "Remove animations". `setMotionDurationScale(5)` slows everything down, `setMotionDurationScale(0)` turns animation off and `null` goes back to following the user's setting.
+
+## Scrim
+
+```html
+<div style="position: relative">
+  ...content...
+  <rx-scrim open dismissible label="Close sheet"></rx-scrim>
+  <div role="dialog">...</div>
+</div>
+```
+
+Compose's `Scrim`: the `scrim` color at 32% over its positioned container (give it `position: fixed` for the whole window). `open` fades it in and out on the default effects spring. With `dismissible` it is a button labelled by `label` that fires `click`; like Compose's, it is not a Tab stop, so close the modal on Escape too. Set `currentAlpha` to drive it yourself, as a dragged drawer does. `ScrimLabels` has Compose's own labels.
 
 ## Building blocks
 

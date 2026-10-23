@@ -25,7 +25,7 @@ The order of the sections is the order we build in. Later components reuse earli
 | 0.8  | Surface                                                               | `rx-surface`                                              | `Surface.kt`                                        | `card/` (MaterialCardView base) | M3                    | ☑      |
 | 0.9  | Typography / Text                                                     | `rx-typescale-*` classes                                  | `Text.kt`, `Typography.kt`                          | `textview/`                     | M3 + M3E (emphasized) | ☑      |
 | 0.10 | Shapes + shape morphing (35 expressive shapes)                        | `rx-shape`, `materialShape()`, `Morph`                    | `MaterialShapes.kt`, `Shapes.kt`, `graphics-shapes` | `shape/`                        | M3E                   | ☑      |
-| 0.11 | Scrim                                                                 | `rx-scrim`                                                | `Scrim.kt`                                          | —                               | M3                    | ☐      |
+| 0.11 | Scrim                                                                 | `rx-scrim`                                                | `Scrim.kt`                                          | —                               | M3                    | ☑      |
 
 The 35 expressive shapes in `MaterialShapes.kt`: Circle, Square, Slanted, Arch, Fan, Arrow, SemiCircle, Oval, Pill, Triangle, Diamond, ClamShell, Pentagon, Gem, Sunny, VerySunny, Cookie (4, 6, 7, 9, 12 sided), Clover (4, 8 leaf), Burst, SoftBurst, Boom, SoftBoom, Flower, Puffy, PuffyDiamond, Ghostish, PixelCircle, PixelTriangle, Bun, Heart.
 

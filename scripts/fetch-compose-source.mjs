@@ -33,6 +33,12 @@ git(
   'compose/material3/material3/src/commonMain',
   'compose/material3/material3-ripple/src/commonMain',
   'compose/animation/animation-core/src/commonMain',
+  // For the spring golden build (scripts/shapes-golden): packFloats and friends.
+  'compose/ui/ui-util/src/commonMain',
+  // Compose's English strings (scrim labels and the like).
+  'compose/ui/ui/src/androidMain/res/values',
+  'compose/material3/material3/src/androidMain/res/values',
+  'compose/material3/material3/src/androidMain/kotlin/androidx/compose/material3/internal',
   'compose/ui/ui-graphics/src/commonMain/kotlin/androidx/compose/ui/graphics',
   'graphics/graphics-shapes/src/commonMain',
 );
