@@ -5,18 +5,23 @@
  * OutlinedIconToggleButton, their `shapes` overloads, IconButtonShapes,
  * IconToggleButtonShapes, shapeForInteraction and shapeByInteraction) and
  * IconButtonDefaults.kt (colors, vibrant colors, borders, shapes and
- * smallContainerSize), with Surface.kt and the tokens
- * StandardIconButtonTokens, FilledIconButtonTokens,
+ * extraSmallContainerSize to extraLargeContainerSize with
+ * IconButtonWidthOption, the size's icon sizes and shapes), with Surface.kt
+ * and the tokens StandardIconButtonTokens, FilledIconButtonTokens,
  * FilledTonalIconButtonTokens, OutlinedIconButtonTokens and
- * SmallIconButtonTokens.
+ * XSmallIconButtonTokens to XLargeIconButtonTokens.
  * Copyright 2021-2025 The Android Open Source Project. Licensed under the Apache License 2.0.
  */
 
 import filled from '@rx-m3e/tokens/js/filled-icon-button.js';
 import tonal from '@rx-m3e/tokens/js/filled-tonal-icon-button.js';
 import outlined from '@rx-m3e/tokens/js/outlined-icon-button.js';
+import large from '@rx-m3e/tokens/js/large-icon-button.js';
+import medium from '@rx-m3e/tokens/js/medium-icon-button.js';
 import small from '@rx-m3e/tokens/js/small-icon-button.js';
 import standard from '@rx-m3e/tokens/js/standard-icon-button.js';
+import xLarge from '@rx-m3e/tokens/js/x-large-icon-button.js';
+import xSmall from '@rx-m3e/tokens/js/x-small-icon-button.js';
 import {LitElement, css, html, unsafeCSS, type PropertyValues} from 'lit';
 import {customElement, property, query} from 'lit/decorators.js';
 import '../focus/focus-ring.js';
@@ -37,9 +42,62 @@ import type {RxRipple} from '../ripple/ripple.js';
  */
 export type IconButtonVariant = 'standard' | 'filled' | 'tonal' | 'outlined';
 
+/** The expressive sizes, by container height: 32, 40, 56, 96 and 136dp. */
+export type IconButtonSize = 'xs' | 's' | 'm' | 'l' | 'xl';
+
+/** IconButtonWidthOption: narrow, uniform (the default) or wide. */
+export type IconButtonWidth = 'narrow' | 'uniform' | 'wide';
+
+/** Round (the default) or square corners. */
+export type IconButtonShape = 'round' | 'square';
+
 /** `color` at `opacity`, as Color.copy(alpha). */
 const alpha = (color: string, opacity: string) =>
   unsafeCSS(`color-mix(in srgb, ${color} calc(${opacity} * 100%), transparent)`);
+
+type SizeTokens = Readonly<Record<string, string>>;
+
+const SIZES: [IconButtonSize, SizeTokens][] = [
+  ['xs', xSmall],
+  ['s', small],
+  ['m', medium],
+  ['l', large],
+  ['xl', xLarge],
+];
+
+/**
+ * Each size's container (extraSmallContainerSize to extraLargeContainerSize:
+ * the icon size plus the width option's leading and trailing space, by the
+ * container height), icon size, and shapes: round or square, the pressed
+ * shape, and the selected shape (squarer from round, round from square).
+ */
+function sizeStyles() {
+  const rules = SIZES.map(([size, t]) => {
+    const host = `:host([size='${size}'])`;
+    // Uniform is the leading space twice; LargeIconButtonTokens calls it UniformLeadingSpace.
+    const uniform = t['uniform-leading-space'] ?? t['default-leading-space'];
+    return `
+      ${host} {
+        --_height: ${t['container-height']};
+        --_icon-size: ${t['icon-size']};
+        --_width: calc(${t['icon-size']} + 2 * ${uniform});
+        --_shape: var(--rx-icon-button-shape, ${t['container-shape-round']});
+        --_pressed-shape: var(--rx-icon-button-pressed-shape, ${t['pressed-container-shape']});
+        --_checked-shape: var(--rx-icon-button-checked-shape, ${t['selected-container-shape-round']});
+      }
+      ${host.slice(0, -1)}[width='narrow']) {
+        --_width: calc(${t['icon-size']} + ${t['narrow-leading-space']} + ${t['narrow-trailing-space']});
+      }
+      ${host.slice(0, -1)}[width='wide']) {
+        --_width: calc(${t['icon-size']} + ${t['wide-leading-space']} + ${t['wide-trailing-space']});
+      }
+      ${host.slice(0, -1)}[shape='square']) {
+        --_shape: var(--rx-icon-button-shape, ${t['container-shape-square']});
+        --_checked-shape: var(--rx-icon-button-checked-shape, ${t['selected-container-shape-square']});
+      }`;
+  });
+  return unsafeCSS(rules.join('\n'));
+}
 
 /**
  * A Material 3 icon button, as Compose's IconButton family, and with
@@ -85,6 +143,15 @@ export class RxIconButton extends FormAssociated(LitElement) {
 
   /** Morph the corners when pressed and checked (the `shapes` overloads). */
   @property({type: Boolean, reflect: true}) morph = false;
+
+  /** One of the expressive sizes: extra small to extra large. Defaults to small. */
+  @property({reflect: true}) size: IconButtonSize = 's';
+
+  /** IconButtonWidthOption: the space beside the icon. Defaults to uniform (square). */
+  @property({reflect: true}) width: IconButtonWidth = 'uniform';
+
+  /** The size's round (default) or square shape. */
+  @property({reflect: true}) shape: IconButtonShape = 'round';
 
   /** The vibrant colors (iconButtonVibrantColors) for a standard or outlined icon button. */
   @property({type: Boolean, reflect: true}) vibrant = false;
@@ -256,16 +323,14 @@ export class RxIconButton extends FormAssociated(LitElement) {
         cursor: default;
       }
 
-      /* smallContainerSize(): the icon size plus the default leading space twice. */
+      /* The size's container size (see sizeStyles). */
       .button {
         position: relative;
         display: inline-grid;
         place-items: center;
         box-sizing: border-box;
-        width: calc(
-          ${unsafeCSS(small['icon-size'])} + 2 * ${unsafeCSS(small['default-leading-space'])}
-        );
-        height: ${unsafeCSS(small['container-height'])};
+        width: var(--_width);
+        height: var(--_height);
         border-radius: var(--_shape);
         background: var(--_off-container);
         color: var(--_off-content);
@@ -301,8 +366,9 @@ export class RxIconButton extends FormAssociated(LitElement) {
         border-color: transparent;
       }
 
+      /* The size's icon size (extraSmallIconSize to extraLargeIconSize). */
       ::slotted(*) {
-        --rx-icon-size: ${unsafeCSS(small['icon-size'])};
+        --rx-icon-size: var(--_icon-size);
       }
 
       @media (forced-colors: active) {
@@ -318,6 +384,7 @@ export class RxIconButton extends FormAssociated(LitElement) {
         }
       }
     `,
+    sizeStyles(),
   ];
 
   /** @internal The shape morph's state, for tests. */

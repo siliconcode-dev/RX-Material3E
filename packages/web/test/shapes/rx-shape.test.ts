@@ -3,6 +3,7 @@ import '@rx-m3e/tokens/theme.css';
 import '../../src/shapes/shape.js';
 import {setMotionDurationScale} from '../../src/motion/index.js';
 import {Morph, star} from '../../src/shapes/graphics/index.js';
+import {manualFrames} from '../helpers/manual-frames.js';
 import {
   MATERIAL_SHAPE_NAMES,
   MaterialShapes,
@@ -243,10 +244,17 @@ describe('rx-shape', () => {
         '<rx-shape id="a" shape="gem"></rx-shape><rx-shape id="b" shape="gem" style="--rx-shape-morph-stiffness: 20"></rx-shape>';
       const [a, b] = [...document.querySelectorAll('rx-shape')] as RxShape[];
       await Promise.all([a.updateComplete, b.updateComplete]);
-      a.shape = b.shape = 'bun';
-      await Promise.all([a.updateComplete, b.updateComplete]);
-      await frames(5);
-      expect(a.morphProgress!).toBeGreaterThan(b.morphProgress!);
+      // Frames from a manual clock, so both springs see the same five frames.
+      const clock = manualFrames();
+      try {
+        a.shape = b.shape = 'bun';
+        await Promise.all([a.updateComplete, b.updateComplete]);
+        clock.step(5);
+        expect(a.morphProgress!).toBeGreaterThan(0);
+        expect(a.morphProgress!).toBeGreaterThan(b.morphProgress!);
+      } finally {
+        clock.restore();
+      }
     });
   });
 });

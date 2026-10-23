@@ -10,7 +10,7 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Steps 1 to 21 of 79 done. Live demo: https://rxmaterial3e.dpdns.org/ See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 to 22 of 79 done. Live demo: https://rxmaterial3e.dpdns.org/ See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package          | What it is                                                     | Status                            |
 | ---------------- | -------------------------------------------------------------- | --------------------------------- |
@@ -258,7 +258,7 @@ Compose's four toggle buttons: `filled` (the default), `tonal`, `elevated` and `
 <rx-icon-button toggle morph><rx-icon label="Favourite">favorite</rx-icon></rx-icon-button>
 ```
 
-Compose's four icon buttons: `standard` (the default), `filled`, `tonal` and `outlined`, 40dp in a 48dp touch target. Standard and outlined icon buttons take the color of the text around them, like Compose's LocalContentColor; `vibrant` gives them fixed colors instead. `toggle` makes it a toggle (`checked`), which is a checkbox for assistive technology and forms; otherwise it is a form button like `rx-button`. `morph` makes the corners pinch in while held and, on a toggle, go squarer when on; as in Compose, a morphing standard or outlined toggle uses the vibrant colors. Give it a name with a `label` on its `rx-icon` or an `aria-label`. `--rx-icon-button-shape`, `--rx-icon-button-pressed-shape` and `--rx-icon-button-checked-shape` set other corners. Sizes and widths come in step 22.
+Compose's four icon buttons: `standard` (the default), `filled`, `tonal` and `outlined`, 40dp in a 48dp touch target. Standard and outlined icon buttons take the color of the text around them, like Compose's LocalContentColor; `vibrant` gives them fixed colors instead. `toggle` makes it a toggle (`checked`), which is a checkbox for assistive technology and forms; otherwise it is a form button like `rx-button`. `morph` makes the corners pinch in while held and, on a toggle, go squarer when on; as in Compose, a morphing standard or outlined toggle uses the vibrant colors. Give it a name with a `label` on its `rx-icon` or an `aria-label`. `size` is `xs` to `xl` (32 to 136dp tall, small by default) and sets the icon size too; `width` is `narrow`, `uniform` (square, the default) or `wide`; `shape="square"` gives the size's square corners, and with `morph` the pressed and checked corners follow the size. `--rx-icon-button-shape`, `--rx-icon-button-pressed-shape` and `--rx-icon-button-checked-shape` set other corners.
 
 ## Scrim
 

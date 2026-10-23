@@ -350,3 +350,82 @@ describe('rx-icon-button behaviour', () => {
     expect([star.checked, pin.checked]).toEqual([true, false]);
   });
 });
+
+/*
+ * The test's own copy of IconButtonDefaults' sizes (the size tokens):
+ * height, icon size, width narrow / uniform / wide, and the corners: square,
+ * pressed, selected from round (selected from square is fully round).
+ */
+const SIZES = {
+  xs: {height: 32, icon: 20, widths: [28, 32, 40], square: 12, pressed: 8, selected: 12},
+  s: {height: 40, icon: 24, widths: [32, 40, 52], square: 12, pressed: 8, selected: 12},
+  m: {height: 56, icon: 24, widths: [48, 56, 72], square: 16, pressed: 12, selected: 16},
+  l: {height: 96, icon: 32, widths: [64, 96, 128], square: 28, pressed: 16, selected: 28},
+  xl: {height: 136, icon: 40, widths: [104, 136, 184], square: 28, pressed: 16, selected: 28},
+} as const;
+const WIDTHS = ['narrow', 'uniform', 'wide'] as const;
+
+describe('rx-icon-button sizes and widths', () => {
+  it('is small and uniform by default', async () => {
+    const el = await mount('');
+    expect([el.size, el.width, el.shape]).toEqual(['s', 'uniform', 'round']);
+  });
+
+  for (const [size, want] of Object.entries(SIZES)) {
+    it(`${size}: ${want.height}dp tall, ${want.widths.join(' / ')}dp wide, a ${want.icon}dp icon`, async () => {
+      for (const [i, width] of WIDTHS.entries()) {
+        const el = await mount(`size="${size}" width="${width}"`);
+        const box = container(el).getBoundingClientRect();
+        expect([box.width, box.height], width).toEqual([want.widths[i], want.height]);
+        // At least the 48dp touch target, the container centered in it.
+        const host = el.getBoundingClientRect();
+        expect(host.width).toBe(Math.max(48, want.widths[i]));
+        expect(host.height).toBe(Math.max(48, want.height));
+        expect(box.left - host.left).toBe((host.width - box.width) / 2);
+        const icon = el.querySelector('rx-icon')!.getBoundingClientRect();
+        expect([icon.width, icon.height]).toEqual([want.icon, want.icon]);
+        expect(icon.left - box.left).toBe((want.widths[i] - want.icon) / 2);
+      }
+    });
+
+    it(`${size}: round or square, pressed ${want.pressed}dp, selected ${want.selected}dp or round`, async () => {
+      setMotionDurationScale(0);
+      const round = await mount(`size="${size}" toggle morph`);
+      expect(radius(round)).toBe(want.height / 2);
+      press(round);
+      await frames(2);
+      expect(radius(round), 'pressed').toBe(want.pressed);
+      release(round);
+      round.checked = true;
+      await round.updateComplete;
+      await frames(2);
+      expect(radius(round), 'selected from round').toBe(want.selected);
+
+      const square = await mount(`size="${size}" shape="square" toggle morph`);
+      expect(radius(square)).toBe(want.square);
+      square.checked = true;
+      await square.updateComplete;
+      await frames(2);
+      expect(radius(square), 'selected from square').toBe(want.height / 2);
+    });
+  }
+
+  it('a square narrow button turns fully round on its shorter side', async () => {
+    setMotionDurationScale(0);
+    const el = await mount('size="xl" width="narrow" shape="square" toggle morph checked');
+    await frames(2);
+    expect(radius(el)).toBe(104 / 2);
+  });
+
+  it('keeps the 1dp outline at every size (outlinedIconButtonBorder)', async () => {
+    for (const size of Object.keys(SIZES)) {
+      const el = await mount(`size="${size}" variant="outlined"`);
+      expect(getComputedStyle(container(el), '::before').borderTopWidth, size).toBe('1px');
+    }
+  });
+
+  it('a square button without morph keeps its square corners', async () => {
+    const el = await mount('size="m" shape="square"');
+    expect(radius(el)).toBe(16);
+  });
+});

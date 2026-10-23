@@ -33,8 +33,7 @@ describe('parseCatalog', () => {
       name: 'Icon button',
       elements: ['rx-icon-button'],
       gen: 'M3 + M3E',
-      status: 'progress',
-      note: expect.stringMatching(/step 22/),
+      status: 'done',
     });
     expect(byId.get('1.4')).toMatchObject({
       name: 'Button group',

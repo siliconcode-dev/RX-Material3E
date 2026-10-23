@@ -5,6 +5,7 @@ import '../src/button/toggle-button.js';
 import '../src/icon/icon.js';
 import type {RxToggleButton} from '../src/button/index.js';
 import {parseCssColor, setMotionDurationScale, type Rgba} from '../src/motion/index.js';
+import {manualFrames} from './helpers/manual-frames.js';
 
 async function mount(markup: string) {
   document.body.innerHTML = markup;
@@ -162,19 +163,21 @@ describe('rx-toggle-button outline', () => {
   it('turned off, the outline springs back in past 1dp (fast spatial bounces)', async () => {
     const el = await mount('<rx-toggle-button variant="outlined" checked>Label</rx-toggle-button>');
     expect(border(el).width).toBe(0);
-    setMotionDurationScale(4);
-    el.checked = false;
-    await el.updateComplete;
-    let widest = 0;
-    for (let i = 0; i < 60; i++) {
-      await nextFrame();
-      widest = Math.max(widest, border(el).width);
+    const clock = manualFrames();
+    try {
+      el.checked = false;
+      await el.updateComplete;
+      let widest = 0;
+      for (let i = 0; i < 60; i++) {
+        clock.step();
+        widest = Math.max(widest, border(el).width);
+      }
+      expect(widest).toBeGreaterThan(1.05);
+      expect(widest).toBeLessThan(1.15);
+      expect(border(el).width).toBe(1);
+    } finally {
+      clock.restore();
     }
-    expect(widest).toBeGreaterThan(1.05);
-    expect(widest).toBeLessThan(1.15);
-    setMotionDurationScale(0);
-    await frames(3);
-    expect(border(el).width).toBe(1);
   });
 
   it('the other variants have no border', async () => {

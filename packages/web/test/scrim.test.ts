@@ -3,6 +3,7 @@ import '@rx-m3e/tokens/theme.css';
 import '../src/scrim/scrim.js';
 import {setMotionDurationScale} from '../src/motion/index.js';
 import {ScrimLabels, type RxScrim} from '../src/scrim/index.js';
+import {manualFrames} from './helpers/manual-frames.js';
 
 async function mount(markup: string) {
   document.body.innerHTML = `<div id="box" style="position: relative; width: 300px; height: 200px">${markup}</div>`;
@@ -46,42 +47,58 @@ describe('rx-scrim', () => {
 
   it('fades in and out on the default effects spring', async () => {
     const el = await mount('<rx-scrim></rx-scrim>');
-    el.open = true;
-    await el.updateComplete;
-    const seen: number[] = [];
-    for (let i = 0; i < 12; i++) {
-      await nextFrame();
-      seen.push(opacity(el));
-    }
-    // It fades (the 0 to 1 effects spring takes 165ms): values in between,
-    // never going down (no bounce: damping 1).
-    expect(seen.some((v) => v > 0 && v < 1)).toBe(true);
-    expect([...seen].sort((a, b) => a - b)).toEqual(seen);
-    await new Promise((r) => setTimeout(r, 300));
-    expect(opacity(el)).toBe(1);
-    expect(getComputedStyle(el).visibility).toBe('visible');
+    // Frames from a manual clock, so a busy machine can't skip them.
+    const clock = manualFrames();
+    try {
+      el.open = true;
+      await el.updateComplete;
+      const seen: number[] = [];
+      for (let i = 0; i < 12; i++) {
+        clock.step();
+        seen.push(opacity(el));
+      }
+      // It fades (the 0 to 1 effects spring takes 165ms): values in between,
+      // never going down (no bounce: damping 1).
+      expect(seen.some((v) => v > 0 && v < 1)).toBe(true);
+      expect([...seen].sort((a, b) => a - b)).toEqual(seen);
+      clock.step(20);
+      await el.updateComplete;
+      expect(opacity(el)).toBe(1);
+      expect(getComputedStyle(el).visibility).toBe('visible');
 
-    el.open = false;
-    await el.updateComplete;
-    // Clicks go through at once; the fade finishes, then it hides.
-    expect(getComputedStyle(el).pointerEvents).toBe('none');
-    // Still fading out on the next frames.
-    await nextFrame();
-    expect(opacity(el)).toBeGreaterThan(0);
-    await new Promise((r) => setTimeout(r, 300));
-    expect(opacity(el)).toBe(0);
-    expect(getComputedStyle(el).visibility).toBe('hidden');
+      el.open = false;
+      await el.updateComplete;
+      // Clicks go through at once; the fade finishes, then it hides.
+      expect(getComputedStyle(el).pointerEvents).toBe('none');
+      // Still fading out on the next frames.
+      clock.step(2);
+      expect(opacity(el)).toBeGreaterThan(0);
+      clock.step(20);
+      await new Promise((r) => setTimeout(r));
+      await el.updateComplete;
+      expect(opacity(el)).toBe(0);
+      expect(getComputedStyle(el).visibility).toBe('hidden');
+    } finally {
+      clock.restore();
+    }
   });
 
   it('uses the default effects spring, not a faster one', async () => {
     // Ten times slower: default effects ends at 1650ms, fast effects at 1070ms.
+    // Frames come from a manual clock, so a busy machine can't skip them.
     setMotionDurationScale(10);
     const el = await mount('<rx-scrim></rx-scrim>');
-    el.open = true;
-    await el.updateComplete;
-    await new Promise((r) => setTimeout(r, 1300));
-    expect(opacity(el)).toBeLessThan(1);
-    expect(opacity(el)).toBeGreaterThan(0.9);
+    const clock = manualFrames();
+    try {
+      el.open = true;
+      await el.updateComplete;
+      // The first frame starts the spring; 81 more are 1296ms in.
+      clock.step(82);
+      expect(opacity(el)).toBeLessThan(1);
+      expect(opacity(el)).toBeGreaterThan(0.9);
+    } finally {
+      clock.restore();
+    }
   });
 
   it('switches at once with reduced motion', async () => {

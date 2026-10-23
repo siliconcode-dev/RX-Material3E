@@ -38,6 +38,22 @@
           display: none;
         }
       }
+      .sizes {
+        display: grid;
+        gap: 16px;
+        overflow-x: auto;
+        padding: 8px 0;
+      }
+      .sizes .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 12px;
+        align-items: center;
+      }
+      .sizes .name {
+        flex: 0 0 100%;
+        color: var(--md-sys-color-on-surface-variant);
+      }
       .bar {
         display: flex;
         flex-wrap: wrap;
@@ -92,6 +108,14 @@
       <span class="head rx-typescale-label-medium wide-only">Disabled, on</span>
       <span class="head rx-typescale-label-medium wide-only">Morph</span>
     </div>
+
+    <h2>Sizes and widths</h2>
+    <p>
+      Extra small to extra large (32 to 136dp tall), each narrow, uniform or wide, round or square.
+      The icon grows with the size. Press and toggle them: the corners pinch in when held and go
+      squarer (round ones) or round (square ones) when on.
+    </p>
+    <div class="sizes" id="sizes"></div>
 
     <h2>On colored surfaces</h2>
     <p>

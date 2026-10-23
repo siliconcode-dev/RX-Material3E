@@ -1,6 +1,6 @@
 import '../packages/web/src/icon-button/icon-button.js';
 import '../packages/web/src/icon/icon.js';
-import type {IconButtonVariant} from '../packages/web/src/icon-button/index.js';
+import type {IconButtonSize, IconButtonVariant} from '../packages/web/src/icon-button/index.js';
 
 const variants: [IconButtonVariant, string, string, string][] = [
   ['standard', 'Standard', 'IconButton', 'search'],
@@ -59,6 +59,35 @@ for (const [variant, label, compose] of variants) {
     [iconButton({variant, toggle: '', checked: '', disabled: ''}, icon, label), true],
     [iconButton({variant, toggle: '', morph: ''}, icon, label), true],
   ]);
+}
+
+const sizes: [IconButtonSize, string][] = [
+  ['xs', 'Extra small · 32dp'],
+  ['s', 'Small · 40dp (default)'],
+  ['m', 'Medium · 56dp'],
+  ['l', 'Large · 96dp'],
+  ['xl', 'Extra large · 136dp'],
+];
+const sizeRows = document.getElementById('sizes')!;
+for (const [size, name] of sizes) {
+  const row = document.createElement('div');
+  row.className = 'row';
+  const label = document.createElement('span');
+  label.className = 'name rx-typescale-label-large';
+  label.textContent = name;
+  row.append(
+    label,
+    iconButton({size, width: 'narrow', variant: 'tonal', toggle: '', morph: ''}, 'edit', 'Narrow'),
+    iconButton({size, variant: 'filled', toggle: '', morph: ''}, 'favorite', 'Uniform'),
+    iconButton({size, width: 'wide', variant: 'tonal', toggle: '', morph: ''}, 'send', 'Wide'),
+    iconButton(
+      {size, shape: 'square', variant: 'filled', toggle: '', morph: '', checked: ''},
+      'star',
+      'Square',
+    ),
+    iconButton({size, variant: 'outlined', morph: ''}, 'share', 'Outlined'),
+  );
+  sizeRows.append(row);
 }
 
 for (const id of ['bar-primary', 'bar-surface']) {

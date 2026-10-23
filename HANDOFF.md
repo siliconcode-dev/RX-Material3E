@@ -6,10 +6,11 @@ all decisions) and COMPONENTS.md (the catalog).
 
 ## Where things stand
 
-- **Steps 1 to 21 of 79 are done**, committed and pushed, CI green.
+- **Steps 1 to 22 of 79 are done**, committed and pushed, CI green.
   Phase 0 (groundwork) and Phase 1 (foundations) are finished; Phase 2
   (actions) is under way: step 18 (buttons), step 19 (button sizes, square
-  shape, press morph), step 20 (toggle button), step 21 (icon button).
+  shape, press morph), step 20 (toggle button), step 21 (icon button), step 22 (icon button
+  sizes and widths).
 - Repository: **https://github.com/siliconcode-dev/RX-Material3E** (the
   owner's new account; the old `siliconxcode2` account is lost). `gh` is
   logged in as `siliconcode-dev`; the clone has it as `origin` and the old
@@ -20,12 +21,12 @@ all decisions) and COMPONENTS.md (the catalog).
 - Demo site: Vercel builds every push (`vercel.json`: `npm run build`,
   output `dist-site`, clean URLs, so pages have no `.html`, e.g. `/buttons`).
   The old Cloudflare Workers URL in the README is from the lost account.
-- **Next: step 22**, icon button expressive sizes (XS to XL) and widths
-  (narrow, uniform, wide). Wait for the owner to say "Go ahead with step 22".
+- **Next: step 23**, button group: standard. Wait for the owner to say
+  "Go ahead with step 23".
 
 When the new session starts, after reading these notes, tell the owner:
 
-> Ready for step 22 (icon button sizes and widths) when you are.
+> Ready for step 23 (button group) when you are.
 
 ## The owner's machine (Windows)
 
@@ -161,16 +162,13 @@ regenerating from a clean setup gives identical files.
 - npm publishing at step 79 (needs the owner's npm account); a shadcn-style
   registry may come later.
 
-## Notes for step 22 (icon button sizes and widths)
+## Notes for step 23 (button group)
 
-Read in step 21 (read again before coding): IconButtonDefaults has
-extraSmallContainerSize to extraLargeContainerSize(widthOption), each the
-size's IconSize plus Narrow, Uniform (DefaultLeadingSpace twice; Large uses
-UniformLeadingSpace) or Wide leading and trailing space, by the size's
-ContainerHeight; extraSmallIconSize to extraLargeIconSize; and per size round,
-square, pressed, selected round and selected square shapes (selected round
-is squarer, selected square is round). Check the samples
-(IconButtonSamples.kt in the material3 samples folder, already in the
-sparse checkout) for how sizes combine with shapes, as for Button in step 19.
-Outline width per size: OutlinedIconButtonBorder uses SmallIconButtonTokens'
-width at every size, as Button does; confirm.
+Not read yet: read upstream first, as always. Starting points:
+`ButtonGroup.kt` (ButtonGroup, ButtonGroupDefaults, ButtonGroupScope and its
+`animateWidth` press interaction, where a pressed button grows and its
+neighbours shrink) and the tokens ButtonGroupSmallTokens and
+ConnectedButtonGroupSmallTokens (connected groups are step 24). It lays out
+rx-button, rx-toggle-button and rx-icon-button children; check how the
+width animation is driven (likely an Animatable per item on a spring) and how
+overflow works. `PressInteractionController` gives each child's press.
