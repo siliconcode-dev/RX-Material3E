@@ -36,7 +36,7 @@ Status: `☐` not started, `◐` in progress, `☑` done.
 | 8    | Focus ring                                                                         | ☑      |
 | 9    | State layer and ripple                                                             | ☑      |
 | 10   | Icon: Material Symbols font and SVG slot                                           | ☑      |
-| 11   | Surface                                                                            | ☐      |
+| 11   | Surface                                                                            | ☑      |
 | 12   | Shapes 1: port `graphics-shapes` (RoundedPolygon) to TypeScript                    | ☐      |
 | 13   | Shapes 2: the 35 expressive MaterialShapes as SVG paths and clip paths             | ☐      |
 | 14   | Shapes 3: morphing between shapes                                                  | ☐      |
@@ -148,6 +148,8 @@ Status: `☐` not started, `◐` in progress, `☑` done.
 - Ripple: timings and geometry from `material3-ripple` (75ms fade in, 225ms fast-out-slow-in grow from 30% of the longest side to the surface plus 10dp, center drifting to the middle, 150ms fade out after both the grow and the press end). State layer: hover 8%, dragged 16%; focus tint is off by default because components use `<rx-focus-ring>`.
 - Icons: Material Symbols, Rounded by default (the M3 Expressive look); Outlined and Sharp via `variant`. The full font is about 5 MB, so `@rx-m3e/tokens/icons.css` is optional and apps should prefer Google Fonts' `&icon_names=` subsets. Accessibility uses plain ARIA attributes (not ElementInternals) so checkers such as axe see it.
 - Demo site: `npm run build` also writes it to `dist-site/`; Cloudflare Workers deploys it with `wrangler.jsonc` at https://rx-material3e.ashfaqizop.workers.dev
+- Surface: color roles paired with content colors as in `ColorScheme.contentColorFor`; tonal elevation uses `surfaceColorAtElevation` and adds up through nested surfaces; `interactive` gives button semantics, ripple and focus ring. Start/end shapes use logical corners so they flip in RTL (the generated `*-start`/`*-end` shape tokens are physical; fix in the token script later).
+- Tests that check a mapping must hold their own copy of the Compose values, never import the list under test.
 - Every element must upgrade cleanly when it is already in the page before the library loads; `test/upgrade.test.ts` checks all of them (add each new tag there).
 - Dependency versions are normally at least two weeks old. Security fixes are the exception (Vitest 5.0.5 fixes GHSA-p458-7748-mcp3).
 - Distribution: npm. A shadcn-style registry may be added after the alpha.

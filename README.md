@@ -10,7 +10,7 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Steps 1 to 10 of 79 done. Live demo: https://rx-material3e.ashfaqizop.workers.dev See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 to 11 of 79 done. Live demo: https://rx-material3e.ashfaqizop.workers.dev See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package          | What it is                                                     | Status                            |
 | ---------------- | -------------------------------------------------------------- | --------------------------------- |
@@ -135,6 +135,15 @@ Load the font yourself. To keep it small, ask Google Fonts for just your icons:
 ```
 
 `@rx-m3e/tokens/icons.css` loads every icon instead (about 5 MB).
+
+## Surface
+
+```html
+<rx-surface color="secondary-container" shape="large" elevation="1">...</rx-surface>
+<rx-surface interactive color="surface-container-highest" shape="medium">Open</rx-surface>
+```
+
+Compose's `Surface`: a `color` role with its matching content color, a `shape` token, `elevation` (shadow, 0 to 5), `tonal-elevation` (tint, 0 to 5) and a border through `--rx-surface-border`. Content is clipped to the shape. `interactive` makes it a button with ripple and focus ring; `selected` and `disabled` work with it.
 
 ## Theme
 

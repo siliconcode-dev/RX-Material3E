@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Surface · RX Material 3E</title>
+    <link rel="stylesheet" href="../packages/tokens/css/fonts.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/theme.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/typescale.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/icons.css" />
+    <link rel="stylesheet" href="./demo.css" />
+    <script type="module" src="./shell.ts"></script>
+    <script type="module" src="./surface.ts"></script>
+    <style>
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 16px;
+        padding: 8px 0 16px;
+      }
+      .gallery rx-surface {
+        min-height: 88px;
+      }
+      .pad {
+        display: grid;
+        gap: 4px;
+        padding: 12px;
+      }
+      .pad small {
+        opacity: 0.8;
+      }
+      .wide {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .on-canvas {
+        padding: 24px 16px;
+        border-radius: var(--md-sys-shape-corner-large);
+        background: var(--md-sys-color-surface);
+        outline: 1px dashed var(--md-sys-color-outline-variant);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Surface</h1>
+    <p>
+      <code>&lt;rx-surface&gt;</code> is Compose's <code>Surface</code>: the container cards,
+      sheets, dialogs and menus sit on. Pick a background role and the matching content color comes
+      with it.
+    </p>
+
+    <h2>Color roles</h2>
+    <div class="gallery" id="colors"></div>
+
+    <h2>Shapes</h2>
+    <div class="gallery" id="shapes"></div>
+
+    <h2>Elevation</h2>
+    <p>
+      Shadow elevation draws a shadow. Tonal elevation is Compose's older way to show height by
+      tinting a <code>surface</code> colored surface; it adds up when surfaces are nested.
+    </p>
+    <div class="on-canvas">
+      <div class="gallery" id="elevation"></div>
+    </div>
+
+    <h2>Border and interaction</h2>
+    <div class="gallery wide">
+      <rx-surface
+        shape="medium"
+        style="--rx-surface-border: 1px solid var(--md-sys-color-outline-variant)"
+      >
+        <div class="pad">
+          <span class="rx-typescale-title-medium">Bordered</span>
+          <small class="rx-typescale-body-small">1dp outline-variant, drawn inside</small>
+        </div>
+      </rx-surface>
+      <rx-surface interactive color="surface-container-highest" shape="medium" id="clickable">
+        <div class="pad">
+          <span class="rx-typescale-title-medium">Clickable</span>
+          <small class="rx-typescale-body-small" id="clicks">Clicked 0 times</small>
+        </div>
+      </rx-surface>
+      <rx-surface interactive color="secondary-container" shape="large" id="toggle">
+        <div class="pad">
+          <span class="row rx-typescale-title-medium"
+            ><rx-icon id="toggle-icon">bookmark</rx-icon> Selectable</span
+          >
+          <small class="rx-typescale-body-small">Click to toggle selected</small>
+        </div>
+      </rx-surface>
+      <rx-surface interactive disabled color="surface-container-highest" shape="medium">
+        <div class="pad" style="opacity: 0.38">
+          <span class="rx-typescale-title-medium">Disabled</span>
+          <small class="rx-typescale-body-small">Not clickable or focusable</small>
+        </div>
+      </rx-surface>
+    </div>
+  </body>
+</html>

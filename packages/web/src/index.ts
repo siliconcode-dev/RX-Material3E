@@ -6,3 +6,4 @@ export * from './elevation/index.js';
 export * from './focus/index.js';
 export * from './ripple/index.js';
 export * from './icon/index.js';
+export * from './surface/index.js';

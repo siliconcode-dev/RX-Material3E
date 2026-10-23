@@ -5,7 +5,7 @@
 // Each test file runs in its own page, so nothing here is defined yet.
 import {expect, it} from 'vitest';
 
-const TAGS = ['rx-theme', 'rx-elevation', 'rx-focus-ring', 'rx-ripple', 'rx-icon'];
+const TAGS = ['rx-theme', 'rx-elevation', 'rx-focus-ring', 'rx-ripple', 'rx-icon', 'rx-surface'];
 
 it('upgrades elements that were in the page before the library loaded', async () => {
   document.body.innerHTML = TAGS.map(
