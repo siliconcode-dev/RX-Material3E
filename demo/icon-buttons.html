@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Icon buttons · RX Material 3E</title>
+    <link rel="stylesheet" href="../packages/tokens/css/fonts.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/theme.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/typescale.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/icons.css" />
+    <link rel="stylesheet" href="./demo.css" />
+    <script type="module" src="./shell.ts"></script>
+    <script type="module" src="./icon-buttons.ts"></script>
+    <style>
+      .grid {
+        display: grid;
+        grid-template-columns: max-content repeat(4, max-content);
+        gap: 8px 20px;
+        align-items: center;
+        overflow-x: auto;
+        padding: 8px 0;
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      .grid > .head {
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      .grid .name {
+        color: var(--md-sys-color-on-surface);
+      }
+      .grid code {
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      @media (max-width: 599px) {
+        .grid {
+          grid-template-columns: max-content repeat(2, max-content);
+        }
+        .grid > .wide-only {
+          display: none;
+        }
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px;
+        padding: 8px 16px;
+        border-radius: var(--md-sys-shape-corner-large);
+      }
+      .bar .title {
+        flex: 1;
+        min-width: 120px;
+      }
+      .bar.primary {
+        background: var(--md-sys-color-primary-container);
+        color: var(--md-sys-color-on-primary-container);
+      }
+      .bar.surface {
+        background: var(--md-sys-color-surface-container);
+        color: var(--md-sys-color-on-surface);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Icon buttons</h1>
+    <p>
+      Compose's four icon buttons, ported from <code>IconButton.kt</code> and
+      <code>IconButtonDefaults.kt</code>: standard, filled, tonal and outlined, each also as a
+      toggle. The container is 40dp in a 48dp touch target. Standard and outlined icon buttons take
+      the color of what they sit on; their vibrant colors are fixed. With <code>morph</code> the
+      corners pinch in while held and, on a toggle, go squarer when on.
+    </p>
+
+    <h2>Icon buttons</h2>
+    <div class="grid" id="buttons">
+      <span class="head rx-typescale-label-medium"></span>
+      <span class="head rx-typescale-label-medium">Enabled</span>
+      <span class="head rx-typescale-label-medium">Vibrant</span>
+      <span class="head rx-typescale-label-medium wide-only">Disabled</span>
+      <span class="head rx-typescale-label-medium wide-only">Morph (press)</span>
+    </div>
+
+    <h2>Toggles</h2>
+    <p>
+      A toggle is a checkbox for assistive technology and forms: Space toggles it. Click to switch
+      them; the last column morphs, and its standard and outlined toggles use the vibrant colors, as
+      in Compose.
+    </p>
+    <div class="grid" id="toggles">
+      <span class="head rx-typescale-label-medium"></span>
+      <span class="head rx-typescale-label-medium">Off</span>
+      <span class="head rx-typescale-label-medium">On</span>
+      <span class="head rx-typescale-label-medium wide-only">Disabled, on</span>
+      <span class="head rx-typescale-label-medium wide-only">Morph</span>
+    </div>
+
+    <h2>On colored surfaces</h2>
+    <p>
+      Standard and outlined icon buttons follow the content color around them (Compose's
+      <code>LocalContentColor</code>), so they fit any bar.
+    </p>
+    <div class="bar primary" id="bar-primary">
+      <span class="title rx-typescale-title-medium">Inbox</span>
+    </div>
+    <div class="bar surface" id="bar-surface" style="margin-top: 12px">
+      <span class="title rx-typescale-title-medium">Draft</span>
+    </div>
+  </body>
+</html>

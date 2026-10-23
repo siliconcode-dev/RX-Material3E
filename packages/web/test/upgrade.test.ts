@@ -16,6 +16,7 @@ const TAGS = [
   'rx-scrim',
   'rx-button',
   'rx-toggle-button',
+  'rx-icon-button',
 ];
 
 it('upgrades elements that were in the page before the library loaded', async () => {

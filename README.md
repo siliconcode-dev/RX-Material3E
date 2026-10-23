@@ -10,7 +10,7 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Steps 1 to 20 of 79 done. Live demo: https://rxmaterial3e.dpdns.org/ See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 to 21 of 79 done. Live demo: https://rxmaterial3e.dpdns.org/ See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package          | What it is                                                     | Status                            |
 | ---------------- | -------------------------------------------------------------- | --------------------------------- |
@@ -246,6 +246,19 @@ Compose's five buttons: `filled` (the default), `tonal`, `elevated`, `outlined` 
 ```
 
 Compose's four toggle buttons: `filled` (the default), `tonal`, `elevated` and `outlined`. Off, a toggle button is round; on (`checked`), it takes its checked colors and square corners; held down, its corners pinch in. The corners spring between the three shapes on the fast spatial spring, and the outlined one's outline shrinks and fades when it turns on. `size` is `xs` to `xl` (small by default) and sets the height, padding, icon size, text style and the pressed and checked corners. The `icon` slot takes a leading icon. It is a checkbox for assistive technology and in forms: Space toggles it, it fires `input` and `change`, it submits `value` ("on" by default) under `name` when on, and a form reset puts back its `checked` attribute. `--rx-toggle-button-shape`, `--rx-toggle-button-pressed-shape` and `--rx-toggle-button-checked-shape` set other corners.
+
+## Icon buttons
+
+```html
+<rx-icon-button><rx-icon label="Search">search</rx-icon></rx-icon-button>
+<rx-icon-button variant="filled"><rx-icon label="Add">add</rx-icon></rx-icon-button>
+<rx-icon-button variant="outlined" toggle checked
+  ><rx-icon label="Pin">push_pin</rx-icon></rx-icon-button
+>
+<rx-icon-button toggle morph><rx-icon label="Favourite">favorite</rx-icon></rx-icon-button>
+```
+
+Compose's four icon buttons: `standard` (the default), `filled`, `tonal` and `outlined`, 40dp in a 48dp touch target. Standard and outlined icon buttons take the color of the text around them, like Compose's LocalContentColor; `vibrant` gives them fixed colors instead. `toggle` makes it a toggle (`checked`), which is a checkbox for assistive technology and forms; otherwise it is a form button like `rx-button`. `morph` makes the corners pinch in while held and, on a toggle, go squarer when on; as in Compose, a morphing standard or outlined toggle uses the vibrant colors. Give it a name with a `label` on its `rx-icon` or an `aria-label`. `--rx-icon-button-shape`, `--rx-icon-button-pressed-shape` and `--rx-icon-button-checked-shape` set other corners. Sizes and widths come in step 22.
 
 ## Scrim
 

@@ -40,6 +40,7 @@ export const sections: DemoSection[] = [
     pages: [
       {title: 'Buttons', href: 'buttons.html'},
       {title: 'Toggle buttons', href: 'toggle-buttons.html'},
+      {title: 'Icon buttons', href: 'icon-buttons.html'},
     ],
   },
 ];

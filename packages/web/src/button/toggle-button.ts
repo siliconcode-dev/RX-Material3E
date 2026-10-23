@@ -129,7 +129,7 @@ export class RxToggleButton extends FormAssociated(LitElement) {
     const press = new PressInteractionController(this, {
       enabled: () => !this.isDisabled,
       onChange: () => this.shapeMorph.update(),
-      keys: [' '],
+      keys: () => [' '],
     });
     // shapeByInteraction: pressed wins over checked, on the fast spatial spring.
     this.shapeMorph = new InteractionShapeController(this, {

@@ -6,10 +6,10 @@ all decisions) and COMPONENTS.md (the catalog).
 
 ## Where things stand
 
-- **Steps 1 to 20 of 79 are done**, committed and pushed, CI green.
+- **Steps 1 to 21 of 79 are done**, committed and pushed, CI green.
   Phase 0 (groundwork) and Phase 1 (foundations) are finished; Phase 2
   (actions) is under way: step 18 (buttons), step 19 (button sizes, square
-  shape, press morph), step 20 (toggle button).
+  shape, press morph), step 20 (toggle button), step 21 (icon button).
 - Repository: **https://github.com/siliconcode-dev/RX-Material3E** (the
   owner's new account; the old `siliconxcode2` account is lost). `gh` is
   logged in as `siliconcode-dev`; the clone has it as `origin` and the old
@@ -20,12 +20,12 @@ all decisions) and COMPONENTS.md (the catalog).
 - Demo site: Vercel builds every push (`vercel.json`: `npm run build`,
   output `dist-site`, clean URLs, so pages have no `.html`, e.g. `/buttons`).
   The old Cloudflare Workers URL in the README is from the lost account.
-- **Next: step 21**, icon button: standard, filled, tonal, outlined, toggle.
-  Wait for the owner to say "Go ahead with step 21".
+- **Next: step 22**, icon button expressive sizes (XS to XL) and widths
+  (narrow, uniform, wide). Wait for the owner to say "Go ahead with step 22".
 
 When the new session starts, after reading these notes, tell the owner:
 
-> Ready for step 21 (icon button) when you are.
+> Ready for step 22 (icon button sizes and widths) when you are.
 
 ## The owner's machine (Windows)
 
@@ -161,15 +161,16 @@ regenerating from a clean setup gives identical files.
 - npm publishing at step 79 (needs the owner's npm account); a shadcn-style
   registry may come later.
 
-## Notes for step 21 (icon button)
+## Notes for step 22 (icon button sizes and widths)
 
-Not read yet: read upstream first, as always. Starting points: `IconButton.kt`
-and `IconButtonDefaults.kt` (IconButton, FilledIconButton,
-FilledTonalIconButton, OutlinedIconButton and their toggle versions) with
-the icon button tokens (StandardIconButtonTokens, FilledIconButtonTokens,
-FilledTonalIconButtonTokens, OutlinedIconButtonTokens and the size tokens
-XSmallIconButtonTokens to XLargeIconButtonTokens, which step 22 needs).
-`InteractionShapeController` (`internals/interaction-shape.ts`) is
-shapeByInteraction for any number of shapes; `PressInteractionController`
-takes `keys` (Space only for toggles); `motion/color.ts` animates colors as
-Compose does if an icon button needs it.
+Read in step 21 (read again before coding): IconButtonDefaults has
+extraSmallContainerSize to extraLargeContainerSize(widthOption), each the
+size's IconSize plus Narrow, Uniform (DefaultLeadingSpace twice; Large uses
+UniformLeadingSpace) or Wide leading and trailing space, by the size's
+ContainerHeight; extraSmallIconSize to extraLargeIconSize; and per size round,
+square, pressed, selected round and selected square shapes (selected round
+is squarer, selected square is round). Check the samples
+(IconButtonSamples.kt in the material3 samples folder, already in the
+sparse checkout) for how sizes combine with shapes, as for Button in step 19.
+Outline width per size: OutlinedIconButtonBorder uses SmallIconButtonTokens'
+width at every size, as Button does; confirm.
