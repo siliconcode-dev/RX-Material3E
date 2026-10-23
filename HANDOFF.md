@@ -6,25 +6,26 @@ all decisions) and COMPONENTS.md (the catalog).
 
 ## Where things stand
 
-- **Steps 1 to 19 of 79 are done**, committed and pushed, CI green.
+- **Steps 1 to 20 of 79 are done**, committed and pushed, CI green.
   Phase 0 (groundwork) and Phase 1 (foundations) are finished; Phase 2
   (actions) is under way: step 18 (buttons), step 19 (button sizes, square
-  shape, press morph).
+  shape, press morph), step 20 (toggle button).
 - Repository: **https://github.com/siliconcode-dev/RX-Material3E** (the
   owner's new account; the old `siliconxcode2` account is lost). `gh` is
   logged in as `siliconcode-dev`; the clone has it as `origin` and the old
   repo as `old` (never push there).
-- Branch: `claude/material-design-web-components-fre1r7` (the default branch
-  and the only one to push to; no pull request unless the owner asks).
+- Branches: work is committed on `claude/material-design-web-components-fre1r7`,
+  then `main` is fast-forwarded to it and both are pushed (the owner asked for
+  `main` at step 20). No pull request unless the owner asks.
 - Demo site: Vercel builds every push (`vercel.json`: `npm run build`,
   output `dist-site`, clean URLs, so pages have no `.html`, e.g. `/buttons`).
   The old Cloudflare Workers URL in the README is from the lost account.
-- **Next: step 20**, toggle button. Wait for the owner to say "Go ahead with
-  step 20".
+- **Next: step 21**, icon button: standard, filled, tonal, outlined, toggle.
+  Wait for the owner to say "Go ahead with step 21".
 
 When the new session starts, after reading these notes, tell the owner:
 
-> Ready for step 20 (toggle button) when you are.
+> Ready for step 21 (icon button) when you are.
 
 ## The owner's machine (Windows)
 
@@ -43,6 +44,11 @@ not a Linux container:
   (Windows lists files alphabetically). The data is identical; restore the
   generated files with `git checkout -- packages/tokens` after checking.
 - Python is `python`, not `python3`.
+- This repo's git identity is `siliconcode-dev <siliconxcode@gmail.com>`
+  (set locally). Contributors are listed in the README and every
+  package.json: ashfaqizop (the owner), siliconcode-dev (the owner's second
+  account) and Claude.
+- Live demo: https://rxmaterial3e.dpdns.org/ (Vercel).
 - The androidx sparse checkout in `.cache/androidx` also has the Compose
   material3 samples and foundation's `shape/` package (added for step 19).
 
@@ -155,14 +161,15 @@ regenerating from a clean setup gives identical files.
 - npm publishing at step 79 (needs the owner's npm account); a shadcn-style
   registry may come later.
 
-## Notes for step 20 (toggle button)
+## Notes for step 21 (icon button)
 
-Not read in full yet: read upstream first, as always. Starting points:
-`ToggleButton.kt` (ToggleButton, ElevatedToggleButton, TonalToggleButton,
-OutlinedToggleButton and ToggleButtonDefaults) with its tokens. It reuses
-step 19's pieces: ToggleButtonDefaults takes the per-size
-`ContainerShapeSquare` and `PressedContainerShape` tokens (ToggleButton.kt
-around line 720) and morphs between the unchecked, pressed and checked shapes
-with `rememberAnimatedShape` (`internals/animated-shape.ts` here), so a third
-shape mid-morph (the frozen-interpolation path) happens for real there.
-`PressInteractionController` gives the pressed state.
+Not read yet: read upstream first, as always. Starting points: `IconButton.kt`
+and `IconButtonDefaults.kt` (IconButton, FilledIconButton,
+FilledTonalIconButton, OutlinedIconButton and their toggle versions) with
+the icon button tokens (StandardIconButtonTokens, FilledIconButtonTokens,
+FilledTonalIconButtonTokens, OutlinedIconButtonTokens and the size tokens
+XSmallIconButtonTokens to XLargeIconButtonTokens, which step 22 needs).
+`InteractionShapeController` (`internals/interaction-shape.ts`) is
+shapeByInteraction for any number of shapes; `PressInteractionController`
+takes `keys` (Space only for toggles); `motion/color.ts` animates colors as
+Compose does if an icon button needs it.

@@ -13,6 +13,11 @@ export interface PressInteractionOptions {
   enabled: () => boolean;
   /** Called when the pressed state changes. */
   onChange: (pressed: boolean) => void;
+  /**
+   * The keys that press the control, as its activation: Enter and Space for
+   * a button (the default), Space alone for a toggle.
+   */
+  keys?: readonly string[];
 }
 
 const EVENTS = [
@@ -77,7 +82,7 @@ export class PressInteractionController implements ReactiveController {
       case 'keydown': {
         const key = (event as KeyboardEvent).key;
         if (
-          (key === ' ' || key === 'Enter') &&
+          (this.options.keys ?? [' ', 'Enter']).includes(key) &&
           !(event as KeyboardEvent).repeat &&
           event.target === this.host &&
           this.options.enabled()

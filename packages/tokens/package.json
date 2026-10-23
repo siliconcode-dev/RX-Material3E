@@ -3,6 +3,23 @@
   "version": "0.1.0",
   "description": "Material 3 and Material 3 Expressive design tokens as CSS custom properties, generated from Jetpack Compose Material3.",
   "license": "Apache-2.0",
+  "contributors": [
+    {
+      "name": "ashfaqizop",
+      "email": "ashfaqizop@gmail.com",
+      "url": "https://github.com/ashfaqizop"
+    },
+    {
+      "name": "siliconcode-dev",
+      "email": "siliconxcode@gmail.com",
+      "url": "https://github.com/siliconcode-dev"
+    },
+    {
+      "name": "Claude",
+      "email": "noreply@anthropic.com",
+      "url": "https://claude.com/claude-code"
+    }
+  ],
   "type": "module",
   "files": [
     "css",

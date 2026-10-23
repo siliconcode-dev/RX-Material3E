@@ -37,6 +37,9 @@ export const sections: DemoSection[] = [
   },
   {
     title: 'Actions',
-    pages: [{title: 'Buttons', href: 'buttons.html'}],
+    pages: [
+      {title: 'Buttons', href: 'buttons.html'},
+      {title: 'Toggle buttons', href: 'toggle-buttons.html'},
+    ],
   },
 ];

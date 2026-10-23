@@ -11,7 +11,7 @@ A hand port (never auto-translated) of Material 3 and Material 3 Expressive to
 framework-free web components, published to npm as `@rx-m3e/tokens` and
 `@rx-m3e/web` (elements are `rx-*`). Jetpack Compose Material3 is the primary
 source, MDC Android the second. Built with Lit 3 and TypeScript in an npm
-workspace monorepo. Live demo: https://rx-material3e.ashfaqizop.workers.dev
+workspace monorepo. Live demo: https://rxmaterial3e.dpdns.org/
 
 ## Working with the owner
 
@@ -53,7 +53,8 @@ workspace monorepo. Live demo: https://rx-material3e.ashfaqizop.workers.dev
    `npm run build`, `npm test`, all clean.
 8. Commit on `claude/material-design-web-components-fre1r7` with a clear
    message ending in the attribution lines from the session's system
-   reminder (no model names in repo files), push, wait for CI, report.
+   reminder (no model names in repo files), fast-forward `main` to it, push
+   both, wait for CI, report.
 
 ## Commands
 

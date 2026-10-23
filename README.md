@@ -10,7 +10,7 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Steps 1 to 19 of 79 done. Live demo: https://rx-material3e.ashfaqizop.workers.dev See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 to 20 of 79 done. Live demo: https://rxmaterial3e.dpdns.org/ See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package          | What it is                                                     | Status                            |
 | ---------------- | -------------------------------------------------------------- | --------------------------------- |
@@ -235,6 +235,18 @@ Compose's five buttons: `filled` (the default), `tonal`, `elevated`, `outlined` 
 
 `size` is one of the expressive sizes: `xs`, `s`, `m`, `l` or `xl` (32, 40, 56, 96 and 136dp tall). Each one uses ButtonDefaults' padding, icon size, icon spacing and text style for that height, as Compose's size samples do. `shape="square"` gives ButtonDefaults.squareShape, 12dp corners at every size. `morph` is Compose's expressive `shapes` overload: while the button is held, the corners spring to the pressed shape for its size (8dp up to small, 12dp medium, 16dp large and extra large) on the default effects spring, and its padding is the small size's. `--rx-button-shape` and `--rx-button-pressed-shape` set other corners. As in Compose, outlined buttons keep a 1dp border at every size.
 
+## Toggle buttons
+
+```html
+<rx-toggle-button>Bold</rx-toggle-button>
+<rx-toggle-button variant="tonal" checked
+  ><rx-icon slot="icon">star</rx-icon>Starred</rx-toggle-button
+>
+<rx-toggle-button variant="outlined" size="m" name="alerts">Alerts</rx-toggle-button>
+```
+
+Compose's four toggle buttons: `filled` (the default), `tonal`, `elevated` and `outlined`. Off, a toggle button is round; on (`checked`), it takes its checked colors and square corners; held down, its corners pinch in. The corners spring between the three shapes on the fast spatial spring, and the outlined one's outline shrinks and fades when it turns on. `size` is `xs` to `xl` (small by default) and sets the height, padding, icon size, text style and the pressed and checked corners. The `icon` slot takes a leading icon. It is a checkbox for assistive technology and in forms: Space toggles it, it fires `input` and `change`, it submits `value` ("on" by default) under `name` when on, and a form reset puts back its `checked` attribute. `--rx-toggle-button-shape`, `--rx-toggle-button-pressed-shape` and `--rx-toggle-button-checked-shape` set other corners.
+
 ## Scrim
 
 ```html
@@ -261,6 +273,7 @@ The shared pieces the components are built from, exported for your own component
 | `minimumInteractiveComponentSize` | Compose's 48dp minimum touch target, as host CSS; `--rx-minimum-interactive-component-size: 0` turns it off                                               |
 | `redispatchEvent()`, `isRtl()`    | Re-fire an event from inside a shadow root; read the layout direction                                                                                     |
 | `PressInteractionController`      | Whether a control is pressed (primary pointer, or Enter or Space held on it), as Compose's `collectIsPressedAsState`                                      |
+| `InteractionShapeController`      | Compose's shapeByInteraction: shows one of a set of corner shapes (rest, pressed, checked) and morphs between them                                        |
 | `AnimatedShapeState`              | Compose's corner-shape morph: interpolates each corner in px from the current size, with `parseCornerShape()` and `applyCornerShape()` for CSS radii      |
 
 ## Theme
@@ -309,6 +322,12 @@ Node 22 comes from `.node-version`.
 GitHub Actions runs lint, format check, type check, build and tests on every push and pull request.
 
 Components are Lit elements written in TypeScript. They use Lit's `experimentalDecorators` mode (the same mode `@material/web` uses), because the dev server does not yet compile standard decorators.
+
+## Contributors
+
+- [ashfaqizop](https://github.com/ashfaqizop) (ashfaqizop@gmail.com), the owner
+- [siliconcode-dev](https://github.com/siliconcode-dev) (siliconxcode@gmail.com), the owner's second account, which hosts the repository
+- [Claude](https://claude.com/claude-code) (Anthropic), who writes the ports with the owner
 
 ## License
 

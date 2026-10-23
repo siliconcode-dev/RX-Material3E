@@ -6,6 +6,14 @@ export {
   type FrameClock,
 } from './animatable.js';
 export {
+  colorToVector,
+  cssColor,
+  parseCssColor,
+  Transparent,
+  vectorToColor,
+  type Rgba,
+} from './color.js';
+export {
   motionDurationScale,
   prefersReducedMotion,
   setMotionDurationScale,

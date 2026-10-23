@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Toggle buttons · RX Material 3E</title>
+    <link rel="stylesheet" href="../packages/tokens/css/fonts.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/theme.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/typescale.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/icons.css" />
+    <link rel="stylesheet" href="./demo.css" />
+    <script type="module" src="./shell.ts"></script>
+    <script type="module" src="./toggle-buttons.ts"></script>
+    <style>
+      .grid {
+        display: grid;
+        grid-template-columns: max-content repeat(3, max-content);
+        gap: 12px 24px;
+        align-items: center;
+        overflow-x: auto;
+        padding: 8px 0;
+      }
+      .grid > .head {
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      .grid code {
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      @media (max-width: 599px) {
+        .grid {
+          grid-template-columns: max-content max-content;
+        }
+        .grid > .wide-only {
+          display: none;
+        }
+      }
+      .sizes {
+        display: grid;
+        gap: 16px;
+        overflow-x: auto;
+        padding: 8px 0;
+      }
+      .sizes .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+        align-items: center;
+      }
+      .sizes .name {
+        flex: 0 0 100%;
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      .panel {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        padding: 16px;
+        border-radius: var(--md-sys-shape-corner-large);
+        background: var(--md-sys-color-surface-container);
+      }
+      output {
+        display: block;
+        color: var(--md-sys-color-on-surface-variant);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Toggle buttons</h1>
+    <p>
+      Compose's four toggle buttons, ported from <code>ToggleButton.kt</code>: a button that stays
+      on or off. Off, it is round; on, it takes its checked colors and square corners; held down,
+      its corners pinch in. The corners spring between the three shapes on the fast spatial spring,
+      so they bounce a little. The outlined one loses its outline when on, the outline shrinking and
+      fading.
+    </p>
+
+    <h2>The four toggle buttons</h2>
+    <div class="grid" id="grid">
+      <span class="head rx-typescale-label-medium"></span>
+      <span class="head rx-typescale-label-medium">Off</span>
+      <span class="head rx-typescale-label-medium">On, with icon</span>
+      <span class="head rx-typescale-label-medium wide-only">Disabled</span>
+    </div>
+
+    <h2>Sizes</h2>
+    <p>
+      Extra small to extra large, small by default. Each size has its own height, padding, icon
+      size, text style, and pressed and checked corners (from 6dp pressed and 12dp checked at small
+      to 16dp and 28dp at extra large).
+    </p>
+    <div class="sizes" id="sizes"></div>
+
+    <h2>In a form</h2>
+    <p>
+      For assistive technology and forms it is a checkbox: Space toggles it, and when it is on it
+      submits its <code>value</code> under its <code>name</code>. A form reset puts it back as the
+      page started it.
+    </p>
+    <form class="panel" id="form">
+      <rx-toggle-button name="format" value="bold" checked
+        ><rx-icon slot="icon">format_bold</rx-icon>Bold</rx-toggle-button
+      >
+      <rx-toggle-button name="format" value="italic"
+        ><rx-icon slot="icon">format_italic</rx-icon>Italic</rx-toggle-button
+      >
+      <rx-toggle-button name="format" value="underline" variant="outlined"
+        ><rx-icon slot="icon">format_underlined</rx-icon>Underline</rx-toggle-button
+      >
+      <button type="reset">Reset</button>
+      <output id="form-output" class="rx-typescale-body-medium" aria-live="polite"></output>
+    </form>
+  </body>
+</html>

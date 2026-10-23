@@ -217,10 +217,10 @@ export function applyCornerShape(element: HTMLElement, shape: CornerShape, atRes
   } as const;
   for (const key of CORNERS) {
     const css = atRest ? restingCss(shape[key]) : null;
-    element.style.setProperty(
-      properties[key],
-      css ?? `${cornerSizeToPx(shape[key], width, height)}px`,
-    );
+    // A spring that overshoots can take a corner below 0 (Compose's outline
+    // requires corners >= 0; CSS would drop a negative radius).
+    const px = Math.max(0, cornerSizeToPx(shape[key], width, height));
+    element.style.setProperty(properties[key], css ?? `${px}px`);
   }
 }
 
