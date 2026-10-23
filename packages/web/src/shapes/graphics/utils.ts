@@ -91,7 +91,17 @@ export function collinearIsh(
  */
 export function convex(previous: Point, current: Point, next: Point): boolean {
   // Upstream note (b/369320447): fast, but not a reliable calculation.
-  return current.minus(previous).clockwise(next.minus(current));
+  //
+  // This is a sign test, and for (nearly) collinear vertices the sign comes
+  // down to rounding error. Kotlin works in 32-bit floats, so do the same
+  // here; otherwise such vertices can come out convex on one platform and
+  // concave on the other, which changes how Morph pairs corners.
+  const f = Math.fround;
+  const ax = f(f(current.x) - f(previous.x));
+  const ay = f(f(current.y) - f(previous.y));
+  const bx = f(f(next.x) - f(current.x));
+  const by = f(f(next.y) - f(current.y));
+  return f(f(ax * by) - f(ay * bx)) > 0;
 }
 
 /**

@@ -28,6 +28,7 @@ export const sections: DemoSection[] = [
       {title: 'Icons', href: 'icons.html'},
       {title: 'Surface', href: 'surface.html'},
       {title: 'Shape engine', href: 'shapes.html'},
+      {title: 'Material shapes', href: 'material-shapes.html'},
     ],
   },
 ];

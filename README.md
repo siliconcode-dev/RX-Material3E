@@ -10,7 +10,7 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Steps 1 to 12 of 79 done. Live demo: https://rx-material3e.ashfaqizop.workers.dev See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 to 13 of 79 done. Live demo: https://rx-material3e.ashfaqizop.workers.dev See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package          | What it is                                                     | Status                            |
 | ---------------- | -------------------------------------------------------------- | --------------------------------- |
@@ -157,6 +157,16 @@ const d = s.toPath(cookie.normalized()); // SVG path data in a 0..1 box
 ```
 
 `RoundedPolygon` (from a vertex count, vertices or features), `circle`, `rectangle`, `star`, `pill`, `pillStar`, `CornerRounding` (radius and smoothing), bounds, `normalized()`, `transformed()`, and `toPath()` for SVG, clip paths or `Path2D`. Google's own tests are ported, and `npm test` also compares 32 shapes against output from Google's real Kotlin code (see `scripts/shapes-golden/`).
+
+## Material shapes
+
+```html
+<rx-shape shape="cookie-9-sided" style="width: 96px; height: 96px">
+  <img src="avatar.jpg" alt="" />
+</rx-shape>
+```
+
+All 35 Material 3 Expressive shapes from Compose's `MaterialShapes`: circle, square, slanted, arch, fan, arrow, semi-circle, oval, pill, triangle, diamond, clam-shell, pentagon, gem, sunny, very-sunny, cookie-4/6/7/9/12-sided, ghostish, clover-4/8-leaf, burst, soft-burst, boom, soft-boom, flower, puffy, puffy-diamond, pixel-circle, pixel-triangle, bun and heart. `--rx-shape-color` sets the fill. In code, `MaterialShapes.Heart` or `materialShape('Heart')` gives the polygon and `shapePath(polygon, width, height)` its SVG path. Every shape is compared point for point with Google's own Kotlin.
 
 ## Theme
 

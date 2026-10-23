@@ -58,6 +58,15 @@ fun main(args: Array<String>) {
                 rounding = r(0.3f, 0.4f),
             ),
         "vertices-repeated-point" to RoundedPolygon(floatArrayOf(0f, 0f, 1f, 0f, 1f, 0f, 0f, 1f)),
+        "vertices-collinear" to
+            RoundedPolygon(floatArrayOf(0f, 0f, 0.5f, 0f, 1f, 0f, 1f, 1f, 0f, 1f), rounding = r(0.1f, 0f)),
+        "vertices-collinear-diagonal" to
+            RoundedPolygon(
+                floatArrayOf(0.1f, 0.1f, 0.4f, 0.4f, 0.7f, 0.7f, 0.7f, 1.3f, 0.1f, 1.3f),
+                rounding = r(0.05f, 0.5f),
+            ),
+        // The middle three vertices are within rounding error of a straight line.
+        "vertices-near-collinear" to RoundedPolygon(floatArrayOf(0.4700031876564026f, 1.1063426733016968f, 0.2314673811197281f, 0.8148945569992065f, -0.08738595992326736f, 0.42531275749206543f, 1.5f, -0.5f)),
         "circle" to RoundedPolygon.circle(),
         "circle3" to RoundedPolygon.circle(3),
         "circle12-offset" to RoundedPolygon.circle(12, radius = 3f, centerX = 1f, centerY = 2f),

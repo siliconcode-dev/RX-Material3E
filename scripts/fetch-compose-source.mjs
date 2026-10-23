@@ -32,5 +32,6 @@ git(
   'set',
   'compose/material3/material3/src/commonMain',
   'compose/material3/material3-ripple/src/commonMain',
+  'compose/ui/ui-graphics/src/commonMain/kotlin/androidx/compose/ui/graphics',
   'graphics/graphics-shapes/src/commonMain',
 );

@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Material shapes · RX Material 3E</title>
+    <link rel="stylesheet" href="../packages/tokens/css/fonts.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/theme.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/typescale.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/icons.css" />
+    <link rel="stylesheet" href="./demo.css" />
+    <script type="module" src="./shell.ts"></script>
+    <script type="module" src="./material-shapes.ts"></script>
+    <style>
+      .shape-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px 24px;
+        align-items: end;
+        padding: 16px;
+        border-radius: var(--md-sys-shape-corner-large);
+        background: var(--md-sys-color-surface-container);
+      }
+      .shape-controls label {
+        display: grid;
+        gap: 4px;
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      .shape-controls select {
+        min-height: 40px;
+        padding: 0 12px;
+        border: 1px solid var(--md-sys-color-outline);
+        border-radius: var(--md-sys-shape-corner-small);
+        background: var(--md-sys-color-surface);
+        color: var(--md-sys-color-on-surface);
+        font: inherit;
+      }
+      .shape-controls input[type='range'] {
+        accent-color: var(--md-sys-color-primary);
+      }
+      .shape-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(calc(var(--size, 72px) + 32px), 1fr));
+        gap: 16px 8px;
+        padding: 16px 0;
+      }
+      .shape-cell {
+        display: grid;
+        justify-items: center;
+        align-content: start;
+        gap: 8px;
+        text-align: center;
+      }
+      .shape-cell rx-shape {
+        width: var(--size, 72px);
+        height: var(--size, 72px);
+      }
+      .shape-cell code {
+        color: var(--md-sys-color-on-surface-variant);
+        font-size: 11px;
+        overflow-wrap: anywhere;
+      }
+      .uses {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        align-items: center;
+      }
+      .avatar {
+        width: 96px;
+        height: 96px;
+        --rx-shape-color: linear-gradient(
+          135deg,
+          var(--md-sys-color-tertiary),
+          var(--md-sys-color-primary)
+        );
+        --rx-shape-content-color: var(--md-sys-color-on-primary);
+        font: var(--md-sys-typescale-headline-medium-weight)
+          var(--md-sys-typescale-headline-medium-size) / 1
+          var(--md-sys-typescale-headline-medium-font);
+      }
+      .badge {
+        width: 56px;
+        height: 56px;
+        --rx-shape-color: var(--md-sys-color-tertiary-container);
+        --rx-shape-content-color: var(--md-sys-color-on-tertiary-container);
+      }
+      .wide {
+        width: 200px;
+        height: 96px;
+        --rx-shape-color: var(--md-sys-color-secondary-container);
+        --rx-shape-content-color: var(--md-sys-color-on-secondary-container);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Material shapes</h1>
+    <p>
+      The 35 Material 3 Expressive shapes from Compose's <code>MaterialShapes</code>, ported
+      definition by definition and checked against Google's Kotlin on every point.
+      <code>&lt;rx-shape shape="cookie-9-sided"&gt;</code> clips anything to one.
+    </p>
+
+    <form class="shape-controls" id="shape-controls">
+      <label class="rx-typescale-label-large">
+        <span>Size <output name="sizeOut">72</output>px</span>
+        <input type="range" name="size" min="32" max="160" step="8" value="72" />
+      </label>
+      <label class="rx-typescale-label-large">
+        Color
+        <select name="color">
+          <option value="primary-container">primary-container</option>
+          <option value="primary">primary</option>
+          <option value="secondary-container">secondary-container</option>
+          <option value="tertiary-container">tertiary-container</option>
+          <option value="tertiary">tertiary</option>
+          <option value="surface-container-highest">surface-container-highest</option>
+        </select>
+      </label>
+    </form>
+
+    <div class="shape-grid" id="shape-grid"></div>
+
+    <h2>Using a shape</h2>
+    <div class="uses">
+      <rx-shape class="avatar" shape="cookie-9-sided">AB</rx-shape>
+      <rx-shape class="badge" shape="sunny"><rx-icon filled>star</rx-icon></rx-shape>
+      <rx-shape class="badge" shape="clover-4-leaf"><rx-icon>eco</rx-icon></rx-shape>
+      <rx-shape class="badge" shape="pixel-circle"><rx-icon>sports_esports</rx-icon></rx-shape>
+      <rx-shape class="wide" shape="pill"
+        ><span class="rx-typescale-title-medium">Stretched pill</span></rx-shape
+      >
+    </div>
+  </body>
+</html>

@@ -55,6 +55,26 @@ const cases: Record<string, () => RoundedPolygon> = {
   'vertices-concave': () =>
     RoundedPolygon.fromVertices([0, 0, 2, 0, 2, 2, 1, 1, 0, 2], {rounding: r(0.3, 0.4)}),
   'vertices-repeated-point': () => RoundedPolygon.fromVertices([0, 0, 1, 0, 1, 0, 0, 1]),
+  // Kotlin's vertices are Float literals; pass the same 32-bit values.
+  'vertices-collinear': () =>
+    RoundedPolygon.fromVertices([0, 0, 0.5, 0, 1, 0, 1, 1, 0, 1].map(Math.fround), {
+      rounding: r(Math.fround(0.1), 0),
+    }),
+  'vertices-collinear-diagonal': () =>
+    RoundedPolygon.fromVertices(
+      [0.1, 0.1, 0.4, 0.4, 0.7, 0.7, 0.7, 1.3, 0.1, 1.3].map(Math.fround),
+      {
+        rounding: r(Math.fround(0.05), Math.fround(0.5)),
+      },
+    ),
+  // The middle three vertices are within rounding error of a straight line.
+  'vertices-near-collinear': () =>
+    RoundedPolygon.fromVertices(
+      [
+        0.4700031876564026, 1.1063426733016968, 0.2314673811197281, 0.8148945569992065,
+        -0.08738595992326736, 0.42531275749206543, 1.5, -0.5,
+      ].map(Math.fround),
+    ),
   circle: () => circle(),
   circle3: () => circle({numVertices: 3}),
   'circle12-offset': () => circle({numVertices: 12, radius: 3, centerX: 1, centerY: 2}),
