@@ -37,7 +37,7 @@ Status: `☐` not started, `◐` in progress, `☑` done.
 | 9    | State layer and ripple                                                             | ☑      |
 | 10   | Icon: Material Symbols font and SVG slot                                           | ☑      |
 | 11   | Surface                                                                            | ☑      |
-| 12   | Shapes 1: port `graphics-shapes` (RoundedPolygon) to TypeScript                    | ☐      |
+| 12   | Shapes 1: port `graphics-shapes` (RoundedPolygon) to TypeScript                    | ☑      |
 | 13   | Shapes 2: the 35 expressive MaterialShapes as SVG paths and clip paths             | ☐      |
 | 14   | Shapes 3: morphing between shapes                                                  | ☐      |
 | 15   | Motion helpers: JS springs for the Web Animations API, reduced motion              | ☐      |
@@ -150,6 +150,7 @@ Status: `☐` not started, `◐` in progress, `☑` done.
 - Demo site: `npm run build` also writes it to `dist-site/`; Cloudflare Workers deploys it with `wrangler.jsonc` at https://rx-material3e.ashfaqizop.workers.dev
 - Surface: color roles paired with content colors as in `ColorScheme.contentColorFor`; tonal elevation uses `surfaceColorAtElevation` and adds up through nested surfaces; `interactive` gives button semantics, ripple and focus ring. Start/end shapes use logical corners so they flip in RTL (the generated `*-start`/`*-end` shape tokens are physical; fix in the token script later).
 - Tests that check a mapping must hold their own copy of the Compose values, never import the list under test.
+- Shape engine: `packages/web/src/shapes/graphics/` is a hand port of `androidx.graphics.shapes` (Point, Utils, Cubic, CornerRounding, Features, RoundedPolygon, Shapes) plus Compose's `toPath`. Google's own unit tests are ported, and `scripts/shapes-golden/` compiles Google's real Kotlin to produce reference output that `golden.test.ts` must match on every number. Kotlin floats are 32-bit, ours 64-bit; the library's 1e-4 tolerance covers it. Upstream quirks kept on purpose: `Float.MIN_VALUE` as a sentinel and starting max, `pillStar` using the full shorter side as end-cap radius, path rotation about the origin. Morph, FeatureMapping, FloatMapping and PolygonMeasure come in step 14; SvgPathParser, FeatureSerializer, FeatureDetector and PolygonValidation later if needed.
 - Every element must upgrade cleanly when it is already in the page before the library loads; `test/upgrade.test.ts` checks all of them (add each new tag there).
 - Dependency versions are normally at least two weeks old. Security fixes are the exception (Vitest 5.0.5 fixes GHSA-p458-7748-mcp3).
 - Distribution: npm. A shadcn-style registry may be added after the alpha.

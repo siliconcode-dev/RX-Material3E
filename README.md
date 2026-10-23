@@ -10,7 +10,7 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Steps 1 to 11 of 79 done. Live demo: https://rx-material3e.ashfaqizop.workers.dev See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 to 12 of 79 done. Live demo: https://rx-material3e.ashfaqizop.workers.dev See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package          | What it is                                                     | Status                            |
 | ---------------- | -------------------------------------------------------------- | --------------------------------- |
@@ -144,6 +144,19 @@ Load the font yourself. To keep it small, ask Google Fonts for just your icons:
 ```
 
 Compose's `Surface`: a `color` role with its matching content color, a `shape` token, `elevation` (shadow, 0 to 5), `tonal-elevation` (tint, 0 to 5) and a border through `--rx-surface-border`. Content is clipped to the shape. `interactive` makes it a button with ripple and focus ring; `selected` and `disabled` work with it.
+
+## Shape engine
+
+A hand port of Google's `androidx.graphics.shapes`, the engine behind the Material 3 Expressive shapes:
+
+```js
+import {graphicsShapes as s} from '@rx-m3e/web';
+
+const cookie = s.star(9, {innerRadius: 0.85, rounding: new s.CornerRounding(0.2, 0.2)});
+const d = s.toPath(cookie.normalized()); // SVG path data in a 0..1 box
+```
+
+`RoundedPolygon` (from a vertex count, vertices or features), `circle`, `rectangle`, `star`, `pill`, `pillStar`, `CornerRounding` (radius and smoothing), bounds, `normalized()`, `transformed()`, and `toPath()` for SVG, clip paths or `Path2D`. Google's own tests are ported, and `npm test` also compares 32 shapes against output from Google's real Kotlin code (see `scripts/shapes-golden/`).
 
 ## Theme
 

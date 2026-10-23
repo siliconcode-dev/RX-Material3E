@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Shape engine · RX Material 3E</title>
+    <link rel="stylesheet" href="../packages/tokens/css/fonts.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/theme.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/typescale.css" />
+    <link rel="stylesheet" href="./demo.css" />
+    <script type="module" src="./shell.ts"></script>
+    <script type="module" src="./shapes.ts"></script>
+    <style>
+      .playground {
+        display: grid;
+        grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+        gap: 24px;
+        align-items: start;
+      }
+      @media (max-width: 719px) {
+        .playground {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+      .shape-controls {
+        display: grid;
+        gap: 14px;
+        padding: 16px;
+        border-radius: var(--md-sys-shape-corner-large);
+        background: var(--md-sys-color-surface-container);
+      }
+      .shape-controls label {
+        display: grid;
+        gap: 4px;
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      .shape-controls select {
+        min-height: 40px;
+        padding: 0 12px;
+        border: 1px solid var(--md-sys-color-outline);
+        border-radius: var(--md-sys-shape-corner-small);
+        background: var(--md-sys-color-surface);
+        color: var(--md-sys-color-on-surface);
+        font: inherit;
+      }
+      .shape-controls input[type='range'] {
+        width: 100%;
+        accent-color: var(--md-sys-color-primary);
+      }
+      .stage {
+        display: grid;
+        gap: 8px;
+        justify-items: center;
+      }
+      .stage svg {
+        width: min(100%, 420px);
+        aspect-ratio: 1;
+        overflow: visible;
+      }
+      .shape-fill {
+        fill: var(--md-sys-color-primary-container);
+        stroke: var(--md-sys-color-primary);
+        stroke-width: 0.006;
+      }
+      .handle-line {
+        stroke: var(--md-sys-color-outline);
+        stroke-width: 0.003;
+      }
+      .anchor {
+        fill: var(--md-sys-color-primary);
+      }
+      .control {
+        fill: var(--md-sys-color-tertiary);
+      }
+      .stats {
+        color: var(--md-sys-color-on-surface-variant);
+        text-align: center;
+      }
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 16px;
+      }
+      .gallery figure {
+        display: grid;
+        justify-items: center;
+        gap: 8px;
+        margin: 0;
+        padding: 12px;
+        border-radius: var(--md-sys-shape-corner-medium);
+        background: var(--md-sys-color-surface-container-low);
+      }
+      .gallery svg {
+        width: 80px;
+        height: 80px;
+        overflow: visible;
+      }
+      .gallery path {
+        fill: var(--md-sys-color-secondary);
+      }
+      .gallery figcaption {
+        color: var(--md-sys-color-on-surface-variant);
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Shape engine</h1>
+    <p>
+      A hand port of Google's <code>androidx.graphics.shapes</code>: polygons with rounded and
+      smoothed corners, the engine behind the Material 3 Expressive shapes. It is checked against
+      output from Google's own Kotlin code, number for number.
+    </p>
+
+    <h2>Playground</h2>
+    <div class="playground">
+      <form class="shape-controls" id="shape-controls">
+        <label class="rx-typescale-label-large">
+          Shape
+          <select name="kind">
+            <option value="polygon">Polygon</option>
+            <option value="star" selected>Star</option>
+            <option value="pillStar">Pill star</option>
+            <option value="rectangle">Rectangle</option>
+            <option value="circle">Circle</option>
+            <option value="pill">Pill</option>
+          </select>
+        </label>
+        <label class="rx-typescale-label-large" data-for="polygon star pillStar circle">
+          <span>Vertices <output name="verticesOut"></output></span>
+          <input type="range" name="vertices" min="3" max="16" value="8" />
+        </label>
+        <label class="rx-typescale-label-large" data-for="star pillStar">
+          <span>Inner radius <output name="innerOut"></output></span>
+          <input type="range" name="inner" min="0.1" max="0.95" step="0.05" value="0.6" />
+        </label>
+        <label class="rx-typescale-label-large" data-for="polygon star pillStar rectangle">
+          <span>Corner radius <output name="radiusOut"></output></span>
+          <input type="range" name="radius" min="0" max="0.6" step="0.01" value="0.15" />
+        </label>
+        <label class="rx-typescale-label-large" data-for="polygon star pillStar rectangle pill">
+          <span>Smoothing <output name="smoothingOut"></output></span>
+          <input type="range" name="smoothing" min="0" max="1" step="0.05" value="0.5" />
+        </label>
+        <label class="rx-typescale-label-large" data-for="star pillStar">
+          <span>Inner corner radius <output name="innerRadiusOut"></output></span>
+          <input type="range" name="innerRadius" min="0" max="0.6" step="0.01" value="0.05" />
+        </label>
+        <label class="rx-typescale-label-large">
+          <span><input type="checkbox" name="points" /> Show curve points</span>
+        </label>
+      </form>
+      <div class="stage">
+        <svg id="stage" viewBox="-0.05 -0.05 1.1 1.1" role="img" aria-label="Shape preview"></svg>
+        <p class="stats rx-typescale-body-small" id="stats"></p>
+      </div>
+    </div>
+
+    <h2>Examples</h2>
+    <div class="gallery" id="gallery"></div>
+  </body>
+</html>
