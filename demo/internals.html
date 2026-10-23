@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Building blocks · RX Material 3E</title>
+    <link rel="stylesheet" href="../packages/tokens/css/fonts.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/theme.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/typescale.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/icons.css" />
+    <link rel="stylesheet" href="./demo.css" />
+    <script type="module" src="./shell.ts"></script>
+    <script type="module" src="./internals.ts"></script>
+    <style>
+      .panel {
+        display: grid;
+        gap: 16px;
+        padding: 16px;
+        border-radius: var(--md-sys-shape-corner-large);
+        background: var(--md-sys-color-surface-container);
+      }
+      fieldset {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+        padding: 12px 16px;
+        border: 1px solid var(--md-sys-color-outline-variant);
+        border-radius: var(--md-sys-shape-corner-medium);
+      }
+      legend {
+        padding: 0 4px;
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+        align-items: center;
+      }
+      .row label {
+        display: inline-flex;
+        gap: 4px;
+        align-items: center;
+      }
+      output {
+        display: block;
+        min-height: 1.5em;
+        color: var(--md-sys-color-on-surface-variant);
+        font-family: var(--md-ref-typeface-plain);
+        overflow-wrap: anywhere;
+      }
+      .toolbar {
+        display: inline-flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        padding: 4px;
+        border-radius: var(--md-sys-shape-corner-full);
+        background: var(--md-sys-color-surface-container-high);
+      }
+      .toolbar rx-surface {
+        display: grid;
+        place-items: center;
+        width: 48px;
+        height: 48px;
+      }
+      .targets {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        align-items: center;
+      }
+      .show-target {
+        outline: 1px dashed var(--md-sys-color-tertiary);
+      }
+      .targets figure {
+        display: grid;
+        gap: 8px;
+        justify-items: center;
+        margin: 0;
+        color: var(--md-sys-color-on-surface-variant);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Building blocks</h1>
+    <p>
+      The shared pieces every component is built from. They are exported too, for building your own
+      components that behave like the library's.
+    </p>
+
+    <h2>Forms and keyboard</h2>
+    <p>
+      The checkboxes and buttons below are custom elements made only from these pieces: semantics on
+      the element itself, native keyboard behaviour (Space toggles a checkbox; Enter and Space press
+      a button), and form association through <code>ElementInternals</code>. They submit, reset,
+      follow <code>&lt;fieldset disabled&gt;</code>, are labelled by <code>&lt;label&gt;</code> and
+      take part in validation.
+    </p>
+    <form class="panel" id="form">
+      <fieldset id="fieldset">
+        <legend class="rx-typescale-label-large">Toppings</legend>
+        <div class="row">
+          <label
+            ><demo-check name="topping" value="cheese" checked></demo-check
+            ><span class="rx-typescale-body-large">Cheese</span></label
+          >
+          <label
+            ><demo-check name="topping" value="olives"></demo-check
+            ><span class="rx-typescale-body-large">Olives</span></label
+          >
+          <label for="terms" class="rx-typescale-body-large">I agree (required)</label>
+          <demo-check id="terms" name="terms" required></demo-check>
+        </div>
+      </fieldset>
+      <div class="row">
+        <demo-button type="submit" name="action" value="order">Order</demo-button>
+        <demo-button type="reset">Reset</demo-button>
+        <label class="rx-typescale-body-medium"
+          ><input type="checkbox" id="disable-fieldset" /> Disable the fieldset</label
+        >
+      </div>
+      <output id="form-output" class="rx-typescale-body-medium" aria-live="polite"></output>
+    </form>
+
+    <h2>One Tab stop for a group</h2>
+    <p>
+      A roving tabindex: Tab enters the group once, the arrow keys move inside it (swapped in
+      right-to-left), Home and End jump to the ends, and disabled items are skipped. Try it with the
+      RTL switch at the top.
+    </p>
+    <demo-toolbar class="toolbar" aria-label="Text formatting">
+      <rx-surface interactive shape="full" aria-label="Bold"
+        ><rx-icon>format_bold</rx-icon></rx-surface
+      >
+      <rx-surface interactive shape="full" aria-label="Italic"
+        ><rx-icon>format_italic</rx-icon></rx-surface
+      >
+      <rx-surface interactive shape="full" aria-label="Underline" disabled
+        ><rx-icon>format_underlined</rx-icon></rx-surface
+      >
+      <rx-surface interactive shape="full" aria-label="Strikethrough"
+        ><rx-icon>strikethrough_s</rx-icon></rx-surface
+      >
+      <rx-surface interactive shape="full" aria-label="Clear"
+        ><rx-icon>format_clear</rx-icon></rx-surface
+      >
+    </demo-toolbar>
+
+    <h2>Touch targets</h2>
+    <p>
+      Compose's <code>minimumInteractiveComponentSize</code>: a control is laid out at least 48dp
+      each way with its visible part centered, so small controls are still easy to hit. The dashed
+      line is the touch target. <code>--rx-minimum-interactive-component-size: 0</code> turns it
+      off.
+    </p>
+    <div class="targets">
+      <figure>
+        <demo-check class="show-target"></demo-check>
+        <figcaption class="rx-typescale-body-small">18dp box, 48dp target</figcaption>
+      </figure>
+      <figure>
+        <demo-check
+          class="show-target"
+          style="--rx-minimum-interactive-component-size: 0px"
+        ></demo-check>
+        <figcaption class="rx-typescale-body-small">Turned off</figcaption>
+      </figure>
+    </div>
+  </body>
+</html>

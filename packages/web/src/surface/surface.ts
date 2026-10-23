@@ -1,4 +1,6 @@
 import {LitElement, css, html, nothing, unsafeCSS, type PropertyValues} from 'lit';
+import {addActivation} from '../internals/activation.js';
+import {ComposeRole, HostSemanticsController} from '../internals/host-semantics.js';
 import {customElement, property, state} from 'lit/decorators.js';
 import {styleMap} from 'lit/directives/style-map.js';
 import '../elevation/elevation.js';
@@ -141,10 +143,21 @@ export class RxSurface extends LitElement {
 
   constructor() {
     super();
-    // Registered first so it runs before any listener a page adds.
-    this.addEventListener('click', this.onClick, true);
-    this.addEventListener('keydown', this.onKeyDown);
-    this.addEventListener('keyup', this.onKeyUp);
+    // Registered first so a disabled click is stopped before any listener a page adds.
+    addActivation(this, {
+      kind: 'button',
+      isEnabled: () => this.interactive,
+      isDisabled: () => this.disabled,
+    });
+    new HostSemanticsController(this, () =>
+      this.interactive
+        ? {
+            role: ComposeRole.Button,
+            disabled: this.disabled,
+            aria: {pressed: this.selected ? true : null},
+          }
+        : {role: null},
+    );
   }
 
   static override styles = css`
@@ -211,9 +224,6 @@ export class RxSurface extends LitElement {
   }
 
   protected override updated(changed: PropertyValues) {
-    if (changed.has('interactive') || changed.has('disabled') || changed.has('selected')) {
-      this.updateSemantics();
-    }
     if (changed.has('absoluteTonalDp')) {
       // Nested surfaces add their own tonal elevation on top of this one's.
       for (const child of this.querySelectorAll('rx-surface')) child.updateTonalElevation();
@@ -235,48 +245,6 @@ export class RxSurface extends LitElement {
     const own = LEVEL_DP[Math.max(0, Math.min(5, Math.round(this.tonalElevation)))] ?? 0;
     this.absoluteTonalDp = (this.parentSurface?.absoluteTonalDp ?? 0) + own;
   }
-
-  private updateSemantics() {
-    if (this.interactive) {
-      this.setAttribute('role', 'button');
-      if (this.disabled) {
-        this.removeAttribute('tabindex');
-        this.setAttribute('aria-disabled', 'true');
-      } else {
-        this.setAttribute('tabindex', '0');
-        this.removeAttribute('aria-disabled');
-      }
-      if (this.selected) this.setAttribute('aria-pressed', 'true');
-      else this.removeAttribute('aria-pressed');
-    } else {
-      for (const name of ['role', 'tabindex', 'aria-disabled', 'aria-pressed']) {
-        this.removeAttribute(name);
-      }
-    }
-  }
-
-  private readonly onClick = (event: Event) => {
-    if (this.interactive && this.disabled) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-    }
-  };
-
-  // Button keyboard behaviour: Enter clicks on keydown, Space on keyup.
-  private readonly onKeyDown = (event: KeyboardEvent) => {
-    if (!this.interactive || this.disabled || event.target !== this) return;
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      this.click();
-    } else if (event.key === ' ') {
-      event.preventDefault();
-    }
-  };
-
-  private readonly onKeyUp = (event: KeyboardEvent) => {
-    if (!this.interactive || this.disabled || event.target !== this) return;
-    if (event.key === ' ') this.click();
-  };
 
   protected override render() {
     // Tonal elevation only tints the plain surface color, as in Compose.

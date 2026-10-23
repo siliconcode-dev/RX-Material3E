@@ -10,7 +10,7 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Steps 1 to 15 of 79 done. Live demo: https://rx-material3e.ashfaqizop.workers.dev See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 to 16 of 79 done. Live demo: https://rx-material3e.ashfaqizop.workers.dev See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package          | What it is                                                     | Status                            |
 | ---------------- | -------------------------------------------------------------- | --------------------------------- |
@@ -214,6 +214,20 @@ Each scheme has six springs: `defaultSpatial`, `fastSpatial`, `slowSpatial`, `de
 In CSS, `--md-sys-motion-spring-*-duration` and `-easing` give each spring as a `linear()` curve. Compose ends a spring once it stays within 0.01 of its target in the value's own unit, so a longer move takes longer; the tokens are timed for a 100dp move (spatial) and an alpha from 0 to 1 (effects). `data-motion-scheme="standard"` on any element switches it to the standard scheme.
 
 With reduced motion, animations jump to their end, like Android's "Remove animations". `setMotionDurationScale(5)` slows everything down, `setMotionDurationScale(0)` turns animation off and `null` goes back to following the user's setting.
+
+## Building blocks
+
+The shared pieces the components are built from, exported for your own components:
+
+| Piece                             | What it does                                                                                                                                              |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `HostSemanticsController`         | Role, tab stop, `aria-disabled` and ARIA state as attributes on the element itself, so `aria-labelledby` and `<label for>` reach it and checkers see them |
+| `addActivation()`                 | Native keyboard behaviour: buttons click on Enter (key down) and Space (key up), toggles on Space; clicks are swallowed while disabled                    |
+| `FormAssociated()`                | Form participation through `ElementInternals`: value in FormData, reset, `<fieldset disabled>`, labels, validity                                          |
+| `submitForm()`, `resetForm()`     | What a native submit or reset button does, including the submitter's name and value                                                                       |
+| `RovingTabindexController`        | One Tab stop for a group; arrow keys (swapped in RTL), Home and End move inside it, skipping disabled items                                               |
+| `minimumInteractiveComponentSize` | Compose's 48dp minimum touch target, as host CSS; `--rx-minimum-interactive-component-size: 0` turns it off                                               |
+| `redispatchEvent()`, `isRtl()`    | Re-fire an event from inside a shadow root; read the layout direction                                                                                     |
 
 ## Theme
 
