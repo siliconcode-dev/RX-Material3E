@@ -2,3 +2,4 @@
 // its roadmap step is done; see ROADMAP.md.
 export * from './theme/index.js';
 export * from './typography/index.js';
+export * from './elevation/index.js';

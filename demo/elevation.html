@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Elevation · RX Material 3E</title>
+    <link rel="stylesheet" href="../packages/tokens/css/fonts.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/theme.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/typescale.css" />
+    <link rel="stylesheet" href="./demo.css" />
+    <script type="module" src="./shell.ts"></script>
+    <script type="module" src="./elevation.ts"></script>
+    <style>
+      .levels {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 32px;
+        padding: 24px 8px;
+      }
+      .surface {
+        position: relative;
+        display: grid;
+        place-content: center;
+        gap: 4px;
+        min-height: 120px;
+        padding: 16px;
+        border-radius: var(--md-sys-shape-corner-medium);
+        background: var(--md-sys-color-surface-container-low);
+        text-align: center;
+      }
+      .surface small {
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      .live {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+        gap: 32px;
+        align-items: center;
+        padding: 24px 8px;
+      }
+      .live label {
+        display: grid;
+        gap: 8px;
+      }
+      .live input[type='range'] {
+        width: 100%;
+        accent-color: var(--md-sys-color-primary);
+      }
+      .hover-card {
+        min-height: 140px;
+        cursor: pointer;
+      }
+      .hover-card rx-elevation {
+        --rx-elevation: var(--md-sys-elevation-level1);
+      }
+      .hover-card:hover rx-elevation,
+      .hover-card:focus-visible rx-elevation {
+        --rx-elevation: var(--md-sys-elevation-level3);
+      }
+      .hover-card:active rx-elevation {
+        --rx-elevation: var(--md-sys-elevation-level1);
+      }
+      .hover-card:focus-visible {
+        outline: 3px solid var(--md-sys-color-secondary);
+        outline-offset: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Elevation</h1>
+    <p>
+      The six Material elevation levels. Each is two shadows from the M3 spec, a sharp key shadow
+      and a soft ambient one. <code>&lt;rx-elevation&gt;</code> takes a <code>level</code>, or any
+      distance through <code>--rx-elevation</code>, and animates between them.
+    </p>
+
+    <p>
+      In the dark theme the shadows are faint on purpose. Material shows depth there mostly through
+      lighter surface colors (<code>surface-container</code> and up), as on Android.
+    </p>
+
+    <h2>Levels</h2>
+    <div class="levels" id="levels"></div>
+
+    <h2>Live</h2>
+    <div class="live">
+      <label class="rx-typescale-label-large">
+        <span>Elevation: <output id="dp-out">3</output>dp</span>
+        <input type="range" id="dp" min="0" max="12" step="0.5" value="3" />
+      </label>
+      <div class="surface" id="live-surface">
+        <rx-elevation id="live-elevation" style="--rx-elevation: 3px"></rx-elevation>
+        <span class="rx-typescale-title-medium">Drag the slider</span>
+        <small class="rx-typescale-body-small">The shadow follows smoothly</small>
+      </div>
+      <div class="surface hover-card" tabindex="0">
+        <rx-elevation></rx-elevation>
+        <span class="rx-typescale-title-medium">Hover or focus me</span>
+        <small class="rx-typescale-body-small">Level 1, rising to 3; back down when pressed</small>
+      </div>
+    </div>
+  </body>
+</html>

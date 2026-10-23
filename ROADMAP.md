@@ -32,7 +32,7 @@ Status: `☐` not started, `◐` in progress, `☑` done.
 | ---- | ---------------------------------------------------------------------------------- | ------ |
 | 5    | Theme: seed color to full scheme, scheme variants, contrast levels, `applyTheme()` | ☑      |
 | 6    | Typography: typescale classes, emphasized styles                                   | ☑      |
-| 7    | Elevation: shadows for levels 0 to 5                                               | ☐      |
+| 7    | Elevation: shadows for levels 0 to 5                                               | ☑      |
 | 8    | Focus ring                                                                         | ☐      |
 | 9    | State layer and ripple                                                             | ☐      |
 | 10   | Icon: Material Symbols font and SVG slot                                           | ☐      |
@@ -143,5 +143,6 @@ Status: `☐` not started, `◐` in progress, `☑` done.
 - Tooling: Lit 3, TypeScript 6 with `experimentalDecorators`, Vite 8 for the dev server, `tsc` for the library build.
 - Quality: Vitest 5 browser mode on Playwright (Chromium for now; Firefox and WebKit join at step 75), ESLint 10 with `eslint-plugin-lit` and `eslint-plugin-wc`, Prettier. CI on GitHub Actions.
 - Theme: `@material/material-color-utilities` 0.4.0 builds schemes. Default spec is 2025 (M3 Expressive); 2021 is available. The library's imports omit file extensions, so it needs a bundler (Vite, webpack, esbuild); it does not load as raw ES modules in a browser.
+- Elevation: `--rx-elevation` is a registered, non-inheriting `<length>` taking the Compose dp values directly; the M3 key + ambient shadow pair is computed from it in CSS, so it animates between levels. Shadows only; tonal elevation is covered by the surface-container color roles, as in current Compose.
 - Dependency versions are normally at least two weeks old. Security fixes are the exception (Vitest 5.0.5 fixes GHSA-p458-7748-mcp3).
 - Distribution: npm. A shadcn-style registry may be added after the alpha.
