@@ -48,7 +48,6 @@
       .sheet {
         position: absolute;
         right: 0;
-        bottom: 0;
         left: 0;
         display: grid;
         gap: 12px;
@@ -57,17 +56,12 @@
           0 0;
         background: var(--md-sys-color-surface-container-low);
         color: var(--md-sys-color-on-surface);
-        translate: 0 110%;
-        transition: translate var(--md-sys-motion-spring-default-spatial-duration)
-          var(--md-sys-motion-spring-default-spatial-easing);
-      }
-      .sheet.open {
-        translate: 0 0;
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .sheet {
-          transition: none;
-        }
+        /* The spring overshoots a little: extend below the edge so no gap shows. */
+        bottom: -32px;
+        padding-bottom: calc(24px + 32px);
+        /* Moved by scrim.ts; hidden below the screen at first. */
+        translate: 0 100%;
+        will-change: translate;
       }
       .controls {
         display: grid;
@@ -104,6 +98,11 @@
       modal surface. It fades in and out on the default effects spring. When it can dismiss the
       modal, it is a labelled button for screen readers (as in Compose, it is not a Tab stop; the
       modal closes on Escape too).
+    </p>
+    <p>
+      The sheet here moves as Compose's <code>ModalBottomSheet</code> does: up on the default
+      spatial spring, down on the fast effects spring, while the scrim fades on the default effects
+      spring.
     </p>
 
     <h2>Over a modal sheet</h2>
