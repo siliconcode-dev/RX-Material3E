@@ -1,6 +1,8 @@
 import {LitElement, css, html, type PropertyValues} from 'lit';
 import {customElement, property, query} from 'lit/decorators.js';
 import type {Cubic} from './graphics/cubic.js';
+import {Animatable} from '../motion/animatable.js';
+import {motionSpring, spring} from '../motion/motion-scheme.js';
 import {Morph} from './graphics/morph.js';
 import {pathFromCubics} from './graphics/path.js';
 import type {RoundedPolygon} from './graphics/rounded-polygon.js';
@@ -72,30 +74,23 @@ function cachedMorph(start: RoundedPolygon, end: RoundedPolygon): Morph {
   return morph;
 }
 
-/** "532ms" or "0.5s" to milliseconds. */
-function parseDuration(value: string): number {
-  const v = value.trim();
-  const n = parseFloat(v);
-  if (!Number.isFinite(n)) return 0;
-  return v.endsWith('ms') ? n : v.endsWith('s') ? n * 1000 : n;
-}
-
 /**
  * Clips its content to a Material 3 Expressive shape and fills it with a
  * color. Any of the 35 MaterialShapes by name (`cookie-9-sided`, `heart`,
  * ...), or any normalized polygon through the `polygon` property.
  *
  * Changing the shape morphs to the new one with Google's Morph (the same
- * curve matching as Android), timed by the expressive default spatial
- * spring. Reduced motion, or `no-morph`, switches shapes at once.
+ * curve matching as Android), its progress driven by the default spatial
+ * spring as Compose would. Going back mid-morph springs back from where it
+ * is, keeping its speed. Reduced motion, or `no-morph`, switches at once.
  *
  * @example
  * <rx-shape shape="cookie-9-sided"><img src="avatar.jpg" alt=""></rx-shape>
  *
  * @cssprop --rx-shape-color - Fill. Defaults to `primary-container`.
  * @cssprop --rx-shape-content-color - Content color. Defaults to `on-primary-container`.
- * @cssprop --rx-shape-morph-duration - Morph duration. Defaults to the default spatial spring's.
- * @cssprop --rx-shape-morph-easing - Morph easing. Defaults to the default spatial spring.
+ * @cssprop --rx-shape-morph-stiffness - Morph spring stiffness. Defaults to the default spatial spring's.
+ * @cssprop --rx-shape-morph-damping - Morph spring damping ratio. Defaults to the default spatial spring's.
  */
 @customElement('rx-shape')
 export class RxShape extends LitElement {
@@ -115,10 +110,8 @@ export class RxShape extends LitElement {
   private morph: Morph | null = null;
   private morphStart: RoundedPolygon | null = null;
   private morphEnd: RoundedPolygon | null = null;
-  // Our own record: an Animation's playbackRate only changes once a pending reverse() applies.
-  private forward = true;
-  private animation: Animation | null = null;
-  private frame = 0;
+  /** Morph progress: 0 is morphStart, 1 is morphEnd. */
+  private readonly progress = new Animatable(0);
 
   private readonly resizeObserver = new ResizeObserver(() => this.updateClip());
 
@@ -129,14 +122,6 @@ export class RxShape extends LitElement {
       width: 48px;
       height: 48px;
       color: var(--rx-shape-content-color, var(--md-sys-color-on-primary-container));
-      --_morph-duration: var(
-        --rx-shape-morph-duration,
-        var(--md-sys-motion-spring-default-spatial-duration, 532ms)
-      );
-      --_morph-easing: var(
-        --rx-shape-morph-easing,
-        var(--md-sys-motion-spring-default-spatial-easing, ease)
-      );
     }
 
     .shape {
@@ -175,11 +160,11 @@ export class RxShape extends LitElement {
   }
 
   /**
-   * The running morph's animation, or null. Pause, seek or reverse it to
-   * drive the morph yourself.
+   * The progress of the running morph (0 at the old shape, 1 at the new;
+   * a springy morph overshoots a little), or null when not morphing.
    */
-  get morphAnimation(): Animation | null {
-    return this.animation;
+  get morphProgress(): number | null {
+    return this.morph ? this.progress.value : null;
   }
 
   protected override updated(changed: PropertyValues<this>) {
@@ -190,74 +175,63 @@ export class RxShape extends LitElement {
     this.updateClip();
   }
 
+  /** The default spatial spring, or the element's own stiffness and damping. */
+  private morphSpring() {
+    const base = motionSpring(this, 'defaultSpatial');
+    const style = getComputedStyle(this);
+    const stiffness = parseFloat(style.getPropertyValue('--rx-shape-morph-stiffness'));
+    const damping = parseFloat(style.getPropertyValue('--rx-shape-morph-damping'));
+    return spring({
+      stiffness: stiffness > 0 ? stiffness : base.stiffness,
+      dampingRatio: damping >= 0 ? damping : base.dampingRatio,
+    });
+  }
+
   private morphTo(next: RoundedPolygon | null) {
     const previous = this.target;
     this.target = next;
-    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!previous || !next || this.noMorph || reduceMotion || !this.isConnected) {
+    if (!previous || !next || this.noMorph || !this.isConnected) {
       this.finishMorph();
       return;
     }
 
-    let start = previous;
-    if (this.animation && this.morphStart && this.morphEnd) {
-      // Going back to the shape the running morph comes from: run it
-      // backwards, which keeps the outline continuous.
-      const from = this.forward ? this.morphStart : this.morphEnd;
-      if (next === from) {
-        this.animation.reverse();
-        this.forward = !this.forward;
+    if (this.morph && this.morphStart && this.morphEnd) {
+      // Back to either end of the running morph: spring the progress there
+      // from where it is, keeping its velocity, as Compose's Animatable does.
+      if (next === this.morphStart || next === this.morphEnd) {
+        this.runProgress(next === this.morphEnd ? 1 : 0);
         return;
       }
       // A third shape: start from whichever end of the running morph is closer.
-      start = this.currentProgress() < 0.5 ? this.morphStart : this.morphEnd;
+      const nearer = this.progress.value < 0.5 ? this.morphStart : this.morphEnd;
+      this.finishMorph();
+      if (nearer === next) return;
+      this.startMorph(nearer, next);
+      return;
     }
-    this.finishMorph();
-    if (start === next) return;
-
-    const style = getComputedStyle(this);
-    const duration = parseDuration(style.getPropertyValue('--_morph-duration'));
-    if (duration <= 0) return;
-    let effect: KeyframeEffect;
-    try {
-      effect = new KeyframeEffect(null, null, {
-        duration,
-        easing: style.getPropertyValue('--_morph-easing').trim() || 'ease',
-        fill: 'forwards',
-      });
-    } catch {
-      // An easing this browser can't parse (such as linear() in an old one).
-      effect = new KeyframeEffect(null, null, {duration, easing: 'ease', fill: 'forwards'});
-    }
-    this.morph = cachedMorph(start, next);
-    this.morphStart = start;
-    this.morphEnd = next;
-    this.forward = true;
-    this.animation = new Animation(effect, document.timeline);
-    this.animation.play();
-    const tick = () => {
-      this.updateClip();
-      if (!this.animation) return;
-      if (this.animation.playState === 'finished') {
-        this.finishMorph();
-        this.updateClip();
-        return;
-      }
-      this.frame = requestAnimationFrame(tick);
-    };
-    this.frame = requestAnimationFrame(tick);
+    this.startMorph(previous, next);
   }
 
-  /** Eased progress of the running morph; may overshoot 0..1 with a spring. */
-  private currentProgress(): number {
-    const progress = this.animation?.effect?.getComputedTiming().progress;
-    return progress ?? 1;
+  private startMorph(start: RoundedPolygon, end: RoundedPolygon) {
+    this.morph = cachedMorph(start, end);
+    this.morphStart = start;
+    this.morphEnd = end;
+    this.progress.snapTo(0);
+    this.runProgress(1);
+  }
+
+  private runProgress(to: 0 | 1) {
+    void this.progress
+      .animateTo(to, this.morphSpring(), undefined, () => this.updateClip())
+      .then((result) => {
+        if (result.endReason === 'Interrupted') return;
+        this.finishMorph();
+        this.updateClip();
+      });
   }
 
   private finishMorph() {
-    cancelAnimationFrame(this.frame);
-    this.animation?.cancel();
-    this.animation = null;
+    this.progress.stop();
     this.morph = null;
     this.morphStart = null;
     this.morphEnd = null;
@@ -273,7 +247,7 @@ export class RxShape extends LitElement {
     let path = '';
     if (width > 0 && height > 0) {
       if (this.morph) {
-        path = morphShapePath(this.morph, this.currentProgress(), width, height);
+        path = morphShapePath(this.morph, this.progress.value, width, height);
       } else if (this.target) {
         path = shapePath(this.target, width, height);
       }

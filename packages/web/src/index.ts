@@ -9,3 +9,4 @@ export * from './icon/index.js';
 export * from './surface/index.js';
 export * as graphicsShapes from './shapes/graphics/index.js';
 export * from './shapes/index.js';
+export * from './motion/index.js';

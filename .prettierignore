@@ -8,3 +8,4 @@ packages/tokens/css/
 packages/tokens/src/
 # Written by scripts/shapes-golden/generate.sh from Google's Kotlin; keep byte for byte.
 packages/web/test/shapes/golden/
+packages/web/test/motion/golden/

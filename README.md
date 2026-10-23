@@ -10,7 +10,7 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Steps 1 to 14 of 79 done. Live demo: https://rx-material3e.ashfaqizop.workers.dev See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 to 15 of 79 done. Live demo: https://rx-material3e.ashfaqizop.workers.dev See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package          | What it is                                                     | Status                            |
 | ---------------- | -------------------------------------------------------------- | --------------------------------- |
@@ -179,7 +179,7 @@ All 35 Material 3 Expressive shapes from Compose's `MaterialShapes`: circle, squ
 </script>
 ```
 
-Changing `shape` morphs to the new shape with Google's `Morph`. Sending it back mid-morph runs the morph backwards. `--rx-shape-morph-duration` and `--rx-shape-morph-easing` change the timing, `no-morph` switches at once, and so does reduced motion. `morphAnimation` gives the running animation, to pause or seek it.
+Changing `shape` morphs to the new shape with Google's `Morph`, its progress on the default spatial spring. Sending it back mid-morph springs back from where it is, keeping its speed. `--rx-shape-morph-stiffness` and `--rx-shape-morph-damping` change the spring, `no-morph` switches at once, and reduced motion does too. `morphProgress` reads the progress.
 
 In code:
 
@@ -191,6 +191,29 @@ const d = morphShapePath(morph, 0.5, 200, 200); // halfway, drawn at 200x200
 ```
 
 All 1,225 pairs of Material shapes, Compose's loading indicator sequence and Google's test pairs are checked against Google's Kotlin.
+
+## Motion
+
+Compose's springs, ported by hand and checked against Google's Kotlin number for number:
+
+```js
+import {Animatable, MotionSchemes, animateWithSpring} from '@rx-m3e/web';
+
+const scheme = MotionSchemes.expressive(); // or .standard()
+
+// A value that springs, like Compose's Animatable. Retarget it mid-flight and it keeps its speed.
+const x = new Animatable(0);
+x.animateTo(240, scheme.defaultSpatial, undefined, () => (ball.style.translate = `${x.value}px`));
+
+// Ordinary keyframes on a spring's curve, timed as Compose would for that distance.
+animateWithSpring(card, {translate: ['0 48px', '0 0']}, scheme.fastSpatial, {distance: 48});
+```
+
+Each scheme has six springs: `defaultSpatial`, `fastSpatial`, `slowSpatial`, `defaultEffects`, `fastEffects`, `slowEffects`. `motionSpring(element, 'fastSpatial')` reads the one the page's CSS sets.
+
+In CSS, `--md-sys-motion-spring-*-duration` and `-easing` give each spring as a `linear()` curve. Compose ends a spring once it stays within 0.01 of its target in the value's own unit, so a longer move takes longer; the tokens are timed for a 100dp move (spatial) and an alpha from 0 to 1 (effects). `data-motion-scheme="standard"` on any element switches it to the standard scheme.
+
+With reduced motion, animations jump to their end, like Android's "Remove animations". `setMotionDurationScale(5)` slows everything down, `setMotionDurationScale(0)` turns animation off and `null` goes back to following the user's setting.
 
 ## Theme
 

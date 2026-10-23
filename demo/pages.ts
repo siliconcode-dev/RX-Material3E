@@ -30,6 +30,7 @@ export const sections: DemoSection[] = [
       {title: 'Shape engine', href: 'shapes.html'},
       {title: 'Material shapes', href: 'material-shapes.html'},
       {title: 'Shape morphing', href: 'morph.html'},
+      {title: 'Motion', href: 'motion.html'},
     ],
   },
 ];

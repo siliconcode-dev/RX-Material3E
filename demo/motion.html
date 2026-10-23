@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Motion · RX Material 3E</title>
+    <link rel="stylesheet" href="../packages/tokens/css/fonts.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/theme.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/typescale.css" />
+    <link rel="stylesheet" href="./demo.css" />
+    <script type="module" src="./shell.ts"></script>
+    <script type="module" src="./motion.ts"></script>
+    <style>
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px 24px;
+        align-items: end;
+        padding: 16px;
+        border-radius: var(--md-sys-shape-corner-large);
+        background: var(--md-sys-color-surface-container);
+      }
+      .bar label {
+        display: grid;
+        gap: 4px;
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      .bar select {
+        min-height: 40px;
+        padding: 0 12px;
+        border: 1px solid var(--md-sys-color-outline);
+        border-radius: var(--md-sys-shape-corner-small);
+        background: var(--md-sys-color-surface);
+        color: var(--md-sys-color-on-surface);
+        font: inherit;
+      }
+      .curves {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+        gap: 16px;
+        padding: 16px 0;
+      }
+      .curve {
+        display: grid;
+        gap: 4px;
+        padding: 12px;
+        border-radius: var(--md-sys-shape-corner-medium);
+        background: var(--md-sys-color-surface-container-low);
+      }
+      .curve svg {
+        width: 100%;
+        height: 120px;
+        overflow: visible;
+      }
+      .curve .grid {
+        stroke: var(--md-sys-color-outline-variant);
+        stroke-width: 1;
+        vector-effect: non-scaling-stroke;
+      }
+      .curve .line {
+        fill: none;
+        stroke: var(--md-sys-color-primary);
+        stroke-width: 2.5;
+        vector-effect: non-scaling-stroke;
+      }
+      .curve .meta {
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      .track {
+        position: relative;
+        height: 96px;
+        margin: 16px 0;
+        border-radius: var(--md-sys-shape-corner-extra-large);
+        background: var(--md-sys-color-surface-container);
+        cursor: pointer;
+        touch-action: manipulation;
+      }
+      .ball {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: var(--md-sys-color-primary);
+        will-change: translate;
+      }
+      .readout {
+        color: var(--md-sys-color-on-surface-variant);
+        font-variant-numeric: tabular-nums;
+      }
+      .buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .buttons button {
+        min-height: 40px;
+        padding: 0 20px;
+        border: 0;
+        border-radius: var(--md-sys-shape-corner-full);
+        background: var(--md-sys-color-secondary-container);
+        color: var(--md-sys-color-on-secondary-container);
+        font: inherit;
+        cursor: pointer;
+      }
+      .buttons button[aria-pressed='true'] {
+        background: var(--md-sys-color-primary);
+        color: var(--md-sys-color-on-primary);
+      }
+      .cards {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        padding: 16px 0;
+      }
+      .card {
+        display: grid;
+        place-items: center;
+        width: 120px;
+        height: 80px;
+        border-radius: var(--md-sys-shape-corner-large);
+        background: var(--md-sys-color-tertiary-container);
+        color: var(--md-sys-color-on-tertiary-container);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Motion</h1>
+    <p>
+      Compose's springs, ported by hand: <code>SpringSimulation</code>, its duration estimate and
+      <code>Animatable</code>. Values and durations are checked against Google's Kotlin, number for
+      number. The spring tokens in CSS come from the same code.
+    </p>
+
+    <form class="bar" id="controls">
+      <label class="rx-typescale-label-large">
+        Motion scheme
+        <select name="scheme">
+          <option value="expressive">Expressive</option>
+          <option value="standard">Standard</option>
+        </select>
+      </label>
+      <label class="rx-typescale-label-large">
+        Duration scale
+        <select name="scale">
+          <option value="system">Follow reduced motion</option>
+          <option value="1">1× (normal)</option>
+          <option value="5">5× (slow motion)</option>
+          <option value="0">0 (no animation)</option>
+        </select>
+      </label>
+    </form>
+
+    <h2>The six springs</h2>
+    <p>
+      Spatial springs move 100dp, effects springs change an alpha from 0 to 1. A spring ends when it
+      stays within 0.01 of its target, as in Compose, so a longer move takes longer.
+    </p>
+    <div class="curves" id="curves"></div>
+
+    <h2>Animatable</h2>
+    <p>
+      Tap the track. The ball springs there with <code>Animatable</code>; tap again while it moves
+      and it carries its speed into the new target, as Compose does.
+    </p>
+    <div class="buttons" id="ball-springs" role="group" aria-label="Spring"></div>
+    <div class="track" id="track" aria-label="Tap to move the ball">
+      <div class="ball" id="ball"></div>
+    </div>
+    <p class="readout rx-typescale-body-medium" id="readout" aria-live="polite"></p>
+
+    <h2>Web Animations</h2>
+    <p>
+      <code>animateWithSpring()</code> runs ordinary <code>element.animate()</code> keyframes on a
+      spring's curve, with the duration Compose would use for that distance.
+    </p>
+    <div class="buttons"><button type="button" id="pop">Pop the cards</button></div>
+    <div class="cards" id="cards">
+      <div class="card">Fast</div>
+      <div class="card">Default</div>
+      <div class="card">Slow</div>
+    </div>
+  </body>
+</html>

@@ -6,7 +6,7 @@
 #   kotlin-compiler-embeddable-2.2.21, kotlin-stdlib-2.2.21, kotlin-script-runtime-2.2.21,
 #   kotlin-reflect-1.6.10, kotlin-daemon-embeddable-2.2.21, kotlinx-coroutines-core-jvm-1.8.0,
 #   trove4j-1.0.20200330, annotations-13.0, androidx collection-jvm-1.5.0, annotation-jvm-1.9.1
-# and the androidx sources from `npm run tokens:fetch` (plus compose/ui/ui-graphics).
+# and the androidx sources from `npm run tokens:fetch`.
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 : "${KT_DEPS:?set KT_DEPS to the folder with the jars}"
@@ -41,3 +41,15 @@ java -cp "$CP" org.jetbrains.kotlin.cli.jvm.K2JVMCompiler -no-stdlib -no-reflect
   "$EXTRACT" scripts/shapes-golden/GoldenMorph.kt
 java -cp "$OUT:$LIBS" androidx.compose.material3.GoldenMorphKt \
   packages/web/test/shapes/golden/morph.json
+
+# Springs: animation-core's SpringSimulation and SpringEstimation as they are,
+# FloatSpringSpec, Spring and the ui-util helpers they use extracted verbatim.
+CORE=.cache/androidx/compose/animation/animation-core/src/commonMain/kotlin/androidx/compose/animation/core
+node scripts/shapes-golden/extract-spring.mjs .cache/androidx "$OUT"
+java -cp "$CP" org.jetbrains.kotlin.cli.jvm.K2JVMCompiler -no-stdlib -no-reflect \
+  -cp "$LIBS" -d "$OUT" \
+  "$CORE"/{SpringSimulation,SpringEstimation,Preconditions}.kt \
+  "$OUT"/SpringExtract.kt "$OUT"/UiUtilExtract.kt scripts/shapes-golden/GoldenSpring.kt
+mkdir -p packages/web/test/motion/golden
+java -cp "$OUT:$LIBS" androidx.compose.animation.core.GoldenSpringKt \
+  packages/web/test/motion/golden/spring.json

@@ -28,7 +28,7 @@ describe('parseCatalog', () => {
       name: expect.stringMatching(/^Design tokens/),
       status: 'done',
     });
-    expect(byId.get('0.3')).toMatchObject({status: 'progress', note: 'tokens only', gen: 'M3E'});
+    expect(byId.get('0.3')).toMatchObject({status: 'done', gen: 'M3E'});
     expect(byId.get('1.3')).toMatchObject({
       name: 'Icon button',
       elements: ['rx-icon-button'],
@@ -37,5 +37,17 @@ describe('parseCatalog', () => {
     });
     expect(byId.get('1.10')?.elements).toContain('rx-chip-set');
     expect(byId.get('6.1')).toMatchObject({name: 'Scaffold', elements: ['rx-scaffold']});
+  });
+
+  it('reads an in-progress status with its note', () => {
+    const table = [
+      '## 0. Foundations',
+      '',
+      '| #   | Item | Web output | Compose | MDC | Gen | Status   |',
+      '| --- | --------- | -------- | ------- | --- | --- | -------- |',
+      '| 0.1 | Motion    | `rx-foo` | `A.kt`  | `a/` | M3E | ◐ tokens only |',
+    ].join('\n');
+    const [entry] = parseCatalog(table)[0].entries;
+    expect(entry).toMatchObject({status: 'progress', note: 'tokens only', gen: 'M3E'});
   });
 });

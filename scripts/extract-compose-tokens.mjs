@@ -10,6 +10,7 @@
 import {readFileSync, readdirSync, writeFileSync, mkdirSync} from 'node:fs';
 import {join, dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {springTiming} from '../packages/web/src/motion/spring.ts';
 
 const [srcDir, commit = 'unknown'] = process.argv.slice(2);
 if (!srcDir) {
@@ -175,48 +176,38 @@ for (const [k, v] of Object.entries(objects.MotionTokens)) {
   else sys[`--md-sys-motion-easing-${kebab(k.slice(6).replace(/CubicBezier$/, ''))}`] = resolve(v);
 }
 
-// Expressive motion springs. CSS has no spring timing function, so each spring
-// is sampled into a `linear()` easing plus the duration it takes to settle.
-function spring(stiffness, dampingRatio) {
-  const w0 = Math.sqrt(stiffness);
-  const dt = 1 / 600;
-  let x = 0,
-    v = 0,
-    t = 0;
-  const samples = [];
-  let settled = 0;
-  while (t < 3) {
-    const a = stiffness * (1 - x) - 2 * dampingRatio * w0 * v;
-    v += a * dt;
-    x += v * dt;
-    t += dt;
-    samples.push([t, x]);
-    if (Math.abs(1 - x) < 0.001 && Math.abs(v) < 0.01) {
-      if (++settled > 30) break;
-    } else settled = 0;
+// Motion springs. CSS has no spring timing function, so each spring is turned
+// into a duration and a `linear()` easing by the library's port of Compose's
+// spring (packages/web/src/motion/spring.ts): the same values Compose
+// computes, millisecond by millisecond, ending when Compose ends it. Compose
+// stops a spring within 0.01 of its target in the value's own unit, so the
+// duration depends on the distance. The tokens use a 100dp move for spatial
+// springs and a 0 to 1 change (an alpha) for effects springs.
+const SpatialTokenDistance = 100;
+const EffectsTokenDistance = 1;
+function motionSprings(tokens) {
+  const out = {};
+  for (const speed of ['Default', 'Fast', 'Slow']) {
+    for (const kind of ['Spatial', 'Effects']) {
+      const damping = num(tokens[`Spring${speed}${kind}Damping`]);
+      const stiffness = num(tokens[`Spring${speed}${kind}Stiffness`]);
+      const base = `--md-sys-motion-spring-${speed.toLowerCase()}-${kind.toLowerCase()}`;
+      const to = kind === 'Spatial' ? SpatialTokenDistance : EffectsTokenDistance;
+      const {duration, easing} = springTiming(damping, stiffness, {to});
+      Object.assign(out, {
+        [`${base}-damping`]: String(damping),
+        [`${base}-stiffness`]: String(stiffness),
+        [`${base}-duration`]: `${duration}ms`,
+        [`${base}-easing`]: easing,
+      });
+    }
   }
-  const dur = samples.at(-1)[0];
-  const step = Math.max(1, Math.floor(samples.length / 48));
-  const pts = ['0'];
-  for (let i = step; i < samples.length - 1; i += step) pts.push(+samples[i][1].toFixed(4));
-  pts.push('1');
-  return {duration: `${Math.round(dur * 1000)}ms`, easing: `linear(${pts.join(', ')})`};
+  return out;
 }
-for (const speed of ['Default', 'Fast', 'Slow']) {
-  for (const kind of ['Spatial', 'Effects']) {
-    const s = objects.ExpressiveMotionTokens;
-    const damping = num(s[`Spring${speed}${kind}Damping`]);
-    const stiffness = num(s[`Spring${speed}${kind}Stiffness`]);
-    const base = `--md-sys-motion-spring-${speed.toLowerCase()}-${kind.toLowerCase()}`;
-    const {duration, easing} = spring(stiffness, damping);
-    Object.assign(sys, {
-      [`${base}-damping`]: String(damping),
-      [`${base}-stiffness`]: String(stiffness),
-      [`${base}-duration`]: duration,
-      [`${base}-easing`]: easing,
-    });
-  }
-}
+// Expressive is the default (M3 Expressive); data-motion-scheme="standard"
+// switches to the standard scheme, like Compose's MotionScheme.standard().
+Object.assign(sys, motionSprings(objects.ExpressiveMotionTokens));
+const standardMotion = motionSprings(objects.StandardMotionTokens);
 
 // ---------------------------------------------------------------------------
 // 4. Component tokens.
@@ -292,7 +283,10 @@ writeFileSync(
 );
 writeFileSync(
   join(outDir, 'css/sys.css'),
-  header('System tokens: typescale, shape, elevation, state and motion.') + block(':root', sys),
+  header('System tokens: typescale, shape, elevation, state and motion.') +
+    block(':root', sys) +
+    '\n/* The standard motion scheme, for a page or a part of one. */\n' +
+    block('[data-motion-scheme="standard"]', standardMotion),
 );
 writeFileSync(
   join(outDir, 'css/color.css'),
@@ -425,6 +419,7 @@ const json = {
   },
   ref,
   sys,
+  standardMotion,
   color: {light, dark},
   components,
 };

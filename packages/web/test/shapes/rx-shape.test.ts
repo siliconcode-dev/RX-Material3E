@@ -1,6 +1,7 @@
 import {afterEach, describe, expect, it} from 'vitest';
 import '@rx-m3e/tokens/theme.css';
 import '../../src/shapes/shape.js';
+import {setMotionDurationScale} from '../../src/motion/index.js';
 import {Morph, star} from '../../src/shapes/graphics/index.js';
 import {
   MATERIAL_SHAPE_NAMES,
@@ -161,78 +162,91 @@ describe('rx-shape', () => {
   });
 
   describe('morphing', () => {
-    const slow =
-      'width: 100px; height: 100px; --rx-shape-morph-duration: 10s; --rx-shape-morph-easing: linear';
+    // A very soft spring keeps the morph going for seconds.
+    const slow = 'width: 100px; height: 100px; --rx-shape-morph-stiffness: 2';
+    const frames = async (n: number) => {
+      for (let i = 0; i < n; i++) await nextFrame();
+    };
 
-    it("morphs with Google's Morph when the shape changes", async () => {
+    it("draws Google's Morph at the spring's progress", async () => {
       const el = await mount(`<rx-shape shape="heart" style="${slow}"></rx-shape>`);
       await nextFrame();
       el.shape = 'clover-8-leaf';
       await el.updateComplete;
-      const animation = el.morphAnimation!;
-      expect(animation).not.toBeNull();
-      animation.pause();
-      animation.currentTime = 5000;
-      await nextFrame();
+      await frames(3);
+      const progress = el.morphProgress!;
+      expect(progress).toBeGreaterThan(0);
+      expect(progress).toBeLessThan(1);
       const morph = new Morph(materialShape('Heart'), materialShape('Clover8Leaf'));
-      expect(clipOf(el)).toBe(clip(morphShapePath(morph, 0.5, 100, 100)));
+      expect(clipOf(el)).toBe(clip(morphShapePath(morph, progress, 100, 100)));
     });
 
-    it('runs backwards when the shape goes back mid-morph', async () => {
-      const el = await mount(`<rx-shape shape="square" style="${slow}"></rx-shape>`);
+    it('springs back from where it is when the shape goes back mid-morph', async () => {
+      const el = await mount(
+        '<rx-shape shape="square" style="width: 100px; height: 100px; --rx-shape-morph-stiffness: 60"></rx-shape>',
+      );
       el.shape = 'circle';
       await el.updateComplete;
-      const animation = el.morphAnimation!;
-      animation.pause();
-      animation.currentTime = 3000;
+      await frames(4);
+      const before = el.morphProgress!;
       el.shape = 'square';
       await el.updateComplete;
-      expect(el.morphAnimation).toBe(animation);
-      await animation.ready;
-      expect(animation.playbackRate).toBe(-1);
-      animation.pause();
-      animation.currentTime = 1000;
-      await nextFrame();
-      const morph = new Morph(materialShape('Square'), materialShape('Circle'));
-      expect(clipOf(el)).toBe(clip(morphShapePath(morph, 0.1, 100, 100)));
+      // Same morph, same place: no jump.
+      expect(el.morphProgress).toBe(before);
+      // It keeps its forward speed for a moment (as Compose's Animatable
+      // does), then springs back and settles on the square.
+      let peak = before;
+      for (let i = 0; i < 180 && el.morphProgress !== null; i++) {
+        await nextFrame();
+        peak = Math.max(peak, el.morphProgress ?? 0);
+      }
+      expect(peak).toBeGreaterThan(before);
+      expect(el.morphProgress).toBeNull();
+      expect(clipOf(el)).toBe(clip(shapePath(materialShape('Square'), 100, 100)));
     });
 
     it('ends exactly on the new shape', async () => {
       const el = await mount(
-        '<rx-shape shape="pill" style="width: 80px; height: 80px; --rx-shape-morph-duration: 40ms"></rx-shape>',
+        '<rx-shape shape="pill" style="width: 80px; height: 80px"></rx-shape>',
       );
       el.shape = 'sunny';
       await el.updateComplete;
-      expect(el.morphAnimation).not.toBeNull();
-      await new Promise((r) => setTimeout(r, 200));
+      expect(el.morphProgress).not.toBeNull();
+      await new Promise((r) => setTimeout(r, 1200));
       await nextFrame();
-      expect(el.morphAnimation).toBeNull();
+      expect(el.morphProgress).toBeNull();
       expect(clipOf(el)).toBe(clip(shapePath(materialShape('Sunny'), 80, 80)));
     });
 
-    it('switches at once with no-morph or a zero duration', async () => {
-      for (const markup of [
-        '<rx-shape shape="gem" no-morph></rx-shape>',
-        '<rx-shape shape="gem" style="--rx-shape-morph-duration: 0s"></rx-shape>',
-      ]) {
-        const el = await mount(markup);
-        el.shape = 'bun';
-        await el.updateComplete;
-        expect(el.morphAnimation).toBeNull();
-        expect(clipOf(el)).toBe(clip(shapePath(materialShape('Bun'), 48, 48)));
+    it('switches at once with no-morph, and within a frame with reduced motion', async () => {
+      const el = await mount('<rx-shape shape="gem" no-morph></rx-shape>');
+      el.shape = 'bun';
+      await el.updateComplete;
+      expect(el.morphProgress).toBeNull();
+      expect(clipOf(el)).toBe(clip(shapePath(materialShape('Bun'), 48, 48)));
+
+      setMotionDurationScale(0);
+      try {
+        const reduced = await mount('<rx-shape shape="gem"></rx-shape>');
+        reduced.shape = 'bun';
+        await reduced.updateComplete;
+        await frames(2);
+        expect(reduced.morphProgress).toBeNull();
+        expect(clipOf(reduced)).toBe(clip(shapePath(materialShape('Bun'), 48, 48)));
+      } finally {
+        setMotionDurationScale(null);
       }
     });
 
-    it('uses the default spatial spring tokens', async () => {
-      const el = await mount('<rx-shape shape="gem"></rx-shape>');
-      el.shape = 'bun';
-      await el.updateComplete;
-      const timing = el.morphAnimation!.effect!.getTiming();
-      const root = getComputedStyle(document.documentElement);
-      expect(`${timing.duration}ms`).toBe(
-        root.getPropertyValue('--md-sys-motion-spring-default-spatial-duration').trim(),
-      );
-      expect(timing.easing).toMatch(/^linear\(/);
+    it('takes its own stiffness, else the default spatial spring', async () => {
+      document.body.innerHTML =
+        '<rx-shape id="a" shape="gem"></rx-shape><rx-shape id="b" shape="gem" style="--rx-shape-morph-stiffness: 20"></rx-shape>';
+      const [a, b] = [...document.querySelectorAll('rx-shape')] as RxShape[];
+      await Promise.all([a.updateComplete, b.updateComplete]);
+      a.shape = b.shape = 'bun';
+      await Promise.all([a.updateComplete, b.updateComplete]);
+      await frames(5);
+      expect(a.morphProgress!).toBeGreaterThan(b.morphProgress!);
     });
   });
 });
