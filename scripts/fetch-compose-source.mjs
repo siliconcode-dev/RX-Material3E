@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 // Sparse-clones the Compose Material3, material3-ripple, animation-core and graphics-shapes sources into .cache/androidx
-// so `npm run tokens` can regenerate packages/tokens. Pass a ref to pin a commit.
+// so `npm run tokens` can regenerate packages/tokens. Pass a branch or commit to pin it;
+// everything in the repo so far was generated from androidx commit 05311d19b0b22b2fa108016661b81ddf0586939b:
+//   npm run tokens:fetch -- 05311d19b0b22b2fa108016661b81ddf0586939b
 
 import {execFileSync} from 'node:child_process';
 import {existsSync} from 'node:fs';
@@ -9,6 +11,8 @@ const dir = '.cache/androidx';
 const ref = process.argv[2] ?? 'androidx-main';
 const git = (...args) => execFileSync('git', args, {stdio: 'inherit'});
 
+// A commit hash can't be cloned with --branch: clone the default branch, then fetch it.
+const isCommit = /^[0-9a-f]{40}$/.test(ref);
 if (!existsSync(dir)) {
   git(
     'clone',
@@ -17,11 +21,12 @@ if (!existsSync(dir)) {
     '--filter=blob:none',
     '--sparse',
     '--branch',
-    ref,
+    isCommit ? 'androidx-main' : ref,
     'https://github.com/androidx/androidx.git',
     dir,
   );
-} else {
+}
+if (existsSync(dir) && (isCommit || process.argv[2])) {
   git('-C', dir, 'fetch', '--depth', '1', 'origin', ref);
   git('-C', dir, 'checkout', 'FETCH_HEAD');
 }
