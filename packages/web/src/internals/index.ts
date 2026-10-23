@@ -13,5 +13,10 @@ export {
   type FormAssociatedHooks,
 } from './form-associated.js';
 export {ComposeRole, HostSemanticsController, type Semantics} from './host-semantics.js';
+export {
+  InteractionElevationController,
+  type InteractionElevationOptions,
+  type InteractionElevations,
+} from './interaction-elevation.js';
 export {RovingTabindexController, type RovingTabindexOptions} from './roving-tabindex.js';
 export {MinimumInteractiveComponentSize, minimumInteractiveComponentSize} from './touch-target.js';

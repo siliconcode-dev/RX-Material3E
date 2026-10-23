@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Buttons · RX Material 3E</title>
+    <link rel="stylesheet" href="../packages/tokens/css/fonts.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/theme.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/typescale.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/icons.css" />
+    <link rel="stylesheet" href="./demo.css" />
+    <script type="module" src="./shell.ts"></script>
+    <script type="module" src="./buttons.ts"></script>
+    <style>
+      .grid {
+        display: grid;
+        grid-template-columns: max-content repeat(3, max-content);
+        gap: 8px 24px;
+        align-items: center;
+        overflow-x: auto;
+        padding: 8px 0;
+      }
+      .grid > .head {
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      .grid code {
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      @media (max-width: 599px) {
+        .grid {
+          grid-template-columns: max-content max-content;
+        }
+        .grid > .wide-only {
+          display: none;
+        }
+      }
+      .panel {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        padding: 16px;
+        border-radius: var(--md-sys-shape-corner-large);
+        background: var(--md-sys-color-surface-container);
+      }
+      .card {
+        display: grid;
+        gap: 8px;
+        max-width: 360px;
+        padding: 24px 24px 12px;
+        border-radius: var(--md-sys-shape-corner-extra-large);
+        background: var(--md-sys-color-surface-container-high);
+      }
+      .card .actions {
+        display: flex;
+        justify-content: end;
+        gap: 8px;
+      }
+      output {
+        display: block;
+        color: var(--md-sys-color-on-surface-variant);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Buttons</h1>
+    <p>
+      Compose's five buttons, ported from <code>Button.kt</code> and its tokens: the colors,
+      elevations, padding and sizes of <code>ButtonDefaults</code>. The container is 40dp tall in a
+      48dp touch target, as Compose's clickable <code>Surface</code> lays it out. Hover rises and
+      falls with Compose's elevation tweens; press shows the ripple; Tab shows the focus ring.
+    </p>
+
+    <h2>The five buttons</h2>
+    <div class="grid" id="grid">
+      <span class="head rx-typescale-label-medium"></span>
+      <span class="head rx-typescale-label-medium">Label</span>
+      <span class="head rx-typescale-label-medium">With icon</span>
+      <span class="head rx-typescale-label-medium wide-only">Disabled</span>
+    </div>
+
+    <h2>Emphasis in use</h2>
+    <p>
+      One filled button for the main action, tonal or outlined for the next ones, text buttons for
+      the least important, as in dialogs.
+    </p>
+    <div class="panel">
+      <rx-button type="button"><rx-icon slot="icon">send</rx-icon>Send</rx-button>
+      <rx-button type="button" variant="tonal">Save draft</rx-button>
+      <rx-button type="button" variant="outlined">Schedule</rx-button>
+      <rx-button type="button" variant="text">Discard</rx-button>
+    </div>
+    <div class="card" style="margin-top: 16px">
+      <h3 class="rx-typescale-headline-small" style="margin: 0">Discard draft?</h3>
+      <p class="rx-typescale-body-medium" style="margin: 0">
+        This message has not been sent. Discarding it can't be undone.
+      </p>
+      <div class="actions">
+        <rx-button type="button" variant="text">Cancel</rx-button>
+        <rx-button type="button" variant="text">Discard</rx-button>
+      </div>
+    </div>
+
+    <h2>In a form</h2>
+    <p>
+      An <code>rx-button</code> submits its form by default, with its name and value, as
+      <code>&lt;button&gt;</code> does; <code>type="reset"</code> resets it and
+      <code>type="button"</code> leaves it alone.
+    </p>
+    <form class="panel" id="form">
+      <label class="rx-typescale-body-large"
+        >Name <input name="name" value="Ada" style="font: inherit; padding: 6px"
+      /></label>
+      <rx-button name="action" value="save">Save</rx-button>
+      <rx-button variant="outlined" name="action" value="publish">Publish</rx-button>
+      <rx-button variant="text" type="reset">Reset</rx-button>
+      <output id="form-output" class="rx-typescale-body-medium" aria-live="polite"></output>
+    </form>
+  </body>
+</html>

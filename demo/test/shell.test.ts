@@ -65,3 +65,16 @@ describe('demo shell', () => {
     expect(menu.ariaExpanded).toBe('false');
   });
 });
+
+describe('isCurrent', () => {
+  it('matches the page on the dev server, the built site and Cloudflare', async () => {
+    const {isCurrent} = await import('../shell');
+    for (const path of ['/demo/buttons.html', '/buttons.html', '/buttons', '/buttons/']) {
+      expect(isCurrent('buttons.html', path), path).toBe(path !== '/buttons/');
+    }
+    for (const path of ['/demo/', '/', '/index.html', '/demo/index.html']) {
+      expect(isCurrent('index.html', path), path).toBe(true);
+    }
+    expect(isCurrent('scrim.html', '/buttons')).toBe(false);
+  });
+});

@@ -67,6 +67,13 @@ export class RxRipple extends LitElement {
   /** Id of the control to follow, in the same document or shadow root. Defaults to the parent. */
   @property({attribute: 'for'}) htmlFor = '';
 
+  /**
+   * The control to follow, ahead of `for` and the parent. Components set it
+   * when the ring or ripple sits inside the visible part of a control whose
+   * host element takes the focus and the clicks.
+   */
+  @property({attribute: false}) controlElement: HTMLElement | null = null;
+
   @state() private hovered = false;
   @state() private focused = false;
 
@@ -145,6 +152,7 @@ export class RxRipple extends LitElement {
 
   /** The element whose interactions the ripple follows. */
   get control(): HTMLElement | null {
+    if (this.controlElement) return this.controlElement;
     if (this.htmlFor) {
       const root = this.getRootNode() as Document | ShadowRoot;
       return root.getElementById?.(this.htmlFor) ?? null;
@@ -165,7 +173,9 @@ export class RxRipple extends LitElement {
   }
 
   protected override updated(changed: PropertyValues<this>) {
-    if (changed.has('htmlFor') && this.isConnected) this.attach(this.control);
+    if ((changed.has('htmlFor') || changed.has('controlElement')) && this.isConnected) {
+      this.attach(this.control);
+    }
     if (changed.has('disabled') && this.disabled) this.reset();
   }
 

@@ -56,6 +56,13 @@ export class RxFocusRing extends LitElement {
   /** Id of the control to follow, in the same document or shadow root. Defaults to the parent. */
   @property({attribute: 'for'}) htmlFor = '';
 
+  /**
+   * The control to follow, ahead of `for` and the parent. Components set it
+   * when the ring or ripple sits inside the visible part of a control whose
+   * host element takes the focus and the clicks.
+   */
+  @property({attribute: false}) controlElement: HTMLElement | null = null;
+
   private attached: HTMLElement | null = null;
 
   static override styles = css`
@@ -112,6 +119,7 @@ export class RxFocusRing extends LitElement {
 
   /** The element whose focus the ring follows. */
   get control(): HTMLElement | null {
+    if (this.controlElement) return this.controlElement;
     if (this.htmlFor) {
       const root = this.getRootNode() as Document | ShadowRoot;
       return root.getElementById?.(this.htmlFor) ?? null;
@@ -132,7 +140,9 @@ export class RxFocusRing extends LitElement {
   }
 
   protected override updated(changed: PropertyValues<this>) {
-    if (changed.has('htmlFor') && this.isConnected) this.attach(this.control);
+    if ((changed.has('htmlFor') || changed.has('controlElement')) && this.isConnected) {
+      this.attach(this.control);
+    }
   }
 
   /** Follows `control` instead of the parent or `for`. Pass null to detach. */

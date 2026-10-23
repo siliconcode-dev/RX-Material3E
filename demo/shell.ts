@@ -54,9 +54,17 @@ function el<K extends keyof HTMLElementTagNameMap>(
   return node;
 }
 
-function isCurrent(href: string) {
-  const path = location.pathname.replace(/\/$/, '/index.html');
-  return path.endsWith(`/demo/${href}`);
+/**
+ * Whether `href` (a page file such as "buttons.html") is the page shown. The
+ * dev server serves /demo/buttons.html, the built site /buttons.html, and
+ * Cloudflare drops the extension (/buttons), so compare page names.
+ */
+export function isCurrent(href: string, pathname = location.pathname) {
+  const page = (path: string) => {
+    const last = path.split('/').pop() || 'index';
+    return last.replace(/\.html$/, '');
+  };
+  return page(pathname) === page(href);
 }
 
 function buildNav() {

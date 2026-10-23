@@ -10,7 +10,7 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Steps 1 to 17 of 79 done. Live demo: https://rx-material3e.ashfaqizop.workers.dev See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 to 18 of 79 done. Live demo: https://rx-material3e.ashfaqizop.workers.dev See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package          | What it is                                                     | Status                            |
 | ---------------- | -------------------------------------------------------------- | --------------------------------- |
@@ -34,6 +34,7 @@ Steps 1 to 17 of 79 done. Live demo: https://rx-material3e.ashfaqizop.workers.de
 | `css/color.css`      | Light and dark color roles. Follows the OS; force with `data-theme="light"` or `"dark"` on `<html>`                    |
 | `css/components.css` | 2,430 component tokens (`--md-comp-*`) across 104 sets, for reference                                                  |
 | `src/tokens.json`    | Everything above as JSON, plus the source commit                                                                       |
+| `js/<set>.js`        | One component's tokens for code, e.g. `@rx-m3e/tokens/js/filled-button.js`: each a `var(--md-comp-…, fallback)`        |
 
 CSS has no spring timing function, so each expressive spring (fast, default, slow; spatial and effects) is simulated and exported as a `linear()` easing with a matching duration:
 
@@ -214,6 +215,17 @@ Each scheme has six springs: `defaultSpatial`, `fastSpatial`, `slowSpatial`, `de
 In CSS, `--md-sys-motion-spring-*-duration` and `-easing` give each spring as a `linear()` curve. Compose ends a spring once it stays within 0.01 of its target in the value's own unit, so a longer move takes longer; the tokens are timed for a 100dp move (spatial) and an alpha from 0 to 1 (effects). `data-motion-scheme="standard"` on any element switches it to the standard scheme.
 
 With reduced motion, animations jump to their end, like Android's "Remove animations". `setMotionDurationScale(5)` slows everything down, `setMotionDurationScale(0)` turns animation off and `null` goes back to following the user's setting.
+
+## Buttons
+
+```html
+<rx-button>Save</rx-button>
+<rx-button variant="tonal"><rx-icon slot="icon">edit</rx-icon>Edit</rx-button>
+<rx-button variant="outlined">Share</rx-button>
+<rx-button variant="text">Cancel</rx-button>
+```
+
+Compose's five buttons: `filled` (the default), `tonal`, `elevated`, `outlined` and `text`, with ButtonDefaults' colors, elevations, padding and sizes. The container is 40dp tall in a 48dp touch target. `icon` and `trailing-icon` slots take 18dp icons. It works like `<button>` in forms: it submits by default (with its `name` and `value`), `type="reset"` resets and `type="button"` does neither. `disabled` and `<fieldset disabled>` turn it off. Expressive sizes and the press shape morph come in step 19.
 
 ## Scrim
 

@@ -6,6 +6,7 @@
   "type": "module",
   "files": [
     "css",
+    "js",
     "src"
   ],
   "exports": {
@@ -18,7 +19,11 @@
     "./sys.css": "./css/sys.css",
     "./color.css": "./css/color.css",
     "./components.css": "./css/components.css",
-    "./tokens.json": "./src/tokens.json"
+    "./tokens.json": "./src/tokens.json",
+    "./js/*.js": {
+      "types": "./js/*.d.ts",
+      "default": "./js/*.js"
+    }
   },
   "sideEffects": [
     "*.css"

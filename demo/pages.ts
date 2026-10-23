@@ -35,4 +35,8 @@ export const sections: DemoSection[] = [
       {title: 'Scrim', href: 'scrim.html'},
     ],
   },
+  {
+    title: 'Actions',
+    pages: [{title: 'Buttons', href: 'buttons.html'}],
+  },
 ];
