@@ -202,6 +202,9 @@ describe('rx-button elevation', () => {
     // Into hover: ElevationDefaults' DefaultIncomingSpec, 120ms FastOutSlowIn.
     expect(timing()?.duration).toBe(120 * 20);
     expect(timing()?.easing).toBe('cubic-bezier(0.4, 0, 0.2, 1)');
+    // A couple of frames into the (now 2.4s) tween: on its way, not there.
+    await nextFrame();
+    await nextFrame();
     const mid = elevation(el);
     expect(mid).toBeGreaterThan(1);
     expect(mid).toBeLessThan(3);
