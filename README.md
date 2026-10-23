@@ -10,7 +10,7 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Steps 1 to 18 of 79 done. Live demo: https://rx-material3e.ashfaqizop.workers.dev See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 to 19 of 79 done. Live demo: https://rx-material3e.ashfaqizop.workers.dev See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package          | What it is                                                     | Status                            |
 | ---------------- | -------------------------------------------------------------- | --------------------------------- |
@@ -225,7 +225,15 @@ With reduced motion, animations jump to their end, like Android's "Remove animat
 <rx-button variant="text">Cancel</rx-button>
 ```
 
-Compose's five buttons: `filled` (the default), `tonal`, `elevated`, `outlined` and `text`, with ButtonDefaults' colors, elevations, padding and sizes. The container is 40dp tall in a 48dp touch target. `icon` and `trailing-icon` slots take 18dp icons. It works like `<button>` in forms: it submits by default (with its `name` and `value`), `type="reset"` resets and `type="button"` does neither. `disabled` and `<fieldset disabled>` turn it off. Expressive sizes and the press shape morph come in step 19.
+Compose's five buttons: `filled` (the default), `tonal`, `elevated`, `outlined` and `text`, with ButtonDefaults' colors, elevations, padding and sizes. The container is 40dp tall in a 48dp touch target. `icon` and `trailing-icon` slots take 18dp icons. It works like `<button>` in forms: it submits by default (with its `name` and `value`), `type="reset"` resets and `type="button"` does neither. `disabled` and `<fieldset disabled>` turn it off.
+
+```html
+<rx-button size="m"><rx-icon slot="icon">edit</rx-icon>Edit</rx-button>
+<rx-button size="xl" shape="square">Start</rx-button>
+<rx-button morph>Like</rx-button>
+```
+
+`size` is one of the expressive sizes: `xs`, `s`, `m`, `l` or `xl` (32, 40, 56, 96 and 136dp tall). Each one uses ButtonDefaults' padding, icon size, icon spacing and text style for that height, as Compose's size samples do. `shape="square"` gives ButtonDefaults.squareShape, 12dp corners at every size. `morph` is Compose's expressive `shapes` overload: while the button is held, the corners spring to the pressed shape for its size (8dp up to small, 12dp medium, 16dp large and extra large) on the default effects spring, and its padding is the small size's. `--rx-button-shape` and `--rx-button-pressed-shape` set other corners. As in Compose, outlined buttons keep a 1dp border at every size.
 
 ## Scrim
 
@@ -252,6 +260,8 @@ The shared pieces the components are built from, exported for your own component
 | `RovingTabindexController`        | One Tab stop for a group; arrow keys (swapped in RTL), Home and End move inside it, skipping disabled items                                               |
 | `minimumInteractiveComponentSize` | Compose's 48dp minimum touch target, as host CSS; `--rx-minimum-interactive-component-size: 0` turns it off                                               |
 | `redispatchEvent()`, `isRtl()`    | Re-fire an event from inside a shadow root; read the layout direction                                                                                     |
+| `PressInteractionController`      | Whether a control is pressed (primary pointer, or Enter or Space held on it), as Compose's `collectIsPressedAsState`                                      |
+| `AnimatedShapeState`              | Compose's corner-shape morph: interpolates each corner in px from the current size, with `parseCornerShape()` and `applyCornerShape()` for CSS radii      |
 
 ## Theme
 
@@ -291,6 +301,7 @@ The demo site (`demo/`) has a catalog page read straight from COMPONENTS.md, plu
 `npm run build` also writes the demo site to `dist-site/` as static files, with every page at the root.
 
 - Cloudflare Workers: build command `npm run build`, deploy command `npx wrangler deploy` (reads `wrangler.jsonc`).
+- Vercel: `vercel.json` sets the build command, the `dist-site` output and clean URLs (pages without `.html`).
 - Cloudflare Pages or any static host: build command `npm run build`, output directory `dist-site`.
 
 Node 22 comes from `.node-version`.

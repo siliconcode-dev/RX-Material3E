@@ -60,6 +60,22 @@
         display: block;
         color: var(--md-sys-color-on-surface-variant);
       }
+      .sizes {
+        display: grid;
+        gap: 16px;
+        overflow-x: auto;
+        padding: 8px 0;
+      }
+      .sizes .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+        align-items: center;
+      }
+      .sizes .name {
+        flex: 0 0 100%;
+        color: var(--md-sys-color-on-surface-variant);
+      }
     </style>
   </head>
   <body>
@@ -78,6 +94,24 @@
       <span class="head rx-typescale-label-medium">With icon</span>
       <span class="head rx-typescale-label-medium wide-only">Disabled</span>
     </div>
+
+    <h2>Sizes</h2>
+    <p>
+      The five expressive sizes, laid out as Compose's size samples: the container height (32, 40,
+      56, 96 and 136dp) with <code>ButtonDefaults</code>' padding, icon size, icon spacing and text
+      style for it. <code>shape="square"</code> is <code>ButtonDefaults.squareShape</code>, 12dp
+      corners at every size.
+    </p>
+    <div class="sizes" id="sizes"></div>
+
+    <h2>Press to morph</h2>
+    <p>
+      With <code>morph</code> the corners spring to the pressed shape of
+      <code>ButtonDefaults.shapesFor</code> while the button is held (8dp up to small, 12dp medium,
+      16dp large and extra large), on the default effects spring, so there is no bounce. Let go half
+      way and it turns back from where it is. Keyboard presses morph too.
+    </p>
+    <div class="sizes" id="morph"></div>
 
     <h2>Emphasis in use</h2>
     <p>

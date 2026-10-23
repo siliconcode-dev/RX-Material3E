@@ -6,23 +6,45 @@ all decisions) and COMPONENTS.md (the catalog).
 
 ## Where things stand
 
-- **Steps 1 to 18 of 79 are done**, committed and pushed, CI green.
+- **Steps 1 to 19 of 79 are done**, committed and pushed, CI green.
   Phase 0 (groundwork) and Phase 1 (foundations) are finished; Phase 2
-  (actions) has started with step 18 (buttons).
-- Branch: `claude/material-design-web-components-fre1r7` (the only branch to
-  push to; no pull request unless the owner asks).
-- Last commits: `079ea6d` (button test timing fix), `d844b33` (step 18).
-- 622 tests pass (`npm test`), lint, format, typecheck and build are clean.
-- Live demo (Cloudflare Workers, rebuilt from the branch):
-  https://rx-material3e.ashfaqizop.workers.dev (pages have no `.html`, e.g.
-  `/buttons`).
-- **Next: step 19**, button expressive sizes XS to XL, round and square
-  shapes, and the press shape morph. Wait for the owner to say "Go ahead with
-  step 19". Prepared notes are at the end of this file.
+  (actions) is under way: step 18 (buttons), step 19 (button sizes, square
+  shape, press morph).
+- Repository: **https://github.com/siliconcode-dev/RX-Material3E** (the
+  owner's new account; the old `siliconxcode2` account is lost). `gh` is
+  logged in as `siliconcode-dev`; the clone has it as `origin` and the old
+  repo as `old` (never push there).
+- Branch: `claude/material-design-web-components-fre1r7` (the default branch
+  and the only one to push to; no pull request unless the owner asks).
+- Demo site: Vercel builds every push (`vercel.json`: `npm run build`,
+  output `dist-site`, clean URLs, so pages have no `.html`, e.g. `/buttons`).
+  The old Cloudflare Workers URL in the README is from the lost account.
+- **Next: step 20**, toggle button. Wait for the owner to say "Go ahead with
+  step 20".
 
 When the new session starts, after reading these notes, tell the owner:
 
-> Ready for step 19 (expressive button sizes XS to XL, round and square shapes, press shape morph) when you are.
+> Ready for step 20 (toggle button) when you are.
+
+## The owner's machine (Windows)
+
+The work now happens on the owner's Windows PC (Git Bash and PowerShell),
+not a Linux container:
+
+- Tests: `CI=1 npx vitest run ...` uses the installed Google Chrome
+  (`channel: 'chrome'`, as on CI). Playwright's own Chromium download was
+  never finished; the owner asked not to bother with it.
+- Git's global `core.autocrlf=true` checks files out with CRLF, so
+  `npm run format:check` reports every file. Check with
+  `npx prettier --check --end-of-line auto .` locally; CI (Linux) is the
+  real check, and commits are stored with LF.
+- `npm run tokens` writes a literal `$(git -C ...)` as the commit (npm runs
+  scripts in cmd on Windows) and orders raw-compose-tokens.json differently
+  (Windows lists files alphabetically). The data is identical; restore the
+  generated files with `git checkout -- packages/tokens` after checking.
+- Python is `python`, not `python3`.
+- The androidx sparse checkout in `.cache/androidx` also has the Compose
+  material3 samples and foundation's `shape/` package (added for step 19).
 
 ## What exists
 
@@ -37,9 +59,9 @@ When the new session starts, after reading these notes, tell the owner:
 | Shape engine       | `src/shapes/graphics/`                      | Hand port of androidx graphics-shapes incl. Morph. **Does Kotlin's 32-bit Float math step for step** (`Math.fround` everywhere, in Kotlin's order): every number matches Android bit for bit. Keep it that way in any change.                                                                                                                       |
 | Material shapes    | `src/shapes/material-shapes.ts`, `shape.ts` | 35 MaterialShapes, `<rx-shape>` (morphs on shape change with an Animatable on the default spatial spring).                                                                                                                                                                                                                                          |
 | Motion             | `src/motion/`                               | Port of SpringSimulation, SpringEstimation, FloatSpringSpec, Spring constants, MotionScheme, Animatable's frame logic; `springTiming()`, `animateWithSpring()`, `motionDurationScale()` / `setMotionDurationScale()` (reduced motion = scale 0). `spring.ts` has no imports so the token script can import it.                                      |
-| Internals          | `src/internals/`                            | `HostSemanticsController`, `addActivation`, `FormAssociated`, `submitForm`/`resetForm`, `RovingTabindexController`, `minimumInteractiveComponentSize`, `InteractionElevationController` (Compose's ButtonElevation logic), `redispatchEvent`, `isRtl`.                                                                                              |
+| Internals          | `src/internals/`                            | `HostSemanticsController`, `addActivation`, `FormAssociated`, `submitForm`/`resetForm`, `RovingTabindexController`, `minimumInteractiveComponentSize`, `InteractionElevationController` (Compose's ButtonElevation logic), `PressInteractionController`, `AnimatedShapeState` (corner-shape morph, step 19), `redispatchEvent`, `isRtl`.            |
 | Scrim              | `src/scrim/`                                | `<rx-scrim>`.                                                                                                                                                                                                                                                                                                                                       |
-| Button             | `src/button/`                               | `<rx-button>` with `variant` filled / tonal / elevated / outlined / text.                                                                                                                                                                                                                                                                           |
+| Button             | `src/button/`                               | `<rx-button>` with `variant` filled / tonal / elevated / outlined / text, `size` xs to xl, `shape` round / square, `morph` (press shape morph).                                                                                                                                                                                                     |
 | Demo               | `demo/`                                     | One page per finished step, listed in `demo/pages.ts`; `shell.ts` builds the header and nav.                                                                                                                                                                                                                                                        |
 | Golden tests       | `scripts/shapes-golden/`                    | Compiles Google's real Kotlin and writes reference JSON (see below).                                                                                                                                                                                                                                                                                |
 
@@ -115,10 +137,9 @@ regenerating from a clean setup gives identical files.
 - `new Animatable(0)` is typed for numbers through `Widen<T>`.
 - Constants used in `connectedCallback` must be declared above the class
   (pre-upgraded elements run it during definition).
-- CI waits: poll
-  `https://api.github.com/repos/siliconxcode2/RX-Material3E/actions/runs?head_sha=<sha>`
-  in a background loop; on failure read logs with the GitHub MCP
-  `get_job_logs` tool (run id from that API).
+- CI waits: `gh run list -R siliconcode-dev/RX-Material3E` gives the run
+  id, `gh run watch <id> -R siliconcode-dev/RX-Material3E --exit-status`
+  waits for it, and `gh run view <id> --log-failed` shows what failed.
 - The owner reads results on a phone sometimes: keep reports short, with
   screenshots.
 
@@ -134,49 +155,14 @@ regenerating from a clean setup gives identical files.
 - npm publishing at step 79 (needs the owner's npm account); a shadcn-style
   registry may come later.
 
-## Prepared notes for step 19 (read upstream again before coding)
+## Notes for step 20 (toggle button)
 
-Step 19 = the expressive `Button(onClick, shapes, ...)` overloads and
-ButtonDefaults' size helpers, in `Button.kt` (the second overload of each
-button, around lines 238, 417, 570, 721, 874) and ButtonDefaults (around
-lines 918 to 1700), plus `internal/AnimatedShape.kt`.
-
-What was already read at the end of this session:
-
-- Sizes by container height: XS 32dp (ButtonXSmallTokens), S 40dp
-  (ButtonSmallTokens, = MinHeight), M 56dp, L 96dp, XL 136dp
-  (ButtonMedium/Large/XLargeTokens).
-- `shapesFor(height)` picks the pressed shape by the midpoint between sizes:
-  XS uses `extraSmallPressedShape`, S the default shapes, M `mediumPressedShape`,
-  L `largePressedShape`, XL `extraLargePressedShape`. The resting shape is
-  `ButtonDefaults.shape` (round, CornerFull); square shapes come from the
-  `ContainerShapeSquare` tokens. Check each size's token file for the square
-  and pressed corner sizes (roughly: XS/S square = medium, pressed = small;
-  M square = large, pressed = medium; L/XL square = extra large, pressed =
-  large; confirm in the tokens, the summary here was skimmed).
-- `contentPaddingFor(height, hasStartIcon, hasEndIcon)`: below S
-  ExtraSmallContentPadding (12dp sides, 6dp vertical, upstream TODO), below M
-  the small padding (16dp sides, 10dp vertical, `iconSmallHorizontalPadding`
-  with icons), below L medium (Medium tokens' leading/trailing, 16dp
-  vertical), below XL large (32dp vertical), else ExtraLargeContentPadding
-  (48dp vertical). Note the expressive overload's default padding is
-  `contentPaddingFor(MinHeight)` (16dp sides), unlike the classic 24dp.
-- `iconSizeFor`, `iconSpacingFor`, `textStyleFor` (labelLarge below M,
-  titleMedium below L, headlineSmall below XL, else headlineLarge).
-- Outline width grows with size (ButtonXLargeTokens etc. `OutlinedOutlineWidth`).
-- Press morph: `shapeByInteraction(shapes, pressed, spec)` with spec
-  `MotionSchemeKeyTokens.DefaultEffects` ("intentional here to prevent any
-  bounce"); for corner-based shapes it uses `rememberAnimatedShape` from
-  `internal/AnimatedShape.kt` (an Animatable progress 0..1 with
-  `Interpolatable.lerp` between the two corner shapes; reversing mid-way
-  flips progress and velocity; a new target mid-way freezes the current
-  interpolated shape). The ported `Animatable` and `motionSpring(el,
-'defaultEffects')` are ready for this. Corner radius interpolation for
-  "full" corners needs care: CornerFull is 50% of the height, so lerp in px
-  from the current size.
-- Decide with the owner (or keep the classic default and add a `size`
-  attribute): whether `<rx-button size="m">` switches to the expressive
-  overload's padding and shapes. The classic overload stays the default
-  unless the owner wants otherwise.
-- Precision pointer sizing (`shouldUsePrecisionPointerComponentSizing`) is
-  behind a flag that is off upstream: ignore it.
+Not read in full yet: read upstream first, as always. Starting points:
+`ToggleButton.kt` (ToggleButton, ElevatedToggleButton, TonalToggleButton,
+OutlinedToggleButton and ToggleButtonDefaults) with its tokens. It reuses
+step 19's pieces: ToggleButtonDefaults takes the per-size
+`ContainerShapeSquare` and `PressedContainerShape` tokens (ToggleButton.kt
+around line 720) and morphs between the unchecked, pressed and checked shapes
+with `rememberAnimatedShape` (`internals/animated-shape.ts` here), so a third
+shape mid-morph (the frozen-interpolation path) happens for real there.
+`PressInteractionController` gives the pressed state.

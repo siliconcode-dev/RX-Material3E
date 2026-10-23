@@ -1,6 +1,6 @@
 import '../packages/web/src/button/button.js';
 import '../packages/web/src/icon/icon.js';
-import type {ButtonVariant} from '../packages/web/src/button/index.js';
+import type {ButtonSize, ButtonVariant} from '../packages/web/src/button/index.js';
 
 const variants: [ButtonVariant, string, string, string][] = [
   ['filled', 'Filled', 'Button', 'add'],
@@ -30,6 +30,42 @@ for (const [variant, label, compose, icon] of variants) {
   cell.append(disabled);
   grid.append(name, plain, withIcon, cell);
 }
+
+const sizes: [ButtonSize, string][] = [
+  ['xs', 'Extra small · 32dp'],
+  ['s', 'Small · 40dp'],
+  ['m', 'Medium · 56dp'],
+  ['l', 'Large · 96dp'],
+  ['xl', 'Extra large · 136dp'],
+];
+
+function button(attributes: Record<string, string>, content: string) {
+  const el = document.createElement('rx-button');
+  el.setAttribute('type', 'button');
+  for (const [name, value] of Object.entries(attributes)) el.setAttribute(name, value);
+  el.innerHTML = content;
+  return el;
+}
+
+function sizeRows(target: HTMLElement, extra: Record<string, string>) {
+  for (const [size, name] of sizes) {
+    const row = document.createElement('div');
+    row.className = 'row';
+    const label = document.createElement('span');
+    label.className = 'name rx-typescale-label-large';
+    label.textContent = name;
+    row.append(
+      label,
+      button({size, ...extra}, '<rx-icon slot="icon">edit</rx-icon>Label'),
+      button({size, shape: 'square', variant: 'tonal', ...extra}, 'Square'),
+      button({size, variant: 'outlined', ...extra}, 'Outlined'),
+    );
+    target.append(row);
+  }
+}
+
+sizeRows(document.getElementById('sizes')!, {});
+sizeRows(document.getElementById('morph')!, {morph: ''});
 
 const form = document.getElementById('form') as HTMLFormElement;
 const output = document.getElementById('form-output')!;
