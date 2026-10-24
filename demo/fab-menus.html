@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FAB menus · RX Material 3E</title>
+    <link rel="stylesheet" href="../packages/tokens/css/fonts.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/theme.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/typescale.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/icons.css" />
+    <link rel="stylesheet" href="./demo.css" />
+    <script type="module" src="./shell.ts"></script>
+    <script type="module" src="./fab-menus.ts"></script>
+    <style>
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        align-items: start;
+        padding: 8px 0;
+      }
+      figure {
+        display: grid;
+        justify-items: center;
+        gap: 8px;
+        margin: 0;
+      }
+      figcaption {
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      .screen {
+        position: relative;
+        height: 560px;
+        max-width: 420px;
+        border-radius: 16px;
+        background: var(--md-sys-color-surface-container-low);
+        overflow: hidden;
+      }
+      .screen.short {
+        height: 300px;
+        width: 260px;
+      }
+      .list {
+        height: 100%;
+        overflow-y: auto;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .list li {
+        padding: 24px;
+        color: var(--md-sys-color-on-surface);
+      }
+      .screen rx-fab-menu {
+        position: absolute;
+        bottom: 0;
+        max-height: 100%;
+      }
+      .screen rx-fab-menu:not([align]),
+      .screen rx-fab-menu[align='end'] {
+        inset-inline-end: 0;
+      }
+      .screen rx-fab-menu[align='start'] {
+        inset-inline-start: 0;
+      }
+      .screen rx-fab-menu[align='center'] {
+        left: 50%;
+        translate: -50% 0;
+      }
+      output {
+        display: block;
+        min-height: 1.5em;
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      label {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>FAB menus</h1>
+    <p>
+      Compose's FAB menu, ported from <code>FloatingActionButtonMenu.kt</code>: a toggle FAB that
+      opens up to six related actions above it. The FAB morphs into a round close button while the
+      items appear one by one from the bottom.
+    </p>
+    <p>
+      <label><input type="checkbox" id="slow" /> Slow motion (5×)</label>
+    </p>
+
+    <h2>The menu</h2>
+    <p>
+      Compose's sample: Reply, Reply all, Forward, Snooze, Archive and Label. Choosing an item or
+      pressing Escape closes the menu. With the keyboard, Tab or the down arrow goes from the button
+      to the top item.
+    </p>
+    <div class="screen">
+      <ul class="list" id="list"></ul>
+      <rx-fab-menu id="menu">
+        <rx-toggle-fab slot="button" aria-label="Toggle menu">
+          <rx-icon>add</rx-icon>
+          <rx-icon slot="checked">close</rx-icon>
+        </rx-toggle-fab>
+      </rx-fab-menu>
+    </div>
+    <output id="log" class="rx-typescale-body-medium" aria-live="polite"></output>
+
+    <h2>Toggle FAB sizes</h2>
+    <p>
+      The toggle FAB starts as a baseline (56dp), medium (80dp) or large (96dp) FAB and always ends
+      as the 56dp round close button with a 20dp icon. The smaller button keeps to the top-end
+      corner of the starting size. Click them.
+    </p>
+    <div class="row" id="sizes"></div>
+
+    <h2>Color sets</h2>
+    <p>
+      Primary (the default), secondary and tertiary: the button goes from the container color to the
+      full color, and the items use the container color.
+    </p>
+    <div class="row" id="colors"></div>
+
+    <h2>Alignment</h2>
+    <p>The items and the button line up at the end (the default), the start or the center.</p>
+    <div class="row" id="aligns"></div>
+  </body>
+</html>

@@ -22,6 +22,9 @@ const TAGS = [
   'rx-segmented-button',
   'rx-segmented-button-set',
   'rx-fab',
+  'rx-toggle-fab',
+  'rx-fab-menu',
+  'rx-fab-menu-item',
 ];
 
 it('upgrades elements that were in the page before the library loaded', async () => {

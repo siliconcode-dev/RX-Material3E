@@ -176,6 +176,19 @@ describe('press ripple', () => {
     expect(ripples(ripple)).toHaveLength(0);
   });
 
+  it('grows to exactly a set radius, without the extra 10dp (ripple(radius))', async () => {
+    const {ripple} = await mount('radius="40"');
+    expect(ripple.radius).toBe(40);
+    ripple.press();
+    const [el] = ripples(ripple);
+    expect(parseFloat(el.style.width)).toBe(80);
+    // It still starts at 30% of the longest side.
+    const animations = el.getAnimations() as CSSAnimation[];
+    animations.forEach((a) => a.pause());
+    animations.forEach((a) => (a.currentTime = 0));
+    expect(parseFloat(getComputedStyle(el).scale)).toBeCloseTo((W * 0.3) / 40, 3);
+  });
+
   it('clips to the control shape unless unbounded', async () => {
     const {ripple} = await mount();
     const surface = ripple.shadowRoot!.querySelector('.surface')!;

@@ -61,6 +61,12 @@ export class RxRipple extends LitElement {
   /** Lets the ripple spread past the control's bounds, without the extra 10dp. */
   @property({type: Boolean, reflect: true}) unbounded = false;
 
+  /**
+   * The radius in pixels the ripple grows to, as Compose's `ripple(radius)`:
+   * exactly this, with no extra 10dp. 0 (the default) covers the surface.
+   */
+  @property({type: Number}) radius = 0;
+
   /** Shows the dragged state layer. Components set this while dragging. */
   @property({type: Boolean, reflect: true}) dragged = false;
 
@@ -259,7 +265,8 @@ export class RxRipple extends LitElement {
         : {x: clientX - rect.left, y: clientY - rect.top};
 
     const coveringRadius = Math.hypot(width, height) / 2;
-    const endRadius = coveringRadius + (this.unbounded ? 0 : BOUNDED_EXTRA_RADIUS);
+    const endRadius =
+      this.radius > 0 ? this.radius : coveringRadius + (this.unbounded ? 0 : BOUNDED_EXTRA_RADIUS);
     const startRadius = Math.max(width, height) * START_RADIUS_FRACTION;
 
     const el = document.createElement('div');

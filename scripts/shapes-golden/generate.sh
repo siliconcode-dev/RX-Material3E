@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Compiles Google's graphics-shapes sources (shapes and Morph) and MaterialShapes (extracted
-# verbatim) and writes the reference JSON in packages/web/test/shapes/golden/.
+# Compiles Google's graphics-shapes sources (shapes and Morph), MaterialShapes (extracted
+# verbatim), the springs and Color lerp, and writes the reference JSON in
+# packages/web/test/shapes/golden/ and packages/web/test/motion/golden/.
 #
 # Needs a JDK and these jars in $KT_DEPS (all from Maven Central / Google Maven):
 #   kotlin-compiler-embeddable-2.2.21, kotlin-stdlib-2.2.21, kotlin-script-runtime-2.2.21,
@@ -53,3 +54,17 @@ java -cp "$CP" org.jetbrains.kotlin.cli.jvm.K2JVMCompiler -no-stdlib -no-reflect
 mkdir -p packages/web/test/motion/golden
 java -cp "$OUT:$LIBS" androidx.compose.animation.core.GoldenSpringKt \
   packages/web/test/motion/golden/spring.json
+
+# Color lerp (the toggle FAB's color, step 29): ui-graphics Color.kt,
+# Float16.kt, InlineClassHelper.kt and the colorspace package as they are,
+# with ui-util's helpers (JVM actuals for its expect functions) and the
+# runtime annotations from extract-color.mjs.
+GRAPHICS=.cache/androidx/compose/ui/ui-graphics/src/commonMain/kotlin/androidx/compose/ui/graphics
+mkdir -p "$OUT/color"
+node scripts/shapes-golden/extract-color.mjs .cache/androidx "$OUT/color"
+java -cp "$CP" org.jetbrains.kotlin.cli.jvm.K2JVMCompiler -no-stdlib -no-reflect \
+  -cp "$LIBS" -d "$OUT" \
+  "$GRAPHICS"/{Color,Float16,InlineClassHelper}.kt "$GRAPHICS"/colorspace/*.kt \
+  "$OUT"/color/*.kt scripts/shapes-golden/GoldenColor.kt
+java -cp "$OUT:$LIBS" androidx.compose.ui.graphics.GoldenColorKt \
+  packages/web/test/motion/golden/color-lerp.json
