@@ -52,7 +52,8 @@ describe('parseCatalog', () => {
       elements: ['rx-segmented-button', 'rx-segmented-button-set'],
       status: 'done',
     });
-    expect(byId.get('1.7')).toMatchObject({name: 'FAB', status: 'todo'});
+    expect(byId.get('1.7')).toMatchObject({name: 'FAB', elements: ['rx-fab'], status: 'done'});
+    expect(byId.get('1.8')).toMatchObject({name: 'Extended FAB', status: 'todo'});
     expect(byId.get('1.10')?.elements).toContain('rx-chip-set');
     expect(byId.get('6.1')).toMatchObject({name: 'Scaffold', elements: ['rx-scaffold']});
   });
@@ -67,5 +68,11 @@ describe('parseCatalog', () => {
     ].join('\n');
     const [entry] = parseCatalog(table)[0].entries;
     expect(entry).toMatchObject({status: 'progress', note: 'tokens only', gen: 'M3E'});
+  });
+
+  it('reads a Windows checkout, with CRLF line endings', () => {
+    const crlf = parseCatalog(markdown.replace(/\r?\n/g, '\r\n'));
+    expect(crlf.map((g) => g.title)).toEqual(groups.map((g) => g.title));
+    expect(crlf.flatMap((g) => g.entries)).toHaveLength(55);
   });
 });

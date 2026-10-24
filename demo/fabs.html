@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FABs · RX Material 3E</title>
+    <link rel="stylesheet" href="../packages/tokens/css/fonts.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/theme.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/typescale.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/icons.css" />
+    <link rel="stylesheet" href="./demo.css" />
+    <script type="module" src="./shell.ts"></script>
+    <script type="module" src="./fabs.ts"></script>
+    <style>
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        align-items: end;
+        padding: 8px 0;
+      }
+      figure {
+        display: grid;
+        justify-items: center;
+        gap: 8px;
+        margin: 0;
+      }
+      figcaption {
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      .screen {
+        position: relative;
+        height: 240px;
+        max-width: 420px;
+        border-radius: 16px;
+        background: var(--md-sys-color-surface-container-low);
+        overflow: hidden;
+      }
+      .screen rx-fab {
+        position: absolute;
+        right: 16px;
+        bottom: 16px;
+      }
+      .screen p {
+        margin: 16px;
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      output {
+        display: block;
+        color: var(--md-sys-color-on-surface-variant);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>FABs</h1>
+    <p>
+      Compose's floating action buttons, ported from <code>FloatingActionButton.kt</code>: the
+      screen's main action, an icon on a raised container. It sits at elevation level 3 and rises to
+      level 4 under the pointer.
+    </p>
+
+    <h2>Sizes</h2>
+    <p>
+      The small FAB is the older 40dp one; medium is new in M3 Expressive. Each size has its own
+      shape and icon size.
+    </p>
+    <div class="row" id="sizes"></div>
+
+    <h2>Colors</h2>
+    <p>
+      M3 Expressive's six colors, primary container first (the default), and baseline M3's surface
+      FAB.
+    </p>
+    <div class="row" id="colors"></div>
+
+    <h2>Lowered</h2>
+    <p>Compose's <code>loweredElevation</code>: level 1, level 2 under the pointer.</p>
+    <div class="row">
+      <rx-fab lowered><rx-icon label="Add">add</rx-icon></rx-fab>
+      <rx-fab lowered color="secondary-container"><rx-icon label="Edit">edit</rx-icon></rx-fab>
+    </div>
+
+    <h2>On a screen</h2>
+    <div class="screen">
+      <p>A FAB usually sits at the bottom end of the screen, 16dp from the edges.</p>
+      <rx-fab id="placed"><rx-icon label="Compose">edit</rx-icon></rx-fab>
+    </div>
+    <output id="log" class="rx-typescale-body-medium" aria-live="polite"></output>
+  </body>
+</html>

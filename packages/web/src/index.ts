@@ -17,3 +17,4 @@ export * from './icon-button/index.js';
 export * from './button-group/index.js';
 export * from './split-button/index.js';
 export * from './segmented-button/index.js';
+export * from './fab/index.js';

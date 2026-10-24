@@ -289,20 +289,23 @@ describe('rx-button-group press growth (ButtonGroupMeasurePolicy)', () => {
       `<rx-button type="button">One</rx-button><rx-toggle-button>Two</rx-toggle-button>`,
     );
     const [button, toggle] = children(group);
-    button.focus();
-    await userEvent.keyboard('{Enter>}');
+    const key = (el: HTMLElement, type: string, k: string) =>
+      el.dispatchEvent(new KeyboardEvent(type, {key: k, bubbles: true}));
+    clock = manualFrames();
+    key(button, 'keydown', 'Enter');
     expect(group.pressedValues[0]).toBe(0);
-    // The spring has started (its first frame comes next).
-    await new Promise((r) => requestAnimationFrame(r));
-    await new Promise((r) => requestAnimationFrame(r));
+    // The spring's first frame shows its start; it moves on the second.
+    clock.step(2);
     expect(group.pressedValues[0]).toBeGreaterThan(0);
-    await userEvent.keyboard('{/Enter}');
-    toggle.focus();
-    await userEvent.keyboard('{Enter>}');
-    await new Promise((r) => requestAnimationFrame(r));
-    await new Promise((r) => requestAnimationFrame(r));
+    key(button, 'keyup', 'Enter');
+    key(toggle, 'keydown', 'Enter');
+    clock.step(2);
     expect(group.pressedValues[1]).toBe(0);
-    await userEvent.keyboard('{/Enter}');
+    key(toggle, 'keyup', 'Enter');
+    key(toggle, 'keydown', ' ');
+    clock.step(2);
+    expect(group.pressedValues[1]).toBeGreaterThan(0);
+    key(toggle, 'keyup', ' ');
   });
 
   it('a pressed button shrinks its neighbour below its minimum width', async () => {

@@ -186,24 +186,32 @@ describe('rx-shape', () => {
       const el = await mount(
         '<rx-shape shape="square" style="width: 100px; height: 100px; --rx-shape-morph-stiffness: 60"></rx-shape>',
       );
-      el.shape = 'circle';
-      await el.updateComplete;
-      await frames(4);
-      const before = el.morphProgress!;
-      el.shape = 'square';
-      await el.updateComplete;
-      // Same morph, same place: no jump.
-      expect(el.morphProgress).toBe(before);
-      // It keeps its forward speed for a moment (as Compose's Animatable
-      // does), then springs back and settles on the square.
-      let peak = before;
-      for (let i = 0; i < 180 && el.morphProgress !== null; i++) {
-        await nextFrame();
-        peak = Math.max(peak, el.morphProgress ?? 0);
+      // The manual frame clock: every frame is seen, however busy the machine.
+      const clock = manualFrames();
+      try {
+        el.shape = 'circle';
+        await el.updateComplete;
+        clock.step(4);
+        const before = el.morphProgress!;
+        el.shape = 'square';
+        await el.updateComplete;
+        // Same morph, same place: no jump.
+        expect(el.morphProgress).toBe(before);
+        // It keeps its forward speed for a moment (as Compose's Animatable
+        // does), then springs back and settles on the square.
+        let peak = before;
+        for (let i = 0; i < 180 && el.morphProgress !== null; i++) {
+          clock.step();
+          peak = Math.max(peak, el.morphProgress ?? 0);
+        }
+        expect(peak).toBeGreaterThan(before);
+        // The morph ends once its animation's promise settles.
+        await new Promise((r) => setTimeout(r));
+        expect(el.morphProgress).toBeNull();
+        expect(clipOf(el)).toBe(clip(shapePath(materialShape('Square'), 100, 100)));
+      } finally {
+        clock.restore();
       }
-      expect(peak).toBeGreaterThan(before);
-      expect(el.morphProgress).toBeNull();
-      expect(clipOf(el)).toBe(clip(shapePath(materialShape('Square'), 100, 100)));
     });
 
     it('ends exactly on the new shape', async () => {

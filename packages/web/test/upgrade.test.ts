@@ -21,6 +21,7 @@ const TAGS = [
   'rx-split-button',
   'rx-segmented-button',
   'rx-segmented-button-set',
+  'rx-fab',
 ];
 
 it('upgrades elements that were in the page before the library loaded', async () => {

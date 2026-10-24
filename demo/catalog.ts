@@ -35,7 +35,8 @@ export function parseCatalog(markdown: string): CatalogGroup[] {
   let group: CatalogGroup | undefined;
   let header: string[] | undefined;
 
-  for (const line of markdown.split('\n')) {
+  // A Windows checkout has CRLF line endings.
+  for (const line of markdown.split(/\r?\n/)) {
     const heading = /^## \d+\. (.+)$/.exec(line);
     if (heading) {
       group = {title: heading[1], entries: []};

@@ -44,6 +44,7 @@ export const sections: DemoSection[] = [
       {title: 'Button groups', href: 'button-groups.html'},
       {title: 'Split buttons', href: 'split-buttons.html'},
       {title: 'Segmented buttons', href: 'segmented-buttons.html'},
+      {title: 'FABs', href: 'fabs.html'},
     ],
   },
 ];

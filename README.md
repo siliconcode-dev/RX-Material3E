@@ -10,7 +10,7 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Steps 1 to 26 of 79 done. Live demo: https://rxmaterial3e.dpdns.org/ See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 to 27 of 79 done. Live demo: https://rxmaterial3e.dpdns.org/ See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package          | What it is                                                     | Status                            |
 | ---------------- | -------------------------------------------------------------- | --------------------------------- |
@@ -305,6 +305,15 @@ Compose's split button: a main action and, 2dp away, a button that opens more. `
 Compose's segmented buttons: outlined buttons in a row, their borders shared and the ends rounded. Checked, a button fills in and a checkmark grows in while the label slides over. The set keeps one button on at a time (`selection="single"`, the default, as radio buttons) or lets each toggle on its own (`selection="multi"`). An icon in a button's `icon` slot shows while it is off and crossfades with the checkmark; `no-checkmark` leaves the checkmark out. Each button fires `input` and `change` and, with a `name`, submits its `value` in a form when checked.
 
 All the buttons are as wide as the widest. On its own the set is as narrow as Compose makes it, fitted to each label's longest word, so a label of several words wraps; give the set a width (`width: 100%`, say) to spread the buttons out.
+
+## FABs
+
+```html
+<rx-fab><rx-icon label="Compose">edit</rx-icon></rx-fab>
+<rx-fab size="large" color="tertiary"><rx-icon label="Add">add</rx-icon></rx-fab>
+```
+
+Compose's floating action button: the screen's main action, an icon on a raised container. `size` is `small` (the older 40dp FAB), `baseline` (56dp, the default), `medium` (80dp) or `large` (96dp), each with its own shape and icon size. `color` is `primary-container` (the default), `secondary-container`, `tertiary-container`, `primary`, `secondary`, `tertiary` or `surface`. It sits at elevation level 3 and rises to level 4 under the pointer; `lowered` drops that to level 1 and 2. Name it with a `label` on its icon or `aria-label`. It is a plain button, not a form control. Extended FABs with a label come in step 28.
 
 ## Scrim
 

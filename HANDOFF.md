@@ -6,12 +6,12 @@ all decisions) and COMPONENTS.md (the catalog).
 
 ## Where things stand
 
-- **Steps 1 to 26 of 79 are done**, committed and pushed, CI green.
+- **Steps 1 to 27 of 79 are done**, committed and pushed, CI green.
   Phase 0 (groundwork) and Phase 1 (foundations) are finished; Phase 2
   (actions) is under way: step 18 (buttons), step 19 (button sizes, square
   shape, press morph), step 20 (toggle button), step 21 (icon button), step 22 (icon button
   sizes and widths), step 23 (button group, without the overflow menu), step 24 (connected
-  button group), step 25 (split button), step 26 (segmented button).
+  button group), step 25 (split button), step 26 (segmented button), step 27 (FAB sizes and colors).
 - Repository: **https://github.com/siliconcode-dev/RX-Material3E** (the
   owner's new account; the old `siliconxcode2` account is lost). `gh` is
   logged in as `siliconcode-dev`; the clone has it as `origin` and the old
@@ -22,12 +22,12 @@ all decisions) and COMPONENTS.md (the catalog).
 - Demo site: Vercel builds every push (`vercel.json`: `npm run build`,
   output `dist-site`, clean URLs, so pages have no `.html`, e.g. `/buttons`).
   The old Cloudflare Workers URL in the README is from the lost account.
-- **Next: step 27**, FAB sizes and container colors. Wait for the owner to
-  say "Go ahead with step 27".
+- **Next: step 28**, extended FAB. Wait for the owner to say "Go ahead with
+  step 28".
 
 When the new session starts, after reading these notes, tell the owner:
 
-> Ready for step 27 (FAB sizes and container colors) when you are.
+> Ready for step 28 (extended FAB) when you are.
 
 ## The owner's machine (Windows)
 
@@ -86,6 +86,19 @@ npm test
 `npm run tokens:fetch` without a commit takes androidx-main's newest code,
 which can change tokens. Only move to a newer commit on purpose, and then
 check every diff.
+
+MDC Android (the second source) is a shallow sparse clone in `.cache/mdc`,
+made at step 27 from commit `66b0eeb53afeb6025ffbbd37734b08e5bce197ed`
+(16 Oct 2026). To make it again:
+
+```sh
+git clone --depth 1 --filter=blob:none --sparse \
+  https://github.com/material-components/material-components-android.git .cache/mdc
+git -C .cache/mdc sparse-checkout set lib/java/com/google/android/material docs/components
+```
+
+Component styles and tokens are under
+`lib/java/com/google/android/material/<component>/res/values/`.
 
 ### Golden tests (Google's Kotlin as the reference)
 
@@ -147,6 +160,9 @@ regenerating from a clean setup gives identical files.
   property times `--_dir`, which `:host(:dir(rtl))` sets to -1), not in
   script: the demo's LTR/RTL switch changes direction after the element
   has drawn. The split and segmented buttons do this.
+- Switching branches (to fast-forward `main`) rewrites files with CRLF on
+  this machine (autocrlf). Anything that parses text the repo holds must
+  split lines on `/\r?\n/`; the demo catalog parser does since step 27.
 - Constants used in `connectedCallback` must be declared above the class
   (pre-upgraded elements run it during definition).
 - CI waits: `gh run list -R siliconcode-dev/RX-Material3E` gives the run
@@ -167,15 +183,17 @@ regenerating from a clean setup gives identical files.
 - npm publishing at step 79 (needs the owner's npm account); a shadcn-style
   registry may come later.
 
-## Notes for step 27 (FAB sizes and container colors)
+## Notes for step 28 (extended FAB)
 
-Not read yet: read upstream first, as always. Starting points:
-`FloatingActionButton.kt` (FloatingActionButton, SmallFloatingActionButton,
-MediumFloatingActionButton, LargeFloatingActionButton, FloatingActionButtonDefaults
-with its shapes, containerColor and elevation, and FloatingActionButtonElevation)
-and the tokens FabBaselineTokens, FabSmallTokens, FabMediumTokens, FabLargeTokens,
-FabPrimaryContainerTokens and FabSecondaryContainerTokens. Small is the legacy
-size; medium is new in M3 Expressive. The extended FAB (step 28) and
-animateFloatingActionButton come later. InteractionElevationController should
-cover the FAB's elevations; check its hover and focus values against the tokens.
-MDC Android's floatingactionbutton/ is the second source.
+Not read yet: read upstream first, as always. Starting points in
+`FloatingActionButton.kt`: ExtendedFloatingActionButton (text only, and
+icon plus text with `expanded`), Small, Medium and Large
+ExtendedFloatingActionButton, the private ExtendedFloatingActionButton
+layout, extendedFabCollapseAnimation and extendedFabExpandAnimation, the
+Small/Medium/Large ExtendedFab paddings and text styles at the end of the
+file, and the tokens ExtendedFabPrimaryTokens, ExtendedFabSmallTokens,
+ExtendedFabMediumTokens and ExtendedFabLargeTokens (note Compose's
+MediumExtendedFabIconPadding of 12dp over the token). COMPONENTS.md plans it
+as `rx-fab` with a `label`; `<rx-fab>` from step 27 has the sizes, colors
+and elevation to build on. MDC: `.cache/mdc/.../floatingactionbutton/`
+(ExtendedFloatingActionButton.java, efab_tokens.xml).

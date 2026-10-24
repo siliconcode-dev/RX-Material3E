@@ -1,8 +1,10 @@
 /*
  * Ported by hand from androidx/compose/material3 Button.kt
- * (ButtonElevation.animateElevation) and internal/Elevation.kt
- * (Animatable.animateElevation, ElevationDefaults and its tween specs).
- * Copyright 2021-2024 The Android Open Source Project. Licensed under the Apache License 2.0.
+ * (ButtonElevation.animateElevation), FloatingActionButton.kt
+ * (FloatingActionButtonElevation and FloatingActionButtonElevationAnimatable)
+ * and internal/Elevation.kt (Animatable.animateElevation, ElevationDefaults
+ * and its tween specs).
+ * Copyright 2021-2025 The Android Open Source Project. Licensed under the Apache License 2.0.
  *
  * Compose collects a control's hover, focus and press interactions in a
  * list; the newest one picks the elevation, and the change animates with a
@@ -57,6 +59,12 @@ export interface InteractionElevationOptions {
    * not the host (one part of a split button). Read once it exists.
    */
   source?: () => HTMLElement | null | undefined;
+  /**
+   * FloatingActionButtonElevationAnimatable rather than ButtonElevation: the
+   * interaction it moves back from is the one it last targeted (not worked
+   * out from the elevation value), and new elevation values snap.
+   */
+  trackLastInteraction?: boolean;
 }
 
 /**
@@ -73,6 +81,10 @@ export class InteractionElevationController implements ReactiveController {
   private animation: Animation | null = null;
   // The element listened to (the host, or options.source once rendered).
   private listening: HTMLElement | null = null;
+  // FloatingActionButtonElevationAnimatable's lastTargetInteraction, and the
+  // elevations its target was worked out from.
+  private lastInteraction: Interaction | null = null;
+  private lastElevations: string | null = null;
 
   constructor(
     private readonly host: ReactiveControllerHost & HTMLElement,
@@ -181,6 +193,10 @@ export class InteractionElevationController implements ReactiveController {
           : interaction === 'focus'
             ? elevations.focused
             : elevations.default;
+    if (this.options.trackLastInteraction) {
+      this.updateTracked(target, elevations, interaction, value);
+      return;
+    }
     if (this.targetValue === value) return;
     if (this.targetValue === null || !enabled) {
       // The first value, and any move to disabled: no transition.
@@ -198,6 +214,30 @@ export class InteractionElevationController implements ReactiveController {
           : previous === elevations.focused
             ? 'focus'
             : null;
+    const spec = interaction ? incomingSpec() : from ? outgoingSpec(from) : null;
+    if (spec) this.animate(target, value, spec);
+    else this.snap(target, value);
+  }
+
+  /** FloatingActionButtonElevationAnimatable's animateElevation and updateElevation. */
+  private updateTracked(
+    target: HTMLElement,
+    elevations: InteractionElevations,
+    interaction: Interaction | null,
+    value: number,
+  ) {
+    const from = this.lastInteraction;
+    // Updated even when the value stays the same (the finally block).
+    this.lastInteraction = interaction;
+    const key = JSON.stringify(elevations);
+    const changed = this.lastElevations !== null && this.lastElevations !== key;
+    this.lastElevations = key;
+    if (this.targetValue === value) return;
+    if (this.targetValue === null || changed) {
+      // The first value, and new elevations (snapElevation): no transition.
+      this.snap(target, value);
+      return;
+    }
     const spec = interaction ? incomingSpec() : from ? outgoingSpec(from) : null;
     if (spec) this.animate(target, value, spec);
     else this.snap(target, value);
