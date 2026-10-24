@@ -19,6 +19,8 @@ const TAGS = [
   'rx-icon-button',
   'rx-button-group',
   'rx-split-button',
+  'rx-segmented-button',
+  'rx-segmented-button-set',
 ];
 
 it('upgrades elements that were in the page before the library loaded', async () => {

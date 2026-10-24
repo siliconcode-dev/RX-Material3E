@@ -56,6 +56,12 @@ export interface AnimatableOptions<T> {
   upperBound?: T;
   /** Frame source; defaults to requestAnimationFrame. */
   frameClock?: FrameClock;
+  /**
+   * Whole numbers, as Compose's `Int.VectorConverter`: every frame's value
+   * is cut toward zero (`toInt()`), and an animation that takes over starts
+   * from that whole number. The velocity stays fractional.
+   */
+  integer?: boolean;
 }
 
 const Unspecified = Number.MIN_SAFE_INTEGER;
@@ -90,6 +96,7 @@ export class Animatable<T extends Value = number> {
   private readonly lower: Vector;
   private readonly upper: Vector;
   private readonly frameClock: FrameClock;
+  private readonly convert: (v: Vector) => Vector;
   private job: {cancel: () => void} | null = null;
 
   /** The spring animateTo uses when no spec is given: Compose's default, with this threshold. */
@@ -97,7 +104,9 @@ export class Animatable<T extends Value = number> {
 
   constructor(initialValue: T, options: AnimatableOptions<Widen<T>> = {}) {
     this.scalar = typeof initialValue === 'number';
-    this.current = toVector(initialValue);
+    // + 0 turns -0 into 0, as Kotlin has no negative zero integer.
+    this.convert = options.integer ? (v) => v.map((x) => Math.trunc(x) + 0) : (v) => v;
+    this.current = this.convert(toVector(initialValue));
     this.size = this.current.length;
     this.currentVelocity = new Array<number>(this.size).fill(0);
     this.target = [...this.current];
@@ -220,7 +229,7 @@ export class Animatable<T extends Value = number> {
           durationScale === 0
             ? durationNanos
             : Math.trunc((frameTimeNanos - startTimeNanos) / durationScale);
-        const value = valueAt(playTimeNanos);
+        const value = this.convert(valueAt(playTimeNanos));
         this.currentVelocity = velocityAt(playTimeNanos);
         this.lastFrameTimeNanos = frameTimeNanos;
         const lastFrame = isFinished(playTimeNanos);
@@ -255,7 +264,7 @@ export class Animatable<T extends Value = number> {
   snapTo(targetValue: Widen<T>): void {
     this.cancelJob();
     this.endAnimation();
-    const v = toVector(targetValue);
+    const v = this.convert(toVector(targetValue));
     this.current = v.map((x, i) => Math.min(Math.max(x, this.lower[i]), this.upper[i]));
     this.target = [...this.current];
   }

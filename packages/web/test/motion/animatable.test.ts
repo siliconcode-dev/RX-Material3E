@@ -162,4 +162,29 @@ describe('Animatable', () => {
       visibilityThreshold: 1,
     });
   });
+
+  it('integer: each frame cut toward zero (Int.VectorConverter), and a takeover starts from it', async () => {
+    const {clock, tick} = manualClock();
+    const a = new Animatable(-13, {frameClock: clock, integer: true});
+    const ref = new FloatSpringSpec(spec.dampingRatio, spec.stiffness);
+    const seen: number[] = [];
+    void a.animateTo(0, spec, undefined, () => seen.push(a.value));
+    tick(0);
+    tick(16);
+    tick(32);
+    expect(seen).toEqual(
+      [0, 16e6, 32e6].map((t) => Math.trunc(ref.getValueFromNanos(t, -13, 0, 0)) + 0),
+    );
+    // The velocity stays fractional.
+    const velocity = a.velocity;
+    expect(Number.isInteger(velocity)).toBe(false);
+    const from = a.value;
+    void a.animateTo(-13, spec, undefined, () => seen.push(a.value));
+    tick(48);
+    expect(seen.at(-1)).toBe(Math.trunc(ref.getValueFromNanos(16e6, from, -13, velocity)) + 0);
+    a.snapTo(2.7);
+    expect(a.value).toBe(2);
+    a.snapTo(-0.5);
+    expect(Object.is(a.value, 0)).toBe(true);
+  });
 });

@@ -6,12 +6,12 @@ all decisions) and COMPONENTS.md (the catalog).
 
 ## Where things stand
 
-- **Steps 1 to 25 of 79 are done**, committed and pushed, CI green.
+- **Steps 1 to 26 of 79 are done**, committed and pushed, CI green.
   Phase 0 (groundwork) and Phase 1 (foundations) are finished; Phase 2
   (actions) is under way: step 18 (buttons), step 19 (button sizes, square
   shape, press morph), step 20 (toggle button), step 21 (icon button), step 22 (icon button
   sizes and widths), step 23 (button group, without the overflow menu), step 24 (connected
-  button group), step 25 (split button).
+  button group), step 25 (split button), step 26 (segmented button).
 - Repository: **https://github.com/siliconcode-dev/RX-Material3E** (the
   owner's new account; the old `siliconxcode2` account is lost). `gh` is
   logged in as `siliconcode-dev`; the clone has it as `origin` and the old
@@ -22,12 +22,12 @@ all decisions) and COMPONENTS.md (the catalog).
 - Demo site: Vercel builds every push (`vercel.json`: `npm run build`,
   output `dist-site`, clean URLs, so pages have no `.html`, e.g. `/buttons`).
   The old Cloudflare Workers URL in the README is from the lost account.
-- **Next: step 26**, segmented button. Wait for the owner to say "Go ahead
-  with step 26".
+- **Next: step 27**, FAB sizes and container colors. Wait for the owner to
+  say "Go ahead with step 27".
 
 When the new session starts, after reading these notes, tell the owner:
 
-> Ready for step 26 (segmented button) when you are.
+> Ready for step 27 (FAB sizes and container colors) when you are.
 
 ## The owner's machine (Windows)
 
@@ -143,6 +143,10 @@ regenerating from a clean setup gives identical files.
   (Vite 8 does not compile standard decorators). A mixin returning a class
   needs the declared-interface cast (see `FormAssociated`).
 - `new Animatable(0)` is typed for numbers through `Widen<T>`.
+- An offset that depends on text direction belongs in CSS (a custom
+  property times `--_dir`, which `:host(:dir(rtl))` sets to -1), not in
+  script: the demo's LTR/RTL switch changes direction after the element
+  has drawn. The split and segmented buttons do this.
 - Constants used in `connectedCallback` must be declared above the class
   (pre-upgraded elements run it during definition).
 - CI waits: `gh run list -R siliconcode-dev/RX-Material3E` gives the run
@@ -163,14 +167,15 @@ regenerating from a clean setup gives identical files.
 - npm publishing at step 79 (needs the owner's npm account); a shadcn-style
   registry may come later.
 
-## Notes for step 26 (segmented button)
+## Notes for step 27 (FAB sizes and container colors)
 
 Not read yet: read upstream first, as always. Starting points:
-`SegmentedButton.kt` (SingleChoiceSegmentedButtonRow,
-MultiChoiceSegmentedButtonRow, SegmentedButton, SegmentedButtonDefaults with
-itemShape and the checkmark icon) and the tokens
-OutlinedSegmentedButtonTokens. It is the baseline M3 segmented button (the
-connected button group of step 24 is the expressive one). The rows overlap
-the borders (negative offsets) and animate the checkmark in; check how the
-icon crossfade is timed. MDC Android's MaterialButtonToggleGroup is the
-second source.
+`FloatingActionButton.kt` (FloatingActionButton, SmallFloatingActionButton,
+MediumFloatingActionButton, LargeFloatingActionButton, FloatingActionButtonDefaults
+with its shapes, containerColor and elevation, and FloatingActionButtonElevation)
+and the tokens FabBaselineTokens, FabSmallTokens, FabMediumTokens, FabLargeTokens,
+FabPrimaryContainerTokens and FabSecondaryContainerTokens. Small is the legacy
+size; medium is new in M3 Expressive. The extended FAB (step 28) and
+animateFloatingActionButton come later. InteractionElevationController should
+cover the FAB's elevations; check its hover and focus values against the tokens.
+MDC Android's floatingactionbutton/ is the second source.

@@ -31,7 +31,6 @@ import type {RxFocusRing} from '../focus/focus-ring.js';
 import {addActivation} from '../internals/activation.js';
 import type {CornerShape} from '../internals/animated-shape.js';
 import {cornerSizeToPx} from '../internals/animated-shape.js';
-import {isRtl} from '../internals/dir.js';
 import {
   InteractionElevationController,
   type InteractionElevations,
@@ -395,6 +394,22 @@ export class RxSplitButton extends LitElement {
         justify-content: center;
       }
 
+      /*
+       * placeRelative: the optical offset is toward the end, mirrored in
+       * right-to-left text (in CSS, so it follows a change of direction).
+       */
+      .trailing-content {
+        translate: calc(var(--_nudge, 0px) * var(--_dir)) 0;
+      }
+
+      :host {
+        --_dir: 1;
+      }
+
+      :host(:dir(rtl)) {
+        --_dir: -1;
+      }
+
       /* trailingButtonIconSizeFor. */
       .chevron {
         --rx-icon-size: var(--_trailing-icon-size);
@@ -532,8 +547,7 @@ export class RxSplitButton extends LitElement {
     const maxStart = -parseFloat(style.getPropertyValue('--_trailing-start'));
     const maxEnd = parseFloat(style.getPropertyValue('--_trailing-end'));
     const x = Math.round(Math.min(Math.max(offset, maxStart), maxEnd));
-    // placeRelative: toward the end, mirrored in right-to-left text.
-    this.trailingContent.style.translate = `${isRtl(this) ? -x : x}px 0`;
+    this.trailingContent.style.setProperty('--_nudge', `${x}px`);
   }
 
   protected override render() {

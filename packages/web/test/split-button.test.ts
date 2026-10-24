@@ -35,8 +35,8 @@ const release = (el: Element) =>
   el.dispatchEvent(new PointerEvent('pointerup', {button: 0, bubbles: true}));
 const offset = (el: RxSplitButton) =>
   parseFloat(
-    (el.shadowRoot!.querySelector('.trailing-content') as HTMLElement).style.translate || '0',
-  );
+    getComputedStyle(el.shadowRoot!.querySelector('.trailing-content') as HTMLElement).translate,
+  ) || 0;
 
 /** A color role (optionally at an opacity) as the browser computes it. */
 function color(role: string, opacity?: number) {
@@ -235,6 +235,15 @@ describe('rx-split-button shapes', () => {
     const leading = getComputedStyle(part(el, 'leading'));
     expect(parseFloat(leading.borderTopRightRadius)).toBe(20);
     expect(parseFloat(leading.borderTopLeftRadius)).toBe(4);
+    expect(offset(el)).toBe(2);
+  });
+
+  it('follows a change of direction after it is drawn', async () => {
+    setMotionDurationScale(0);
+    const el = await mount();
+    await frames(2);
+    expect(offset(el)).toBe(-2);
+    document.documentElement.dir = 'rtl';
     expect(offset(el)).toBe(2);
   });
 });

@@ -10,7 +10,7 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Steps 1 to 25 of 79 done. Live demo: https://rxmaterial3e.dpdns.org/ See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 to 26 of 79 done. Live demo: https://rxmaterial3e.dpdns.org/ See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package          | What it is                                                     | Status                            |
 | ---------------- | -------------------------------------------------------------- | --------------------------------- |
@@ -291,6 +291,20 @@ Compose's ButtonGroup: buttons, toggle buttons and icon buttons in a row, 12dp a
 ```
 
 Compose's split button: a main action and, 2dp away, a button that opens more. `variant` is `filled` (the default), `tonal`, `elevated` or `outlined`, and `size` is `xs` to `xl`. The leading button fires `leading-click`; the trailing one toggles `checked` (firing `input` and `change`), turns fully round and turns its chevron over. Put your own content in the `trailing` slot to replace the chevron. Give the trailing button a name with `trailing-label`. The menu it opens comes with menus at step 58.
+
+## Segmented buttons
+
+```html
+<rx-segmented-button-set>
+  <rx-segmented-button checked>Day</rx-segmented-button>
+  <rx-segmented-button>Week</rx-segmented-button>
+  <rx-segmented-button>Month</rx-segmented-button>
+</rx-segmented-button-set>
+```
+
+Compose's segmented buttons: outlined buttons in a row, their borders shared and the ends rounded. Checked, a button fills in and a checkmark grows in while the label slides over. The set keeps one button on at a time (`selection="single"`, the default, as radio buttons) or lets each toggle on its own (`selection="multi"`). An icon in a button's `icon` slot shows while it is off and crossfades with the checkmark; `no-checkmark` leaves the checkmark out. Each button fires `input` and `change` and, with a `name`, submits its `value` in a form when checked.
+
+All the buttons are as wide as the widest. On its own the set is as narrow as Compose makes it, fitted to each label's longest word, so a label of several words wraps; give the set a width (`width: 100%`, say) to spread the buttons out.
 
 ## Scrim
 

@@ -49,8 +49,10 @@ describe('parseCatalog', () => {
     });
     expect(byId.get('1.6')).toMatchObject({
       name: 'Segmented button',
-      status: 'todo',
+      elements: ['rx-segmented-button', 'rx-segmented-button-set'],
+      status: 'done',
     });
+    expect(byId.get('1.7')).toMatchObject({name: 'FAB', status: 'todo'});
     expect(byId.get('1.10')?.elements).toContain('rx-chip-set');
     expect(byId.get('6.1')).toMatchObject({name: 'Scaffold', elements: ['rx-scaffold']});
   });

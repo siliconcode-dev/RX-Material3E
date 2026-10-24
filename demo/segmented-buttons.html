@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Segmented buttons · RX Material 3E</title>
+    <link rel="stylesheet" href="../packages/tokens/css/fonts.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/theme.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/typescale.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/icons.css" />
+    <link rel="stylesheet" href="./demo.css" />
+    <script type="module" src="./shell.ts"></script>
+    <script type="module" src="./segmented-buttons.ts"></script>
+    <style>
+      .stack {
+        display: grid;
+        gap: 16px;
+        justify-items: start;
+        padding: 8px 0;
+      }
+      .wide {
+        width: 100%;
+        max-width: 480px;
+      }
+      output {
+        display: block;
+        color: var(--md-sys-color-on-surface-variant);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Segmented buttons</h1>
+    <p>
+      Compose's segmented buttons, ported from <code>SegmentedButton.kt</code>: outlined buttons in
+      a row with shared borders, the ends rounded. Checked, a button fills in and a checkmark grows
+      in while the label slides over to make room.
+    </p>
+
+    <h2>Single choice</h2>
+    <p>One button on at a time, as SingleChoiceSegmentedButtonRow. They are radio buttons.</p>
+    <div class="stack">
+      <rx-segmented-button-set id="single">
+        <rx-segmented-button checked>Day</rx-segmented-button>
+        <rx-segmented-button>Month</rx-segmented-button>
+        <rx-segmented-button>Week</rx-segmented-button>
+      </rx-segmented-button-set>
+      <output id="single-log" class="rx-typescale-body-medium" aria-live="polite"></output>
+    </div>
+
+    <h2>Multiple choice with icons</h2>
+    <p>
+      Any number on, as MultiChoiceSegmentedButtonRow. An icon shows while a button is off and
+      crossfades with the checkmark.
+    </p>
+    <div class="stack">
+      <rx-segmented-button-set selection="multi">
+        <rx-segmented-button><rx-icon slot="icon">star</rx-icon>Favorites</rx-segmented-button>
+        <rx-segmented-button
+          ><rx-icon slot="icon">trending_up</rx-icon>Trending</rx-segmented-button
+        >
+        <rx-segmented-button><rx-icon slot="icon">bookmark</rx-icon>Saved</rx-segmented-button>
+      </rx-segmented-button-set>
+    </div>
+
+    <h2>Width</h2>
+    <p>
+      On its own a row is as narrow as Compose makes it: every button as wide as the widest, fitted
+      to each label's longest word, so "Last week" wraps. Given a width, the buttons share it.
+    </p>
+    <div class="stack">
+      <rx-segmented-button-set>
+        <rx-segmented-button checked>Today</rx-segmented-button>
+        <rx-segmented-button>Last week</rx-segmented-button>
+        <rx-segmented-button>All time</rx-segmented-button>
+      </rx-segmented-button-set>
+      <rx-segmented-button-set class="wide">
+        <rx-segmented-button checked>Today</rx-segmented-button>
+        <rx-segmented-button>Last week</rx-segmented-button>
+        <rx-segmented-button>All time</rx-segmented-button>
+      </rx-segmented-button-set>
+    </div>
+
+    <h2>No checkmark</h2>
+    <p>Compose's <code>icon = {}</code>: the label stays in the middle.</p>
+    <div class="stack">
+      <rx-segmented-button-set>
+        <rx-segmented-button no-checkmark checked>S</rx-segmented-button>
+        <rx-segmented-button no-checkmark>M</rx-segmented-button>
+        <rx-segmented-button no-checkmark>L</rx-segmented-button>
+        <rx-segmented-button no-checkmark>XL</rx-segmented-button>
+      </rx-segmented-button-set>
+    </div>
+
+    <h2>Disabled</h2>
+    <div class="stack">
+      <rx-segmented-button-set>
+        <rx-segmented-button checked>Walk</rx-segmented-button>
+        <rx-segmented-button disabled>Ride</rx-segmented-button>
+        <rx-segmented-button>Drive</rx-segmented-button>
+      </rx-segmented-button-set>
+      <rx-segmented-button-set selection="multi">
+        <rx-segmented-button disabled checked>Walk</rx-segmented-button>
+        <rx-segmented-button disabled>Ride</rx-segmented-button>
+        <rx-segmented-button disabled>Drive</rx-segmented-button>
+      </rx-segmented-button-set>
+    </div>
+  </body>
+</html>
