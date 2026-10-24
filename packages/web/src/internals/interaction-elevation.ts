@@ -52,6 +52,11 @@ export interface InteractionElevationOptions {
   elevations: () => InteractionElevations | null;
   /** Whether the control is enabled. */
   enabled: () => boolean;
+  /**
+   * The element whose hover, focus, press and key events drive it, when
+   * not the host (one part of a split button). Read once it exists.
+   */
+  source?: () => HTMLElement | null | undefined;
 }
 
 /**
@@ -66,6 +71,8 @@ export class InteractionElevationController implements ReactiveController {
   // Animatable.targetValue: the last elevation animated or snapped to.
   private targetValue: number | null = null;
   private animation: Animation | null = null;
+  // The element listened to (the host, or options.source once rendered).
+  private listening: HTMLElement | null = null;
 
   constructor(
     private readonly host: ReactiveControllerHost & HTMLElement,
@@ -75,16 +82,27 @@ export class InteractionElevationController implements ReactiveController {
   }
 
   hostConnected() {
-    for (const type of EVENTS) this.host.addEventListener(type, this);
+    this.listen();
   }
 
   hostDisconnected() {
-    for (const type of EVENTS) this.host.removeEventListener(type, this);
+    if (this.listening) {
+      for (const type of EVENTS) this.listening.removeEventListener(type, this);
+    }
+    this.listening = null;
     this.interactions = [];
   }
 
   hostUpdated() {
+    this.listen();
     this.update();
+  }
+
+  private listen() {
+    const source = this.options.source ? this.options.source() : this.host;
+    if (!source || source === this.listening) return;
+    for (const type of EVENTS) source.addEventListener(type, this);
+    this.listening = source;
   }
 
   private add(interaction: Interaction) {
@@ -119,7 +137,7 @@ export class InteractionElevationController implements ReactiveController {
       case 'keydown': {
         const key = (event as KeyboardEvent).key;
         if ((key === ' ' || key === 'Enter') && !(event as KeyboardEvent).repeat) {
-          if (event.target === this.host) this.add('press');
+          if (event.target === this.listening) this.add('press');
         }
         break;
       }
@@ -128,7 +146,7 @@ export class InteractionElevationController implements ReactiveController {
         break;
       case 'focusin':
         // Compose only gets focus from the keyboard (touch mode doesn't focus buttons).
-        if (this.host.matches(':focus-visible')) this.add('focus');
+        if (this.listening?.matches(':focus-visible')) this.add('focus');
         break;
       case 'focusout':
         this.remove('focus');

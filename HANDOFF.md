@@ -6,12 +6,12 @@ all decisions) and COMPONENTS.md (the catalog).
 
 ## Where things stand
 
-- **Steps 1 to 24 of 79 are done**, committed and pushed, CI green.
+- **Steps 1 to 25 of 79 are done**, committed and pushed, CI green.
   Phase 0 (groundwork) and Phase 1 (foundations) are finished; Phase 2
   (actions) is under way: step 18 (buttons), step 19 (button sizes, square
   shape, press morph), step 20 (toggle button), step 21 (icon button), step 22 (icon button
   sizes and widths), step 23 (button group, without the overflow menu), step 24 (connected
-  button group).
+  button group), step 25 (split button).
 - Repository: **https://github.com/siliconcode-dev/RX-Material3E** (the
   owner's new account; the old `siliconxcode2` account is lost). `gh` is
   logged in as `siliconcode-dev`; the clone has it as `origin` and the old
@@ -22,12 +22,12 @@ all decisions) and COMPONENTS.md (the catalog).
 - Demo site: Vercel builds every push (`vercel.json`: `npm run build`,
   output `dist-site`, clean URLs, so pages have no `.html`, e.g. `/buttons`).
   The old Cloudflare Workers URL in the README is from the lost account.
-- **Next: step 25**, split button. Wait for the owner to say "Go ahead with
-  step 25".
+- **Next: step 26**, segmented button. Wait for the owner to say "Go ahead
+  with step 26".
 
 When the new session starts, after reading these notes, tell the owner:
 
-> Ready for step 25 (split button) when you are.
+> Ready for step 26 (segmented button) when you are.
 
 ## The owner's machine (Windows)
 
@@ -163,13 +163,14 @@ regenerating from a clean setup gives identical files.
 - npm publishing at step 79 (needs the owner's npm account); a shadcn-style
   registry may come later.
 
-## Notes for step 25 (split button)
+## Notes for step 26 (segmented button)
 
 Not read yet: read upstream first, as always. Starting points:
-`SplitButton.kt` (SplitButtonLayout, SplitButtonDefaults with its leading
-and trailing buttons, sizes XS to XL) and the tokens SplitButtonXSmallTokens
-to SplitButtonXLargeTokens. It uses HorizontalCenterOptically (the trailing
-icon is optically centered, from ShapeWithHorizontalCenterOptically in
-AnimatedShape.kt) and rotates the trailing chevron when checked. Shapes have
-different start and end corners, which now go through createOutline's
-per-pair scaling (`applyCornerShape`).
+`SegmentedButton.kt` (SingleChoiceSegmentedButtonRow,
+MultiChoiceSegmentedButtonRow, SegmentedButton, SegmentedButtonDefaults with
+itemShape and the checkmark icon) and the tokens
+OutlinedSegmentedButtonTokens. It is the baseline M3 segmented button (the
+connected button group of step 24 is the expressive one). The rows overlap
+the borders (negative offsets) and animate the checkmark in; check how the
+icon crossfade is timed. MDC Android's MaterialButtonToggleGroup is the
+second source.

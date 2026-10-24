@@ -18,6 +18,7 @@ const TAGS = [
   'rx-toggle-button',
   'rx-icon-button',
   'rx-button-group',
+  'rx-split-button',
 ];
 
 it('upgrades elements that were in the page before the library loaded', async () => {

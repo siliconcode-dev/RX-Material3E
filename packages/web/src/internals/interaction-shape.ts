@@ -32,6 +32,14 @@ export interface InteractionShapeOptions {
   spec: () => SpringSpec;
   /** Whether the morph is on; when off the stylesheet's corners apply. */
   enabled?: () => boolean;
+  /**
+   * Whether a new set of shapes starts a new morph state at rest, as
+   * `key(shapes)` (true, the default), or the current state morphs on to the
+   * new shape (SplitButton's shapeByInteraction has no key).
+   */
+  keyed?: boolean;
+  /** Called after each drawn frame with the shape drawn and the container's size. */
+  onDraw?: (shape: CornerShape, width: number, height: number) => void;
 }
 
 /**
@@ -88,12 +96,11 @@ export class InteractionShapeController implements ReactiveController {
     container.style.removeProperty('border-radius');
     const set = shapes as CornerShape[];
     const current = set[index];
-    if (
+    const changed =
       !this.key ||
-      !this.state ||
       this.key.length !== set.length ||
-      set.some((shape, i) => !cornerShapesEqual(shape, this.key![i]))
-    ) {
+      set.some((shape, i) => !cornerShapesEqual(shape, this.key![i]));
+    if (!this.state || (changed && this.options.keyed !== false)) {
       this.state?.progress.stop();
       this.key = set;
       const state = new AnimatedShapeState(current, this.options.spec, () => this.draw(state));
@@ -101,6 +108,7 @@ export class InteractionShapeController implements ReactiveController {
       this.draw(state);
       return;
     }
+    this.key = set;
     const state = this.state;
     void state.animateToShape(current)?.then(() => this.draw(state));
   }
@@ -121,6 +129,8 @@ export class InteractionShapeController implements ReactiveController {
       this.resize = new ResizeObserver(() => this.state && this.draw(this.state));
       this.resize.observe(container);
     }
-    applyCornerShape(container, state.atRest ? state.targetShape : state.morphedShape());
+    const shape = state.atRest ? state.targetShape : state.morphedShape();
+    applyCornerShape(container, shape);
+    this.options.onDraw?.(shape, container.offsetWidth, container.offsetHeight);
   }
 }

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Split buttons · RX Material 3E</title>
+    <link rel="stylesheet" href="../packages/tokens/css/fonts.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/theme.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/typescale.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/icons.css" />
+    <link rel="stylesheet" href="./demo.css" />
+    <script type="module" src="./shell.ts"></script>
+    <script type="module" src="./split-buttons.ts"></script>
+    <style>
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+        padding: 8px 0;
+      }
+      .sizes {
+        display: grid;
+        gap: 16px;
+        justify-items: start;
+        padding: 8px 0;
+      }
+      .sizes .name {
+        color: var(--md-sys-color-on-surface-variant);
+      }
+      output {
+        display: block;
+        color: var(--md-sys-color-on-surface-variant);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Split buttons</h1>
+    <p>
+      Compose's split button, ported from <code>SplitButton.kt</code>: a main action and, 2dp away,
+      a button that opens more. The halves share rounded outer ends; their inner corners grow when
+      pressed. Checked, the trailing button turns fully round, darkens slightly and turns its
+      chevron over (the menu itself comes with menus at step 58).
+    </p>
+
+    <h2>The four split buttons</h2>
+    <div class="row" id="variants"></div>
+    <output id="log" class="rx-typescale-body-medium" aria-live="polite"></output>
+
+    <h2>Sizes</h2>
+    <p>
+      Extra small to extra large (32 to 136dp), with SplitButtonDefaults' paddings, icon sizes and
+      inner corners for each, and ButtonDefaults' text style.
+    </p>
+    <div class="sizes" id="sizes"></div>
+
+    <h2>Disabled</h2>
+    <div class="row">
+      <rx-split-button disabled trailing-label="More options"
+        ><rx-icon slot="icon">edit</rx-icon>Edit</rx-split-button
+      >
+      <rx-split-button disabled variant="outlined" trailing-label="More options"
+        >Share</rx-split-button
+      >
+    </div>
+  </body>
+</html>

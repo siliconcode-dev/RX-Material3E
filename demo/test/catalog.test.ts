@@ -45,6 +45,10 @@ describe('parseCatalog', () => {
     expect(byId.get('1.5')).toMatchObject({
       name: 'Split button',
       elements: ['rx-split-button'],
+      status: 'done',
+    });
+    expect(byId.get('1.6')).toMatchObject({
+      name: 'Segmented button',
       status: 'todo',
     });
     expect(byId.get('1.10')?.elements).toContain('rx-chip-set');

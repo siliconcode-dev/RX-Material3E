@@ -10,7 +10,7 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Steps 1 to 24 of 79 done. Live demo: https://rxmaterial3e.dpdns.org/ See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 to 25 of 79 done. Live demo: https://rxmaterial3e.dpdns.org/ See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package          | What it is                                                     | Status                            |
 | ---------------- | -------------------------------------------------------------- | --------------------------------- |
@@ -281,6 +281,16 @@ Compose's ButtonGroup: buttons, toggle buttons and icon buttons in a row, 12dp a
 ```
 
 `connected` puts toggle buttons 2dp apart with Compose's connected shapes: rounded outer ends, small inner corners that pinch in when pressed, fully round when on. They wrap onto more rows, as in Compose's connected samples, and don't grow on press. `selection="single"` keeps one on at a time, as radio buttons.
+
+## Split buttons
+
+```html
+<rx-split-button trailing-label="More options">
+  <rx-icon slot="icon">edit</rx-icon>Edit
+</rx-split-button>
+```
+
+Compose's split button: a main action and, 2dp away, a button that opens more. `variant` is `filled` (the default), `tonal`, `elevated` or `outlined`, and `size` is `xs` to `xl`. The leading button fires `leading-click`; the trailing one toggles `checked` (firing `input` and `change`), turns fully round and turns its chevron over. Put your own content in the `trailing` slot to replace the chevron. Give the trailing button a name with `trailing-label`. The menu it opens comes with menus at step 58.
 
 ## Scrim
 
