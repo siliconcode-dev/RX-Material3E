@@ -6,12 +6,12 @@ all decisions) and COMPONENTS.md (the catalog).
 
 ## Where things stand
 
-- **Steps 1 to 29 of 79 are done**, committed and pushed, CI green.
+- **Steps 1 to 30 of 79 are done**, committed and pushed, CI green.
   Phase 0 (groundwork) and Phase 1 (foundations) are finished; Phase 2
   (actions) is under way: step 18 (buttons), step 19 (button sizes, square
   shape, press morph), step 20 (toggle button), step 21 (icon button), step 22 (icon button
   sizes and widths), step 23 (button group, without the overflow menu), step 24 (connected
-  button group), step 25 (split button), step 26 (segmented button), step 27 (FAB sizes and colors), step 28 (extended FAB), step 29 (FAB menu).
+  button group), step 25 (split button), step 26 (segmented button), step 27 (FAB sizes and colors), step 28 (extended FAB), step 29 (FAB menu), step 30 (assist and suggestion chips).
 - Repository: **https://github.com/siliconcode-dev/RX-Material3E** (the
   owner's new account; the old `siliconxcode2` account is lost). `gh` is
   logged in as `siliconcode-dev`; the clone has it as `origin` and the old
@@ -22,12 +22,12 @@ all decisions) and COMPONENTS.md (the catalog).
 - Demo site: Vercel builds every push (`vercel.json`: `npm run build`,
   output `dist-site`, clean URLs, so pages have no `.html`, e.g. `/buttons`).
   The old Cloudflare Workers URL in the README is from the lost account.
-- **Next: step 30**, chips 1 (assist, suggestion). Wait for the owner to say
-  "Go ahead with step 30".
+- **Next: step 31**, chips 2 (filter, input, chip set). Wait for the owner to
+  say "Go ahead with step 31".
 
 When the new session starts, after reading these notes, tell the owner:
 
-> Ready for step 30 (chips: assist and suggestion) when you are.
+> Ready for step 31 (chips: filter, input and the chip set) when you are.
 
 ## The owner's machine (Windows)
 
@@ -185,13 +185,16 @@ regenerating from a clean setup gives identical files.
 - npm publishing at step 79 (needs the owner's npm account); a shadcn-style
   registry may come later.
 
-## Notes for step 30 (chips 1: assist, suggestion)
+## Notes for step 31 (chips 2: filter, input, chip set)
 
-Not read yet: read upstream first, as always. Starting points: `Chip.kt`
-(AssistChip, ElevatedAssistChip, SuggestionChip, ElevatedSuggestionChip,
-AssistChipDefaults, SuggestionChipDefaults, the shared Chip and
-ChipContent layout, ChipColors and ChipElevation) and the tokens
-AssistChipTokens, SuggestionChipTokens and ChipsTokens. MDC:
-`.cache/mdc/.../chip/` (Chip, ChipDrawable and the chip styles).
-COMPONENTS.md plans `rx-assist-chip` and `rx-suggestion-chip`; the chip set
-is step 31.
+Not read yet: read upstream first, as always. Starting points in `Chip.kt`:
+FilterChip and ElevatedFilterChip, InputChip (with its avatar and
+inputChipPadding), their Defaults, SelectableChip with AnimatingChipContent
+(the leading and trailing icons expand and fade in and out), the expressive
+`shapes` overloads with ChipShapes and shapeByInteraction (ChipsTokens'
+unselected, selected and pressed shapes), SelectableChipColors and
+SelectableChipElevation; the tokens FilterChipTokens, InputChipTokens and
+ChipsTokens. The chip set (`rx-chip-set`) has no Compose class: look at the
+samples' ChipGroupSingleLineSample and ChipGroupReflowSample (FlowRow) and
+MDC's ChipGroup. Step 30's `src/chip/chip.ts` has the shared ChipBase and
+chipStyles to build on; selectable chips use the checkbox role.

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chips · RX Material 3E</title>
+    <link rel="stylesheet" href="../packages/tokens/css/fonts.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/theme.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/typescale.css" />
+    <link rel="stylesheet" href="../packages/tokens/css/icons.css" />
+    <link rel="stylesheet" href="./demo.css" />
+    <script type="module" src="./shell.ts"></script>
+    <script type="module" src="./chips.ts"></script>
+    <style>
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        padding: 8px 0;
+      }
+      .scroller {
+        display: flex;
+        overflow-x: auto;
+        max-width: 640px;
+        padding: 8px 0;
+      }
+      .scroller rx-assist-chip:not(:first-child) {
+        flex: none;
+        margin-inline: 4px;
+      }
+      output {
+        display: block;
+        min-height: 1.5em;
+        color: var(--md-sys-color-on-surface-variant);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Chips</h1>
+    <p>
+      Compose's assist and suggestion chips, ported from <code>Chip.kt</code>. Filter and input
+      chips and the chip set come next.
+    </p>
+
+    <h2>Assist chips</h2>
+    <p>
+      Smart or automated actions shown in context, such as adding an event to a calendar. Flat (an
+      outline) or elevated (a raised container), with an optional leading and trailing icon.
+    </p>
+    <div class="row" id="assist"></div>
+    <div class="row" id="assist-elevated"></div>
+
+    <h2>Suggestion chips</h2>
+    <p>Suggested replies or searches, made from what the user is doing.</p>
+    <div class="row" id="suggestion"></div>
+    <div class="row" id="suggestion-elevated"></div>
+    <output id="log" class="rx-typescale-body-medium" aria-live="polite"></output>
+
+    <h2>Disabled</h2>
+    <div class="row" id="disabled"></div>
+
+    <h2>A row of chips</h2>
+    <p>
+      Compose's single-line chip group: assist chips 4dp apart in a row that scrolls sideways, each
+      with a drop-down arrow.
+    </p>
+    <div class="scroller" id="scroller"></div>
+  </body>
+</html>

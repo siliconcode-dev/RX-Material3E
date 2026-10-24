@@ -25,6 +25,8 @@ const TAGS = [
   'rx-toggle-fab',
   'rx-fab-menu',
   'rx-fab-menu-item',
+  'rx-assist-chip',
+  'rx-suggestion-chip',
 ];
 
 it('upgrades elements that were in the page before the library loaded', async () => {

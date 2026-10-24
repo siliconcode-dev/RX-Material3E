@@ -60,7 +60,11 @@ describe('parseCatalog', () => {
       status: 'done',
     });
     expect(byId.get('1.10')?.elements).toContain('rx-chip-set');
-    expect(byId.get('1.10')).toMatchObject({status: 'todo'});
+    expect(byId.get('1.10')).toMatchObject({
+      status: 'progress',
+      note: expect.stringMatching(/step 31/),
+    });
+    expect(byId.get('2.1')).toMatchObject({status: 'todo'});
     expect(byId.get('6.1')).toMatchObject({name: 'Scaffold', elements: ['rx-scaffold']});
   });
 

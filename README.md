@@ -10,7 +10,7 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Steps 1 to 29 of 79 done. Live demo: https://rxmaterial3e.dpdns.org/ See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 to 30 of 79 done. Live demo: https://rxmaterial3e.dpdns.org/ See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package          | What it is                                                     | Status                            |
 | ---------------- | -------------------------------------------------------------- | --------------------------------- |
@@ -338,6 +338,15 @@ A `label` makes it an extended FAB: Compose's ExtendedFloatingActionButton at th
 Compose's M3 Expressive FAB menu: a toggle FAB that opens up to six related actions above it. The toggle FAB springs from a FAB into the menu's round 56dp close button, its size, corners, colors and icon all moving together, and switches to the `checked` icon half way. The items appear one by one from the bottom, each opening its width and fading in, and leave from the top. `size` on the toggle FAB is `baseline`, `medium` or `large`; `color` on it and on the items is `primary` (the default), `secondary` or `tertiary`; `align` on the menu is `end` (the default), `start` or `center`.
 
 Clicking the toggle FAB opens and closes the menu, and choosing an item or pressing Escape closes it; each fires `toggle`. With the keyboard, Tab or the down arrow goes from the button to the top item and the arrows move between items. Place the menu yourself, usually `position: fixed` at the bottom end of the screen.
+
+## Chips
+
+```html
+<rx-assist-chip><rx-icon slot="icon">event</rx-icon>Add to calendar</rx-assist-chip>
+<rx-suggestion-chip elevated>Sounds good</rx-suggestion-chip>
+```
+
+Compose's assist and suggestion chips. An assist chip is a smart action in context, such as adding an event to a calendar; a suggestion chip is a suggested reply or search. Both are flat with an outline by default, or `elevated` with a raised container. An assist chip takes an `icon` and a `trailing-icon`, a suggestion chip an `icon`; icons are 18dp. They are 32dp tall with a 48dp touch target, fire `click`, and `disabled` turns them off. Filter and input chips and the chip set come in step 31.
 
 ## Scrim
 
