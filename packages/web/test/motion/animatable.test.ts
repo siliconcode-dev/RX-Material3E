@@ -187,4 +187,26 @@ describe('Animatable', () => {
     a.snapTo(-0.5);
     expect(Object.is(a.value, 0)).toBe(true);
   });
+
+  it("integer 'size': rounded to the nearest whole number and never below 0 (IntSize.VectorConverter)", async () => {
+    const {clock, tick} = manualClock();
+    const a = new Animatable(10, {frameClock: clock, integer: 'size'});
+    const ref = new FloatSpringSpec(spec.dampingRatio, spec.stiffness);
+    const seen: number[] = [];
+    void a.animateTo(0, spec, undefined, () => seen.push(a.value));
+    for (let t = 0; t <= 400; t += 16) tick(t);
+    const want = [];
+    for (let t = 0; t < 16 * seen.length; t += 16) {
+      const playTime = t * 1e6;
+      const done = playTime >= ref.getDurationNanos(10, 0, 0);
+      want.push(done ? 0 : Math.max(0, Math.round(ref.getValueFromNanos(playTime, 10, 0, 0))));
+    }
+    expect(seen).toEqual(want);
+    // The default spatial spring overshoots below 0, which shows as 0.
+    expect(Math.min(...seen)).toBe(0);
+    a.snapTo(2.5);
+    expect(a.value).toBe(3);
+    a.snapTo(-4);
+    expect(a.value).toBe(0);
+  });
 });

@@ -12,6 +12,12 @@
     <script type="module" src="./shell.ts"></script>
     <script type="module" src="./fabs.ts"></script>
     <style>
+      .stack {
+        display: grid;
+        gap: 16px;
+        justify-items: start;
+        padding: 8px 0;
+      }
       .row {
         display: flex;
         flex-wrap: wrap;
@@ -79,6 +85,24 @@
       <rx-fab lowered><rx-icon label="Add">add</rx-icon></rx-fab>
       <rx-fab lowered color="secondary-container"><rx-icon label="Edit">edit</rx-icon></rx-fab>
     </div>
+
+    <h2>Extended FABs</h2>
+    <p>
+      With a <code>label</code>: the baseline ExtendedFloatingActionButton, and M3 Expressive's
+      small (56dp), medium (80dp) and large (96dp) extended FABs, each with its own padding and text
+      style. With the label alone, or with an icon.
+    </p>
+    <div class="stack" id="extended"></div>
+
+    <h2>Collapsing</h2>
+    <p>
+      <code>collapsed</code> folds an extended FAB to its icon, as a list scrolls. The baseline one
+      slides and fades its label away; the M3 Expressive ones spring their width.
+    </p>
+    <div class="row">
+      <rx-button id="toggle" variant="tonal">Collapse</rx-button>
+    </div>
+    <div class="stack" id="collapsing"></div>
 
     <h2>On a screen</h2>
     <div class="screen">

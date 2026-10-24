@@ -53,7 +53,8 @@ describe('parseCatalog', () => {
       status: 'done',
     });
     expect(byId.get('1.7')).toMatchObject({name: 'FAB', elements: ['rx-fab'], status: 'done'});
-    expect(byId.get('1.8')).toMatchObject({name: 'Extended FAB', status: 'todo'});
+    expect(byId.get('1.8')).toMatchObject({name: 'Extended FAB', status: 'done'});
+    expect(byId.get('1.9')).toMatchObject({name: 'FAB menu', status: 'todo'});
     expect(byId.get('1.10')?.elements).toContain('rx-chip-set');
     expect(byId.get('6.1')).toMatchObject({name: 'Scaffold', elements: ['rx-scaffold']});
   });

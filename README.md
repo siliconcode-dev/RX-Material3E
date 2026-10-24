@@ -10,7 +10,7 @@ This project is not affiliated with or endorsed by Google.
 
 ## Status
 
-Steps 1 to 27 of 79 done. Live demo: https://rxmaterial3e.dpdns.org/ See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
+Steps 1 to 28 of 79 done. Live demo: https://rxmaterial3e.dpdns.org/ See [ROADMAP.md](ROADMAP.md) for the step-by-step plan and [COMPONENTS.md](COMPONENTS.md) for the full catalog.
 
 | Package          | What it is                                                     | Status                            |
 | ---------------- | -------------------------------------------------------------- | --------------------------------- |
@@ -313,7 +313,14 @@ All the buttons are as wide as the widest. On its own the set is as narrow as Co
 <rx-fab size="large" color="tertiary"><rx-icon label="Add">add</rx-icon></rx-fab>
 ```
 
-Compose's floating action button: the screen's main action, an icon on a raised container. `size` is `small` (the older 40dp FAB), `baseline` (56dp, the default), `medium` (80dp) or `large` (96dp), each with its own shape and icon size. `color` is `primary-container` (the default), `secondary-container`, `tertiary-container`, `primary`, `secondary`, `tertiary` or `surface`. It sits at elevation level 3 and rises to level 4 under the pointer; `lowered` drops that to level 1 and 2. Name it with a `label` on its icon or `aria-label`. It is a plain button, not a form control. Extended FABs with a label come in step 28.
+Compose's floating action button: the screen's main action, an icon on a raised container. `size` is `small` (the older 40dp FAB), `baseline` (56dp, the default), `medium` (80dp) or `large` (96dp), each with its own shape and icon size. `color` is `primary-container` (the default), `secondary-container`, `tertiary-container`, `primary`, `secondary`, `tertiary` or `surface`. It sits at elevation level 3 and rises to level 4 under the pointer; `lowered` drops that to level 1 and 2. Name it with a `label` on its icon or `aria-label`. It is a plain button, not a form control.
+
+```html
+<rx-fab label="Compose"><rx-icon label="Compose">edit</rx-icon></rx-fab>
+<rx-fab size="medium" label="Reply" collapsed><rx-icon label="Reply">reply</rx-icon></rx-fab>
+```
+
+A `label` makes it an extended FAB: Compose's ExtendedFloatingActionButton at the baseline size, and M3 Expressive's small (56dp), medium (80dp) and large (96dp) extended FABs, each with its own padding and text style. With an icon too, `collapsed` (or `expanded = false`) folds it down to the icon, as an app does while a list scrolls: the baseline one slides and fades its label away, the M3 Expressive ones spring their width. As in Compose, the label names the FAB only when there is no icon, so give the icon a `label`.
 
 ## Scrim
 

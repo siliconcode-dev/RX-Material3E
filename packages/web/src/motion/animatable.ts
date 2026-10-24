@@ -59,9 +59,11 @@ export interface AnimatableOptions<T> {
   /**
    * Whole numbers, as Compose's `Int.VectorConverter`: every frame's value
    * is cut toward zero (`toInt()`), and an animation that takes over starts
-   * from that whole number. The velocity stays fractional.
+   * from that whole number. The velocity stays fractional. `'size'` is
+   * `IntSize.VectorConverter`: rounded to the nearest whole number, and
+   * never below 0.
    */
-  integer?: boolean;
+  integer?: boolean | 'size';
 }
 
 const Unspecified = Number.MIN_SAFE_INTEGER;
@@ -105,7 +107,12 @@ export class Animatable<T extends Value = number> {
   constructor(initialValue: T, options: AnimatableOptions<Widen<T>> = {}) {
     this.scalar = typeof initialValue === 'number';
     // + 0 turns -0 into 0, as Kotlin has no negative zero integer.
-    this.convert = options.integer ? (v) => v.map((x) => Math.trunc(x) + 0) : (v) => v;
+    this.convert =
+      options.integer === 'size'
+        ? (v) => v.map((x) => Math.max(0, Math.round(x)))
+        : options.integer
+          ? (v) => v.map((x) => Math.trunc(x) + 0)
+          : (v) => v;
     this.current = this.convert(toVector(initialValue));
     this.size = this.current.length;
     this.currentVelocity = new Array<number>(this.size).fill(0);

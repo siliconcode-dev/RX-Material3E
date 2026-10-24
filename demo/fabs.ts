@@ -1,5 +1,6 @@
 import '../packages/web/src/fab/fab.js';
 import '../packages/web/src/icon/icon.js';
+import '../packages/web/src/button/button.js';
 import type {FabColor, FabSize} from '../packages/web/src/fab/index.js';
 
 function fab(attributes: Record<string, string>, icon: string, label: string) {
@@ -44,3 +45,36 @@ const log = document.getElementById('log')!;
 document
   .getElementById('placed')!
   .addEventListener('click', () => (log.textContent = 'Compose clicked'));
+
+const extendedSizes: [FabSize, string, string][] = [
+  ['baseline', 'Extended FAB', 'add'],
+  ['small', 'Small extended FAB', 'add'],
+  ['medium', 'Medium extended FAB', 'add'],
+  ['large', 'Large extended FAB', 'add'],
+];
+const extended = document.getElementById('extended')!;
+for (const [size, text, icon] of extendedSizes) {
+  const textOnly = document.createElement('rx-fab');
+  textOnly.setAttribute('size', size);
+  textOnly.label = text;
+  const withIcon = fab({size}, icon, 'Add');
+  withIcon.setAttribute('label', text);
+  const row = document.createElement('div');
+  row.className = 'row';
+  row.append(textOnly, withIcon);
+  extended.append(row);
+}
+
+const collapsing = document.getElementById('collapsing')!;
+const folding: HTMLElement[] = [];
+for (const [size, text, icon] of extendedSizes) {
+  const el = fab({size, label: text}, icon, 'Add');
+  folding.push(el);
+  collapsing.append(el);
+}
+const toggle = document.getElementById('toggle')!;
+toggle.addEventListener('click', () => {
+  const collapse = !folding[0].hasAttribute('collapsed');
+  for (const el of folding) el.toggleAttribute('collapsed', collapse);
+  toggle.textContent = collapse ? 'Expand' : 'Collapse';
+});
