@@ -42,6 +42,8 @@ export class InteractionShapeController implements ReactiveController {
   // key(shapes) and the AnimatedShapeState remembered under it.
   private key: CornerShape[] | null = null;
   private state: AnimatedShapeState | null = null;
+  // The corners are px worked out from the size: redraw when it changes.
+  private resize: ResizeObserver | null = null;
 
   constructor(
     private readonly host: ReactiveControllerHost & HTMLElement,
@@ -61,6 +63,8 @@ export class InteractionShapeController implements ReactiveController {
 
   hostDisconnected() {
     this.state?.progress.stop();
+    this.resize?.disconnect();
+    this.resize = null;
   }
 
   update() {
@@ -104,6 +108,8 @@ export class InteractionShapeController implements ReactiveController {
   private reset(container: HTMLElement) {
     this.state?.progress.stop();
     this.key = this.state = null;
+    this.resize?.disconnect();
+    this.resize = null;
     clearCornerShape(container);
     container.style.removeProperty('border-radius');
   }
@@ -111,7 +117,10 @@ export class InteractionShapeController implements ReactiveController {
   private draw(state: AnimatedShapeState) {
     const container = this.options.container();
     if (state !== this.state || !container) return;
-    const atRest = state.atRest;
-    applyCornerShape(container, atRest ? state.targetShape : state.morphedShape(), atRest);
+    if (!this.resize) {
+      this.resize = new ResizeObserver(() => this.state && this.draw(this.state));
+      this.resize.observe(container);
+    }
+    applyCornerShape(container, state.atRest ? state.targetShape : state.morphedShape());
   }
 }

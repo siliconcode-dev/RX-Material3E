@@ -74,6 +74,35 @@
       </rx-button-group>
     </div>
 
+    <h2>Connected</h2>
+    <p>
+      With <code>connected</code> the toggle buttons sit 2dp apart with Compose's connected shapes:
+      rounded outer ends, small inner corners that pinch in when pressed, and fully round when on.
+      They wrap onto more rows, as Compose's connected samples do, and don't grow on press.
+      <code>selection="single"</code> keeps one on at a time (radio buttons).
+    </p>
+    <div class="stack">
+      <rx-button-group connected selection="single" id="single">
+        <rx-toggle-button checked name="place" value="work"
+          ><rx-icon slot="icon">work</rx-icon>Work</rx-toggle-button
+        >
+        <rx-toggle-button name="place" value="restaurant"
+          ><rx-icon slot="icon">restaurant</rx-icon>Restaurant</rx-toggle-button
+        >
+        <rx-toggle-button name="place" value="coffee"
+          ><rx-icon slot="icon">coffee</rx-icon>Coffee</rx-toggle-button
+        >
+        <rx-toggle-button name="place" value="home"
+          ><rx-icon slot="icon">home</rx-icon>Home</rx-toggle-button
+        >
+      </rx-button-group>
+      <rx-button-group connected>
+        <rx-toggle-button variant="tonal">Wi-Fi</rx-toggle-button>
+        <rx-toggle-button variant="tonal" checked>Bluetooth</rx-toggle-button>
+        <rx-toggle-button variant="tonal">Location</rx-toggle-button>
+      </rx-button-group>
+    </div>
+
     <h2>Sharing the width</h2>
     <p>
       Give items <code>flex: 1</code> (Compose's <code>weight</code>) and the group a width: the

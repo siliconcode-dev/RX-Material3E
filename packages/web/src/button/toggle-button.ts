@@ -100,6 +100,13 @@ export class RxToggleButton extends FormAssociated(LitElement) {
   /** Sent with the form, under `name`, when checked. */
   @property() value = 'on';
 
+  /**
+   * A radio button for assistive technology (Compose's
+   * `Modifier.semantics { role = Role.RadioButton }`), as one of a
+   * single-select rx-button-group.
+   */
+  @property({type: Boolean, reflect: true}) radio = false;
+
   @query('.button') private buttonEl!: HTMLElement;
   @query('.outline-color') private outlineProbe?: HTMLElement;
   @query('rx-ripple') private ripple?: RxRipple;
@@ -117,7 +124,7 @@ export class RxToggleButton extends FormAssociated(LitElement) {
     addActivation(this, {kind: 'toggle', isDisabled: () => this.isDisabled});
     this.addEventListener('click', this.onClick);
     new HostSemanticsController(this, () => ({
-      role: ComposeRole.Checkbox,
+      role: this.radio ? ComposeRole.RadioButton : ComposeRole.Checkbox,
       disabled: this.isDisabled,
       aria: {checked: this.checked},
     }));

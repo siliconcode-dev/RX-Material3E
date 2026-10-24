@@ -241,8 +241,16 @@ describe('rx-button morph', () => {
     expect(radius(el)).toBeGreaterThan(before);
     setMotionDurationScale(0);
     await frames(3);
-    // At rest again the stylesheet's own value is back (follows later resizes).
-    expect(container(el).style.getPropertyValue('border-start-start-radius')).toBe('9999px');
+    // At rest, fully round again: half the height, in px.
+    expect(container(el).style.getPropertyValue('border-start-start-radius')).toBe('20px');
+    // It follows later size changes: a two-line label makes it taller.
+    el.innerHTML = 'Two<br />lines';
+    await frames(3);
+    const height = container(el).getBoundingClientRect().height;
+    expect(height).toBeGreaterThan(40);
+    expect(container(el).style.getPropertyValue('border-start-start-radius')).toBe(
+      `${height / 2}px`,
+    );
   });
 
   it('morphs for a keyboard press, not for a disabled button', async () => {

@@ -1,1 +1,1 @@
-export {RxButtonGroup, type ButtonGroupAlign} from './button-group.js';
+export {RxButtonGroup, type ButtonGroupAlign, type ButtonGroupSelection} from './button-group.js';

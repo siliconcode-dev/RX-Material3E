@@ -318,3 +318,141 @@ describe('rx-button-group press growth (ButtonGroupMeasurePolicy)', () => {
     expect(container(small).getBoundingClientRect().width).toBe(58 - 24);
   });
 });
+
+/** The four drawn corners (start-start, start-end, end-end, end-start) in px. */
+const corners = (el: Element) => {
+  const s = getComputedStyle(container(el));
+  return [
+    s.borderStartStartRadius,
+    s.borderStartEndRadius,
+    s.borderEndEndRadius,
+    s.borderEndStartRadius,
+  ].map(parseFloat);
+};
+const toggles = (n: number, attrs = '') =>
+  Array.from({length: n}, (_, i) => `<rx-toggle-button ${attrs}>Item ${i}</rx-toggle-button>`).join(
+    '',
+  );
+
+/*
+ * The test's own copy of ButtonGroupDefaults' connected shapes at 40dp:
+ * outer corners CornerSize(100) drawn at half the height (20), inner 8
+ * (InnerCornerCornerSize), pressed inner 4, checked fully round; the middle
+ * ones ShapeDefaults.Small (8) and pressed 4.
+ */
+describe('rx-button-group connected', () => {
+  it('puts the items 2dp apart, in rows 2dp apart', async () => {
+    const group = await mount(toggles(5), 'connected style="width: 250px"');
+    const boxes = children(group).map((c) => c.getBoundingClientRect());
+    expect(boxes[1].left - boxes[0].right).toBe(2);
+    // It wraps (FlowRow): a later item starts a new row 2dp below.
+    const second = boxes.find((b) => b.top > boxes[0].top)!;
+    expect(second.top - boxes[0].bottom).toBe(2);
+  });
+
+  it('gives the first, middle and last toggles their connected shapes', async () => {
+    setMotionDurationScale(0);
+    const group = await mount(toggles(3), 'connected');
+    await new Promise((r) => requestAnimationFrame(r));
+    const [first, middle, last] = children(group);
+    expect(corners(first)).toEqual([20, 8, 8, 20]);
+    expect(corners(middle)).toEqual([8, 8, 8, 8]);
+    expect(corners(last)).toEqual([8, 20, 20, 8]);
+  });
+
+  it('pressed, the inner corners pinch to 4dp; checked, fully round', async () => {
+    setMotionDurationScale(0);
+    const group = await mount(toggles(3), 'connected');
+    const [first, middle, last] = children(group);
+    const frame = () => new Promise((r) => requestAnimationFrame(r));
+    for (const [el, want] of [
+      [first, [20, 4, 4, 20]],
+      [middle, [4, 4, 4, 4]],
+      [last, [4, 20, 20, 4]],
+    ] as const) {
+      press(el);
+      await frame();
+      await frame();
+      expect(corners(el)).toEqual(want);
+      release(el);
+    }
+    (middle as unknown as {checked: boolean}).checked = true;
+    await frame();
+    await frame();
+    expect(corners(middle)).toEqual([20, 20, 20, 20]);
+  });
+
+  it('mirrors the shapes in right-to-left text', async () => {
+    setMotionDurationScale(0);
+    document.documentElement.dir = 'rtl';
+    try {
+      const group = await mount(toggles(2), 'connected');
+      await new Promise((r) => requestAnimationFrame(r));
+      const first = getComputedStyle(container(children(group)[0]));
+      // The start is on the right.
+      expect(parseFloat(first.borderTopRightRadius)).toBe(20);
+      expect(parseFloat(first.borderTopLeftRadius)).toBe(8);
+    } finally {
+      document.documentElement.removeAttribute('dir');
+    }
+  });
+
+  it('a lone item takes the leading shape', async () => {
+    setMotionDurationScale(0);
+    const group = await mount(toggles(1), 'connected');
+    await new Promise((r) => requestAnimationFrame(r));
+    expect(corners(children(group)[0])).toEqual([20, 8, 8, 20]);
+  });
+
+  it('does not grow on press', async () => {
+    const group = await mount(items(100, 100, 100), 'connected');
+    clock = manualFrames();
+    pressAndSettle(children(group)[1]);
+    expect(widths(group)).toEqual([100, 100, 100]);
+  });
+});
+
+describe('rx-button-group selection', () => {
+  it('multi (the default): each toggle on its own, as checkboxes', async () => {
+    const group = await mount(toggles(3), 'connected');
+    const [a, b] = children(group) as (HTMLElement & {checked: boolean})[];
+    a.click();
+    b.click();
+    expect([a.checked, b.checked]).toEqual([true, true]);
+    expect(a.getAttribute('role')).toBe('checkbox');
+  });
+
+  it('single: radio buttons, one on at a time, the one on stays on', async () => {
+    const group = await mount(toggles(3), 'connected selection="single"');
+    const [a, b, c] = children(group) as (HTMLElement & {checked: boolean})[];
+    await Promise.all(
+      [a, b, c].map((t) => (t as unknown as {updateComplete: Promise<unknown>}).updateComplete),
+    );
+    expect(a.getAttribute('role')).toBe('radio');
+    const changes: string[] = [];
+    group.addEventListener('change', (e) => changes.push((e.target as HTMLElement).textContent!));
+    a.click();
+    expect([a.checked, b.checked, c.checked]).toEqual([true, false, false]);
+    c.click();
+    expect([a.checked, b.checked, c.checked]).toEqual([false, false, true]);
+    // Pressing the one that is on keeps it on, with no change event.
+    c.click();
+    expect(c.checked).toBe(true);
+    expect(changes).toEqual(['Item 0', 'Item 2']);
+    // Back to multi: checkboxes again.
+    group.selection = 'multi';
+    await group.updateComplete;
+    await (a as unknown as {updateComplete: Promise<unknown>}).updateComplete;
+    expect(a.getAttribute('role')).toBe('checkbox');
+  });
+
+  it('single works for keyboard toggling too', async () => {
+    const group = await mount(toggles(2), 'selection="single"');
+    const [a, b] = children(group) as (HTMLElement & {checked: boolean})[];
+    a.focus();
+    await userEvent.keyboard(' ');
+    b.focus();
+    await userEvent.keyboard(' ');
+    expect([a.checked, b.checked]).toEqual([false, true]);
+  });
+});

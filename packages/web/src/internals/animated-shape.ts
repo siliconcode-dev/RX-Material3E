@@ -16,13 +16,11 @@ import type {SpringSpec} from '../motion/motion-scheme.js';
 
 /**
  * A corner size, as Compose's CornerSize: a fixed size in px, a percent of
- * the shape's shorter side, or the interpolation of two others. `css` keeps
- * the CSS value it was read from, so a shape at rest can be written back as
- * it was given and follow later size changes.
+ * the shape's shorter side, or the interpolation of two others.
  */
 export type CornerSize =
-  | {readonly kind: 'px'; readonly px: number; readonly css?: string}
-  | {readonly kind: 'percent'; readonly percent: number; readonly css?: string}
+  | {readonly kind: 'px'; readonly px: number}
+  | {readonly kind: 'percent'; readonly percent: number}
   | {readonly kind: 'lerp'; readonly a: CornerSize; readonly b: CornerSize; readonly t: number};
 
 /** A shape with four corner sizes, as Compose's RoundedCornerShape. Corners are logical. */
@@ -101,13 +99,9 @@ export function parseCornerShape(value: string, fullValue: string): CornerShape 
   for (const part of value.trim().split(/\s+/)) {
     const number = parseFloat(part);
     if (!Number.isFinite(number) || number < 0) return null;
-    if (part.endsWith('%')) sizes.push({kind: 'percent', percent: number, css: part});
+    if (part.endsWith('%')) sizes.push({kind: 'percent', percent: number});
     else if (/^[\d.]+(px)?$/.test(part)) {
-      sizes.push(
-        number === full
-          ? {kind: 'percent', percent: 50, css: part}
-          : {kind: 'px', px: number, css: part},
-      );
+      sizes.push(number === full ? {kind: 'percent', percent: 50} : {kind: 'px', px: number});
     } else return null;
   }
   if (sizes.length < 1 || sizes.length > 4) return null;
@@ -196,32 +190,39 @@ export class AnimatedShapeState {
   }
 }
 
-/** The CSS for a corner at rest, or null when it is an interpolation. */
-function restingCss(corner: CornerSize): string | null {
-  return corner.kind === 'lerp' ? null : (corner.css ?? null);
-}
-
 /**
- * Writes `shape` as the element's logical corner radii. Corners are worked
- * out in px from the element's size, except at rest, where the CSS each
- * corner was read from is written back so it keeps following the size.
+ * Writes `shape` as the element's logical corner radii, in px from the
+ * element's size, as CornerBasedShape.createOutline works them out: a start
+ * pair (or end pair) larger than the shorter side is scaled down to fit,
+ * each pair on its own. (CSS would scale all four corners by one factor, so
+ * a 100% outer corner would also shrink the inner ones.)
  */
-export function applyCornerShape(element: HTMLElement, shape: CornerShape, atRest: boolean) {
+export function applyCornerShape(element: HTMLElement, shape: CornerShape) {
   const width = element.offsetWidth;
   const height = element.offsetHeight;
-  const properties = {
-    topStart: 'border-start-start-radius',
-    topEnd: 'border-start-end-radius',
-    bottomEnd: 'border-end-end-radius',
-    bottomStart: 'border-end-start-radius',
-  } as const;
-  for (const key of CORNERS) {
-    const css = atRest ? restingCss(shape[key]) : null;
-    // A spring that overshoots can take a corner below 0 (Compose's outline
-    // requires corners >= 0; CSS would drop a negative radius).
-    const px = Math.max(0, cornerSizeToPx(shape[key], width, height));
-    element.style.setProperty(properties[key], css ?? `${px}px`);
+  const minDimension = Math.min(width, height);
+  // A spring that overshoots can take a corner below 0 (Compose's outline
+  // requires corners >= 0; CSS would drop a negative radius).
+  const px = (corner: CornerSize) => Math.max(0, cornerSizeToPx(corner, width, height));
+  let topStart = px(shape.topStart);
+  let topEnd = px(shape.topEnd);
+  let bottomEnd = px(shape.bottomEnd);
+  let bottomStart = px(shape.bottomStart);
+  if (topStart + bottomStart > minDimension) {
+    const scale = minDimension / (topStart + bottomStart);
+    topStart *= scale;
+    bottomStart *= scale;
   }
+  if (topEnd + bottomEnd > minDimension) {
+    const scale = minDimension / (topEnd + bottomEnd);
+    topEnd *= scale;
+    bottomEnd *= scale;
+  }
+  const style = element.style;
+  style.setProperty('border-start-start-radius', `${topStart}px`);
+  style.setProperty('border-start-end-radius', `${topEnd}px`);
+  style.setProperty('border-end-end-radius', `${bottomEnd}px`);
+  style.setProperty('border-end-start-radius', `${bottomStart}px`);
 }
 
 /** Removes the radii `applyCornerShape` wrote, handing the shape back to the stylesheet. */

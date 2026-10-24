@@ -40,7 +40,7 @@ describe('parseCatalog', () => {
       elements: ['rx-button-group'],
       gen: 'M3E',
       status: 'progress',
-      note: expect.stringMatching(/step 24/),
+      note: expect.stringMatching(/step 58/),
     });
     expect(byId.get('1.5')).toMatchObject({
       name: 'Split button',

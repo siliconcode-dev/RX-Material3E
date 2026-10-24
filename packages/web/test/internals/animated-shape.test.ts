@@ -1,6 +1,7 @@
 import {afterEach, describe, expect, it} from 'vitest';
 import {
   AnimatedShapeState,
+  applyCornerShape,
   cornerShapesEqual,
   cornerSizeToPx,
   lerpCornerShape,
@@ -150,5 +151,45 @@ describe('AnimatedShapeState', () => {
     const state = new AnimatedShapeState(rest, spec, () => frames++);
     await state.animateToShape(pressed);
     expect(frames).toBeGreaterThan(2);
+  });
+});
+
+describe('applyCornerShape (CornerBasedShape.createOutline)', () => {
+  function drawn(shape: CornerShape, width: number, height: number) {
+    const el = document.createElement('div');
+    el.style.cssText = `width: ${width}px; height: ${height}px`;
+    document.body.append(el);
+    applyCornerShape(el, shape);
+    const s = el.style;
+    const result = [
+      s.getPropertyValue('border-start-start-radius'),
+      s.getPropertyValue('border-start-end-radius'),
+      s.getPropertyValue('border-end-end-radius'),
+      s.getPropertyValue('border-end-start-radius'),
+    ];
+    el.remove();
+    return result;
+  }
+
+  it('writes each corner in px', () => {
+    expect(drawn(uniform('9999px'), 100, 40)).toEqual(['20px', '20px', '20px', '20px']);
+    expect(drawn(uniform('1px 2px 3px 4px'), 100, 40)).toEqual(['1px', '2px', '3px', '4px']);
+  });
+
+  it('scales the start pair and the end pair to the shorter side, each on its own', () => {
+    // ShapeDefaults.CornerFull is CornerSize(100): 40px corners at the start
+    // fit to 20px; the 8px end corners stay (one CSS factor would halve them).
+    expect(drawn(uniform('100% 8px 8px 100%'), 100, 40)).toEqual(['20px', '8px', '8px', '20px']);
+    expect(drawn(uniform('30px 30px 10px 10px'), 100, 30)).toEqual([
+      '22.5px',
+      '22.5px',
+      '7.5px',
+      '7.5px',
+    ]);
+  });
+
+  it('draws a negative corner (an overshooting spring) as 0', () => {
+    const shape = lerpCornerShape(uniform('8px'), uniform('2px'), 2);
+    expect(drawn(shape, 100, 40)).toEqual(['0px', '0px', '0px', '0px']);
   });
 });

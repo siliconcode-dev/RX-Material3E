@@ -14,11 +14,15 @@
  */
 
 import group from '@rx-m3e/tokens/js/button-group-small.js';
+import connected from '@rx-m3e/tokens/js/connected-button-group-small.js';
 import {LitElement, css, html, unsafeCSS} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 import {trackPress, type PressTracker} from '../internals/press-interaction.js';
 import {Animatable} from '../motion/animatable.js';
 import {motionSpring} from '../motion/motion-scheme.js';
+
+/** Multi (the default: each toggle on its own) or single (one toggle on at a time). */
+export type ButtonGroupSelection = 'multi' | 'single';
 
 /** Alignment.Vertical for the items: Top (the default), CenterVertically or Bottom. */
 export type ButtonGroupAlign = 'top' | 'center' | 'bottom';
@@ -82,6 +86,20 @@ export class RxButtonGroup extends LitElement {
   /** No growing on press. */
   @property({type: Boolean, reflect: true, attribute: 'static'}) isStatic = false;
 
+  /**
+   * A connected group, as Compose's connected samples: toggle buttons 2dp
+   * apart with ButtonGroupDefaults' connected shapes, wrapping onto more
+   * rows 2dp apart. Connected items don't grow on press.
+   */
+  @property({type: Boolean, reflect: true}) connected = false;
+
+  /**
+   * With `single`, one toggle button is on at a time and they are radio
+   * buttons (SingleSelectConnectedButtonGroupSample); pressing the one that
+   * is on keeps it on.
+   */
+  @property({reflect: true}) selection: ButtonGroupSelection = 'multi';
+
   private items: Item[] = [];
   // The items' widths before any growth (Compose's `widths`), while animating.
   private base: number[] | null = null;
@@ -112,7 +130,91 @@ export class RxButtonGroup extends LitElement {
       flex-shrink: 0;
       --rx-button-group-width: 100%;
     }
+
+    /*
+     * Connected (SingleSelect/MultiSelectConnectedButtonGroupSample): a
+     * FlowRow spaced by ConnectedSpaceBetween, rows 2dp apart; the toggle
+     * buttons take connectedMiddleButtonShapes (ShapeDefaults.Small, the
+     * pressed inner corner size, connectedButtonCheckedShape fully round),
+     * the first connectedLeadingButtonShapes and the last
+     * connectedTrailingButtonShapes. Their outer corners are
+     * ShapeDefaults.CornerFull, CornerSize(100): 100% of the shorter side,
+     * which the outline scales down to fit.
+     */
+    :host([connected]) {
+      flex-wrap: wrap;
+      gap: 2px ${unsafeCSS(connected['between-space'])};
+    }
+
+    :host([connected]) ::slotted(*) {
+      --rx-toggle-button-shape: var(--md-sys-shape-corner-small);
+      --rx-toggle-button-pressed-shape: ${unsafeCSS(connected['pressed-inner-corner-corner-size'])};
+      --rx-toggle-button-checked-shape: var(--md-sys-shape-corner-full);
+    }
+
+    :host([connected]) ::slotted(:last-child) {
+      --rx-toggle-button-shape: ${unsafeCSS(connected['inner-corner-corner-size'])} 100% 100%
+        ${unsafeCSS(connected['inner-corner-corner-size'])};
+      --rx-toggle-button-pressed-shape: ${unsafeCSS(connected['pressed-inner-corner-corner-size'])}
+        100% 100% ${unsafeCSS(connected['pressed-inner-corner-corner-size'])};
+    }
+
+    /* After the last child's rule: a lone item is the leading one (index 0). */
+    :host([connected]) ::slotted(:first-child) {
+      --rx-toggle-button-shape: 100% ${unsafeCSS(connected['inner-corner-corner-size'])}
+        ${unsafeCSS(connected['inner-corner-corner-size'])} 100%;
+      --rx-toggle-button-pressed-shape: 100%
+        ${unsafeCSS(connected['pressed-inner-corner-corner-size'])}
+        ${unsafeCSS(connected['pressed-inner-corner-corner-size'])} 100%;
+    }
   `;
+
+  constructor() {
+    super();
+    this.addEventListener('click', this.onItemClick, true);
+    this.addEventListener('change', this.onItemChange);
+  }
+
+  /** The direct child an event came from, if any. */
+  private itemOf(event: Event): HTMLElement | null {
+    for (const node of event.composedPath()) {
+      if (node instanceof HTMLElement && node.parentElement === this) return node;
+    }
+    return null;
+  }
+
+  // Single selection: pressing the toggle that is on keeps it on
+  // (onCheckedChange = { selectedIndex = index }).
+  private readonly onItemClick = (event: Event) => {
+    const item = this.itemOf(event);
+    if (this.selection === 'single' && item && (item as {checked?: boolean}).checked === true) {
+      event.preventDefault();
+    }
+  };
+
+  // Single selection: turning one on turns the others off.
+  private readonly onItemChange = (event: Event) => {
+    const item = this.itemOf(event) as (HTMLElement & {checked?: boolean}) | null;
+    if (this.selection !== 'single' || !item?.checked) return;
+    for (const other of this.items) {
+      const element = other.element as HTMLElement & {checked?: boolean};
+      if (element !== item && element.checked) element.checked = false;
+    }
+  };
+
+  protected override updated() {
+    this.markRadios();
+  }
+
+  // Single selection makes the toggle buttons radio buttons.
+  private markRadios() {
+    // The attribute, so it also reaches toggle buttons that upgrade later.
+    for (const {element} of this.items) {
+      if (element.localName === 'rx-toggle-button' || 'radio' in element) {
+        element.toggleAttribute('radio', this.selection === 'single');
+      }
+    }
+  }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
@@ -132,6 +234,7 @@ export class RxButtonGroup extends LitElement {
       (element) => this.items.find((i) => i.element === element) ?? this.watch(element),
     );
     this.base = null;
+    this.markRadios();
   }
 
   /** EnlargeOnPressNode for one item. */
@@ -142,7 +245,8 @@ export class RxButtonGroup extends LitElement {
       release: 0,
       saved: null,
       tracker: trackPress(element, {
-        enabled: () => !this.isStatic && element.getAttribute('aria-disabled') !== 'true',
+        enabled: () =>
+          !this.isStatic && !this.connected && element.getAttribute('aria-disabled') !== 'true',
         // A toggle (checkbox) is pressed by Space only, as it is activated.
         keys: () => (element.getAttribute('role') === 'checkbox' ? [' '] : [' ', 'Enter']),
         onChange: (pressed) => this.onPressChange(item, pressed),
